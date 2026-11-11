@@ -11,7 +11,13 @@
 <meta property="og:title" content="KYLA 한국유소년라크로스협회">
 <meta property="og:description" content="라크로스를 통해 더 넓은 세상을 경험하다.">
 <meta property="og:url" content="https://koreayouthlacrosse.com/">
+<meta property="og:locale" content="ko_KR">
 <meta property="og:image" content="https://koreayouthlacrosse.com/assets/img/og-image.png">
+<link rel="canonical" href="https://koreayouthlacrosse.com/">
+<link rel="alternate" hreflang="ko" href="https://koreayouthlacrosse.com/">
+<link rel="alternate" hreflang="en" href="https://koreayouthlacrosse.com/en/">
+<link rel="alternate" hreflang="ja" href="https://koreayouthlacrosse.com/ja/">
+<link rel="alternate" hreflang="x-default" href="https://koreayouthlacrosse.com/">
 <link rel="icon" type="image/png" href="assets/img/favicon.png">
 <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -39,6 +45,10 @@
 
 <a class="skip" href="#main" data-skip>본문으로 건너뛰기</a>
 
+<div class="langbar">
+  <nav class="wrap lang" aria-label="언어 선택" translate="no"><a href="./" lang="ko" hreflang="ko" data-lang-link="ko" aria-current="true">한국어</a><a href="en/" lang="en" hreflang="en" data-lang-link="en">English</a><a href="ja/" lang="ja" hreflang="ja" data-lang-link="ja">日本語</a></nav>
+</div>
+
 <header class="hdr">
   <div class="wrap hdr__in">
     <a class="brand" href="#home" aria-label="KYLA 한국유소년라크로스협회 홈">
@@ -46,16 +56,15 @@
       <span class="brand__name">한국유소년<br>라크로스협회</span>
     </a>
     <nav class="nav" aria-label="주요 메뉴">
-      <a href="#about">협회 소개</a>
-      <a href="#programs">유소년 교육</a>
-      <a href="#schedule">대회·일정</a>
-      <a href="#coach">지도자 자격</a>
-      <a href="#international">국제교류</a>
-      <a href="#notice">공지사항</a>
-      <a href="#gallery">사진</a>
+      <a data-ctx="nav" href="#about">협회 소개</a>
+      <a data-ctx="nav" href="#programs">유소년 교육</a>
+      <a data-ctx="nav" href="#schedule">대회·일정</a>
+      <a data-ctx="nav" href="#coach">지도자 자격</a>
+      <a data-ctx="nav" href="#international">국제교류</a>
+      <a data-ctx="nav" href="#notice">공지사항</a>
+      <a data-ctx="nav" href="#gallery">사진</a>
     </nav>
-    <a class="hdr__en" href="#international" lang="en">English</a>
-    <a class="btn btn--sm hdr__cta" href="#apply">신청·문의</a>
+    <a class="btn btn--sm hdr__cta" href="#apply" data-ctx="cta">신청·문의</a>
     <button class="hdr__menu" type="button" id="menu-btn" aria-expanded="false" aria-controls="mnav">
       <span id="menu-label">메뉴</span>
       <svg class="ico" aria-hidden="true"><use id="menu-ico" href="#i-menu"/></svg>
@@ -76,9 +85,9 @@
   <a class="mnav__link" href="#contact">후원·협력</a>
   <p class="mnav__foot">
     <a class="extlink" data-instagram="인스타그램" rel="noopener" hidden></a>
-    <a href="#international" lang="en">International exchange (English)</a>
     <a href="#privacy">개인정보처리방침</a>
   </p>
+  <p class="mnav__lang lang lang--plain" translate="no"><a href="./" lang="ko" hreflang="ko" data-lang-link="ko" aria-current="true">한국어</a><a href="en/" lang="en" hreflang="en" data-lang-link="en">English</a><a href="ja/" lang="ja" hreflang="ja" data-lang-link="ja">日本語</a></p>
 </nav>
 
 <main id="main" tabindex="-1">
@@ -88,7 +97,7 @@
 
   <div class="hero">
     <div class="hero__copy">
-      <h1 class="hero__title" tabindex="-1"><span class="oblique"><span>라크로스를 통해</span><span>더 넓은 세상을</span><span>경험하다.</span></span></h1>
+      <h1 class="hero__title" tabindex="-1"><span class="oblique">라크로스를 통해<br>더 넓은 세상을<br>경험하다.</span></h1>
       <p class="hero__lead">KYLA는 유소년 선수들이 안전하게 배우고, 즐겁게 성장하며, 국내외 다양한 팀과 연결될 수 있는 기회를 만들어갑니다.</p>
       <div class="btns">
         <a class="btn" href="#apply">대회·교육 신청</a>
@@ -185,12 +194,11 @@
     </div>
   </section>
 
-  <section class="intl" lang="en" aria-labelledby="h-intl">
+  <section class="intl" aria-labelledby="h-intl">
     <div class="wrap">
-      <h2 class="intl__title" id="h-intl">Connecting Young Athletes Beyond Borders.</h2>
-      <p class="intl__text">We welcome international friendship games, joint training, mutual visits, school and club partnerships, and collaborative youth lacrosse events. We can meet in Seoul, in Jeju, or in your city.</p>
-      <p class="intl__ko" lang="ko">해외 학교·클럽과의 친선경기, 합동훈련, 상호 방문을 환영합니다.</p>
-      <div class="btns"><a class="btn btn--light" href="#international">International exchange</a></div>
+      <h2 class="intl__title" id="h-intl" lang="en">Connecting Young Athletes Beyond Borders.</h2>
+      <p class="intl__text">해외 학교·클럽과의 친선경기, 합동훈련, 상호 방문, 학교와 클럽 사이의 교류, 함께 여는 유소년 라크로스 행사를 환영합니다. 서울에서도, 제주에서도, 상대 팀의 도시에서도 만날 수 있습니다.</p>
+      <div class="btns"><a class="btn btn--light" href="#international">국제교류 안내 보기</a></div>
     </div>
   </section>
 
@@ -201,7 +209,7 @@
         <li><a class="row" href="#schedule"><span><span class="ways__who">학부모·선수</span><span class="ways__what">일정과 공지, 대회 사진을 확인하고 대회에 신청합니다.</span></span><svg class="ico" aria-hidden="true"><use href="#i-chev"/></svg></a></li>
         <li><a class="row" href="#programs"><span><span class="ways__who">학교·선생님</span><span class="ways__what">체육수업, 방과후, 동아리 라크로스 프로그램을 알아봅니다.</span></span><svg class="ico" aria-hidden="true"><use href="#i-chev"/></svg></a></li>
         <li><a class="row" href="#coach"><span><span class="ways__who">클럽·지도자</span><span class="ways__what">대회 참가와 유소년 지도자 자격 교육을 확인합니다.</span></span><svg class="ico" aria-hidden="true"><use href="#i-chev"/></svg></a></li>
-        <li><a class="row" href="#international"><span><span class="ways__who" lang="en">Overseas schools and clubs</span><span class="ways__what" lang="en">Friendly games, joint training and mutual visits with Korean youth teams.</span></span><svg class="ico" aria-hidden="true"><use href="#i-chev"/></svg></a></li>
+        <li><a class="row" href="#international"><span><span class="ways__who">해외 학교·클럽</span><span class="ways__what">한국 유소년팀과의 친선경기, 합동훈련, 상호 방문을 안내합니다.</span></span><svg class="ico" aria-hidden="true"><use href="#i-chev"/></svg></a></li>
         <li><a class="row" href="#contact"><span><span class="ways__who">기업·기관</span><span class="ways__what">후원과 협력을 제안합니다.</span></span><svg class="ico" aria-hidden="true"><use href="#i-chev"/></svg></a></li>
       </ul>
     </div>
@@ -612,27 +620,24 @@
   </div>
 </section>
 
-<!-- ============================================================ 국제교류 (영문) -->
-<section class="view en" data-view="international" lang="en">
+<!-- ============================================================ 국제교류 -->
+<section class="view" data-view="international">
   <header class="pagehead" data-tone="blue">
     <div class="wrap">
-      <h1 class="t-page" tabindex="-1">Connecting Young Athletes Beyond Borders.</h1>
-      <p class="pagehead__lead">KYLA is a Seoul-based association growing youth lacrosse in Korea. We are looking for schools, clubs and coaches abroad to play, train and learn with.</p>
+      <h1 class="t-page" tabindex="-1"><span class="oblique">국제교류</span></h1>
+      <p class="pagehead__lead"><strong class="slogan" lang="en">Connecting Young Athletes Beyond Borders.</strong>KYLA는 서울을 기반으로 한국 유소년 라크로스를 키워 가는 협회입니다. 함께 경기하고, 훈련하고, 배울 해외 학교와 클럽, 지도자를 찾고 있습니다.</p>
     </div>
   </header>
 
   <div class="wrap">
     <section class="sect">
       <div class="sect__grid">
-        <h2 class="t-2">About KYLA</h2>
+        <h2 class="t-2">KYLA 소개</h2>
         <div class="sect__body">
           <div class="prose">
-            <p>The Korea Youth Lacrosse Association (KYLA) was founded in 2026 to give children and teenagers in Korea a safe and enjoyable way into lacrosse. We run youth lacrosse education with schools and clubs, organize youth tournaments, and train youth coaches.</p>
-            <p>In 2026 we held the 1st Youth Lacrosse Festival on May 31 and the 1st KYLA Youth Lacrosse Championship on October 25.</p>
-          </div>
-          <div class="note" lang="ko">
-            <p><strong>국문 안내</strong></p>
-            <p>KYLA는 한국과 해외의 학교, 클럽, 지도자가 라크로스를 통해 교류하고 함께 성장할 기회를 만들고자 합니다. 서울을 기반으로 서울과 제주, 해외를 잇고, 해외팀의 한국 방문과 한국팀의 해외 방문, 친선경기, 합동훈련, 학교·클럽 매칭, 국제캠프와 공동 행사를 환영합니다. 특정 대회나 정해진 일정에 한정하지 않고 각 팀 상황에 맞는 방식을 함께 논의합니다.</p>
+            <p>한국유소년라크로스협회(KYLA)는 한국의 어린이와 청소년이 안전하고 즐겁게 라크로스를 시작할 수 있도록 2026년에 설립한 단체입니다. 학교, 클럽과 함께 유소년 라크로스 교육을 운영하고, 유소년 대회를 열고, 유소년 지도자를 양성합니다.</p>
+            <p>2026년에는 5월 31일에 제1회 유소년 라크로스 페스티벌을, 10월 25일에 제1회 KYLA 유소년 라크로스 챔피언십을 열었습니다.</p>
+            <p>서울을 기반으로 서울과 제주, 해외를 잇고, 한국과 해외의 학교·클럽·지도자가 라크로스를 통해 교류하며 함께 성장할 기회를 만들고자 합니다.</p>
           </div>
         </div>
       </div>
@@ -641,18 +646,18 @@
     <section class="sect">
       <div class="sect__grid">
         <div>
-          <h2 class="t-2">Ways to work together</h2>
-          <p class="secintro">Our exchange opportunities are not limited to one tournament or a fixed schedule. Dates, length and format are agreed with each team.</p>
+          <h2 class="t-2">함께할 수 있는 방식</h2>
+          <p class="secintro">교류는 특정 대회나 정해진 일정에 한정하지 않습니다. 시기와 기간, 방식은 각 팀과 협의해 정합니다.</p>
         </div>
         <div class="sect__body">
-          <dl class="ways-en">
-            <div><dt>Visit Korea</dt><dd>Friendly games, joint training and cultural exchange with Korean youth teams in Seoul or Jeju.</dd></div>
-            <div><dt>Host a Korean team</dt><dd>Tournaments, games with local schools and clubs, and training visits in your country.</dd></div>
-            <div><dt>Joint training</dt><dd>Players and coaches from different countries training side by side.</dd></div>
-            <div><dt>School and club matching</dt><dd>We pair teams by level, age group and preferred season.</dd></div>
-            <div><dt>International camps</dt><dd>Age-group clinics and shared programs.</dd></div>
-            <div><dt>Co-hosted events</dt><dd>Friendship series or tournaments shaped by what both sides need.</dd></div>
-            <div><dt>Coach exchange</dt><dd>Sharing teaching methods, safety practice and culture.</dd></div>
+          <dl class="deflist">
+            <div><dt>한국 방문</dt><dd>서울이나 제주에서 한국 유소년팀과 친선경기, 합동훈련, 문화 교류를 합니다.</dd></div>
+            <div><dt>한국팀 초청</dt><dd>대회 참가, 현지 학교·클럽과의 경기, 훈련 방문으로 한국팀을 맞이합니다.</dd></div>
+            <div><dt>합동훈련</dt><dd>서로 다른 나라의 선수와 지도자가 함께 훈련합니다.</dd></div>
+            <div><dt>학교·클럽 매칭</dt><dd>수준과 연령, 희망 시기에 맞는 팀을 연결합니다.</dd></div>
+            <div><dt>국제캠프</dt><dd>연령별 클리닉과 공동 프로그램을 엽니다.</dd></div>
+            <div><dt>공동 행사</dt><dd>양쪽에 필요한 형태로 친선 시리즈나 대회를 함께 엽니다.</dd></div>
+            <div><dt>지도자 교류</dt><dd>지도 방법과 안전 관리, 문화를 나눕니다.</dd></div>
           </dl>
         </div>
       </div>
@@ -661,64 +666,64 @@
     <section class="sect" id="intl-form">
       <div class="sect__grid">
         <div>
-          <h2 class="t-2">Tell us about your team</h2>
-          <p class="secintro">A few details help us suggest a realistic plan. We reply by email.</p>
+          <h2 class="t-2">팀을 소개해 주세요</h2>
+          <p class="secintro">몇 가지를 알려 주시면 실현 가능한 계획을 제안해 드립니다. 답변은 이메일로 드립니다.</p>
         </div>
         <div class="sect__body">
           <p class="note note--warn" data-preview-note hidden></p>
-          <form class="form" id="form-intl" data-form="intl" data-lang="en" novalidate>
+          <form class="form" id="form-intl" data-form="intl" novalidate>
             <fieldset class="form__group">
-              <legend class="form__legend">School or team</legend>
-              <div class="field"><label class="field__label" for="intl-team">School or team name<em>required</em></label><input class="input" id="intl-team" name="School or team" required autocomplete="organization" data-msg="Enter your school or team name."></div>
+              <legend class="form__legend">학교·팀</legend>
+              <div class="field"><label class="field__label" for="intl-team"><span>학교 또는 팀 이름</span><em>필수</em></label><input class="input" id="intl-team" name="학교 또는 팀 이름" required autocomplete="organization" data-msg="학교나 팀 이름을 입력해 주세요."></div>
               <div class="form__grid form__grid--2">
-                <div class="field"><label class="field__label" for="intl-country">Country<em>required</em></label><input class="input" id="intl-country" name="Country" required autocomplete="country-name" data-msg="Enter your country."></div>
-                <div class="field"><label class="field__label" for="intl-city">City</label><input class="input" id="intl-city" name="City" autocomplete="address-level2"></div>
+                <div class="field"><label class="field__label" for="intl-country"><span>국가</span><em>필수</em></label><input class="input" id="intl-country" name="국가" required autocomplete="country-name" data-msg="국가를 입력해 주세요."></div>
+                <div class="field"><label class="field__label" for="intl-city">도시</label><input class="input" id="intl-city" name="도시" autocomplete="address-level2"></div>
               </div>
             </fieldset>
             <fieldset class="form__group">
-              <legend class="form__legend">Contact person</legend>
+              <legend class="form__legend">담당자</legend>
               <div class="form__grid form__grid--2">
-                <div class="field"><label class="field__label" for="intl-name">Name<em>required</em></label><input class="input" id="intl-name" name="Contact name" required autocomplete="name" data-msg="Enter a contact name."></div>
-                <div class="field"><label class="field__label" for="intl-email">Email<em>required</em></label><input class="input" id="intl-email" name="Email" type="email" required autocomplete="email" inputmode="email" data-msg="Enter an email address we can reply to." data-msg-type="Check the email address format."></div>
+                <div class="field"><label class="field__label" for="intl-name"><span>이름</span><em>필수</em></label><input class="input" id="intl-name" name="담당자 이름" required autocomplete="name" data-msg="담당자 이름을 입력해 주세요."></div>
+                <div class="field"><label class="field__label" for="intl-email"><span>이메일</span><em>필수</em></label><input class="input" id="intl-email" name="이메일" type="email" required autocomplete="email" inputmode="email" data-msg="답변받을 이메일 주소를 입력해 주세요." data-msg-type="이메일 주소 형식을 확인해 주세요."></div>
               </div>
-              <div class="field"><label class="field__label" for="intl-other">Other contact</label><input class="input" id="intl-other" name="Other contact" aria-describedby="intl-other-hint"><p class="field__hint" id="intl-other-hint">WhatsApp, LINE or KakaoTalk, if you use one.</p></div>
+              <div class="field"><label class="field__label" for="intl-other">다른 연락 수단</label><input class="input" id="intl-other" name="다른 연락 수단" aria-describedby="intl-other-hint"><p class="field__hint" id="intl-other-hint">WhatsApp, LINE, 카카오톡을 쓰신다면 적어 주세요.</p></div>
             </fieldset>
             <fieldset class="form__group">
-              <legend class="form__legend">Your group</legend>
+              <legend class="form__legend">참가 인원</legend>
               <fieldset class="field">
-                <legend class="field__label">Divisions</legend>
+                <legend class="field__label">디비전</legend>
                 <div class="checks">
-                  <label class="check"><input type="checkbox" name="Divisions" value="U10"><span>U10</span></label>
-                  <label class="check"><input type="checkbox" name="Divisions" value="U12"><span>U12</span></label>
-                  <label class="check"><input type="checkbox" name="Divisions" value="U14"><span>U14</span></label>
-                  <label class="check"><input type="checkbox" name="Divisions" value="U16"><span>U16</span></label>
+                  <label class="check"><input type="checkbox" name="디비전" value="U10"><span>U10</span></label>
+                  <label class="check"><input type="checkbox" name="디비전" value="U12"><span>U12</span></label>
+                  <label class="check"><input type="checkbox" name="디비전" value="U14"><span>U14</span></label>
+                  <label class="check"><input type="checkbox" name="디비전" value="U16"><span>U16</span></label>
                 </div>
               </fieldset>
               <div class="form__grid form__grid--2">
-                <div class="field"><label class="field__label" for="intl-players">Players</label><input class="input" id="intl-players" name="Players" type="number" min="0" inputmode="numeric"></div>
-                <div class="field"><label class="field__label" for="intl-staff">Coaches and staff</label><input class="input" id="intl-staff" name="Coaches and staff" type="number" min="0" inputmode="numeric"></div>
+                <div class="field"><label class="field__label" for="intl-players">선수 수</label><input class="input" id="intl-players" name="선수 수" type="number" min="0" inputmode="numeric"></div>
+                <div class="field"><label class="field__label" for="intl-staff">지도자·스태프 수</label><input class="input" id="intl-staff" name="지도자·스태프 수" type="number" min="0" inputmode="numeric"></div>
               </div>
             </fieldset>
             <fieldset class="form__group">
-              <legend class="form__legend">What you have in mind</legend>
+              <legend class="form__legend">희망하는 교류</legend>
               <fieldset class="field">
-                <legend class="field__label">Interested in</legend>
+                <legend class="field__label">관심 있는 방식</legend>
                 <div class="checks">
-                  <label class="check"><input type="checkbox" name="Interested in" value="Visiting Korea"><span>Visiting Korea</span></label>
-                  <label class="check"><input type="checkbox" name="Interested in" value="Hosting a Korean team"><span>Hosting a Korean team</span></label>
-                  <label class="check"><input type="checkbox" name="Interested in" value="Friendly games"><span>Friendly games</span></label>
-                  <label class="check"><input type="checkbox" name="Interested in" value="Joint training"><span>Joint training</span></label>
-                  <label class="check"><input type="checkbox" name="Interested in" value="Camp"><span>Camp</span></label>
-                  <label class="check"><input type="checkbox" name="Interested in" value="Co-hosted tournament"><span>Co-hosted tournament</span></label>
+                  <label class="check"><input type="checkbox" name="관심 있는 방식" value="한국 방문"><span>한국 방문</span></label>
+                  <label class="check"><input type="checkbox" name="관심 있는 방식" value="한국팀 초청"><span>한국팀 초청</span></label>
+                  <label class="check"><input type="checkbox" name="관심 있는 방식" value="친선경기"><span>친선경기</span></label>
+                  <label class="check"><input type="checkbox" name="관심 있는 방식" value="합동훈련"><span>합동훈련</span></label>
+                  <label class="check"><input type="checkbox" name="관심 있는 방식" value="캠프"><span>캠프</span></label>
+                  <label class="check"><input type="checkbox" name="관심 있는 방식" value="공동 대회"><span>공동 대회</span></label>
                 </div>
               </fieldset>
-              <div class="field"><label class="field__label" for="intl-when">Preferred dates, length and location</label><textarea class="input" id="intl-when" name="Preferred dates and location"></textarea></div>
-              <div class="field"><label class="field__label" for="intl-note">Anything else</label><textarea class="input" id="intl-note" name="Other requests"></textarea></div>
+              <div class="field"><label class="field__label" for="intl-when">희망 시기, 기간, 장소</label><textarea class="input" id="intl-when" name="희망 시기, 기간, 장소"></textarea></div>
+              <div class="field"><label class="field__label" for="intl-note">그 밖에 전하실 내용</label><textarea class="input" id="intl-note" name="그 밖에 전하실 내용"></textarea></div>
             </fieldset>
             <div class="field">
-              <label class="check"><input type="checkbox" name="Consent" value="Agreed" required data-msg="Please agree so we can reply to you."><span>I agree that KYLA may use the details above to reply to this inquiry.</span></label>
+              <label class="check"><input type="checkbox" name="정보 이용 동의" value="동의" required data-msg="답변을 드리려면 동의가 필요합니다."><span>KYLA가 이 문의에 답변하기 위해 위 정보를 이용하는 데 동의합니다. (필수)</span></label>
             </div>
-            <div class="btns"><button class="btn" type="submit">Send inquiry</button></div>
+            <div class="btns"><button class="btn" type="submit">문의 보내기</button></div>
             <div class="result" role="status" aria-live="polite" hidden></div>
           </form>
         </div>
@@ -778,18 +783,18 @@
         <fieldset class="form__group">
           <legend class="form__legend">참가 대회</legend>
           <div class="field">
-            <label class="field__label" for="team-event">대회<em>필수</em></label>
+            <label class="field__label" for="team-event"><span>대회</span><em>필수</em></label>
             <select class="input" id="team-event" name="대회" required data-msg="참가할 대회를 선택해 주세요."></select>
           </div>
         </fieldset>
         <fieldset class="form__group">
           <legend class="form__legend">팀 정보</legend>
           <div class="form__grid form__grid--2">
-            <div class="field"><label class="field__label" for="team-name">팀 이름<em>필수</em></label><input class="input" id="team-name" name="팀 이름" required data-msg="팀 이름을 입력해 주세요."></div>
-            <div class="field"><label class="field__label" for="team-org">소속 학교·클럽<em>필수</em></label><input class="input" id="team-org" name="소속 학교·클럽" required autocomplete="organization" data-msg="소속 학교나 클럽 이름을 입력해 주세요."></div>
+            <div class="field"><label class="field__label" for="team-name"><span>팀 이름</span><em>필수</em></label><input class="input" id="team-name" name="팀 이름" required data-msg="팀 이름을 입력해 주세요."></div>
+            <div class="field"><label class="field__label" for="team-org"><span>소속 학교·클럽</span><em>필수</em></label><input class="input" id="team-org" name="소속 학교·클럽" required autocomplete="organization" data-msg="소속 학교나 클럽 이름을 입력해 주세요."></div>
           </div>
           <div class="field">
-            <label class="field__label" for="team-div">참가 디비전<em>필수</em></label>
+            <label class="field__label" for="team-div"><span>참가 디비전</span><em>필수</em></label>
             <select class="input" id="team-div" name="참가 디비전" required aria-describedby="team-div-hint" data-msg="참가 디비전을 선택해 주세요.">
               <option value="">선택</option><option>U8·U9</option><option>U10</option><option>U12</option><option>U14</option><option>U16</option>
             </select>
@@ -799,8 +804,8 @@
         <fieldset class="form__group">
           <legend class="form__legend">담당 지도자</legend>
           <div class="form__grid form__grid--2">
-            <div class="field"><label class="field__label" for="team-coach">이름<em>필수</em></label><input class="input" id="team-coach" name="담당 지도자" required autocomplete="name" data-msg="담당 지도자 이름을 입력해 주세요."></div>
-            <div class="field"><label class="field__label" for="team-tel">휴대전화<em>필수</em></label><input class="input" id="team-tel" name="휴대전화" type="tel" required autocomplete="tel" inputmode="tel" placeholder="010-0000-0000" data-msg="연락받을 휴대전화 번호를 입력해 주세요."></div>
+            <div class="field"><label class="field__label" for="team-coach"><span>이름</span><em>필수</em></label><input class="input" id="team-coach" name="담당 지도자" required autocomplete="name" data-msg="담당 지도자 이름을 입력해 주세요."></div>
+            <div class="field"><label class="field__label" for="team-tel"><span>휴대전화</span><em>필수</em></label><input class="input" id="team-tel" name="휴대전화" type="tel" required autocomplete="tel" inputmode="tel" placeholder="010-0000-0000" data-msg="연락받을 휴대전화 번호를 입력해 주세요."></div>
           </div>
           <div class="field"><label class="field__label" for="team-email">이메일</label><input class="input" id="team-email" name="이메일" type="email" autocomplete="email" inputmode="email" data-msg-type="이메일 주소 형식을 확인해 주세요."></div>
         </fieldset>
@@ -846,7 +851,7 @@
         <fieldset class="form__group">
           <legend class="form__legend">문의 내용</legend>
           <div class="field">
-            <label class="field__label" for="inq-cat">문의 분류<em>필수</em></label>
+            <label class="field__label" for="inq-cat"><span>문의 분류</span><em>필수</em></label>
             <select class="input" id="inq-cat" name="문의 분류" required data-msg="문의 분류를 선택해 주세요.">
               <option value="">선택</option>
               <option value="school">학교 교육 프로그램</option>
@@ -857,15 +862,15 @@
               <option value="etc">그 밖의 문의</option>
             </select>
           </div>
-          <div class="field"><label class="field__label" for="inq-body">내용<em>필수</em></label><textarea class="input" id="inq-body" name="내용" required data-msg="문의 내용을 입력해 주세요."></textarea></div>
+          <div class="field"><label class="field__label" for="inq-body"><span>내용</span><em>필수</em></label><textarea class="input" id="inq-body" name="내용" required data-msg="문의 내용을 입력해 주세요."></textarea></div>
         </fieldset>
         <fieldset class="form__group">
           <legend class="form__legend">연락받을 분</legend>
           <div class="form__grid form__grid--2">
-            <div class="field"><label class="field__label" for="inq-name">이름<em>필수</em></label><input class="input" id="inq-name" name="이름" required autocomplete="name" data-msg="이름을 입력해 주세요."></div>
+            <div class="field"><label class="field__label" for="inq-name"><span>이름</span><em>필수</em></label><input class="input" id="inq-name" name="이름" required autocomplete="name" data-msg="이름을 입력해 주세요."></div>
             <div class="field"><label class="field__label" for="inq-org">소속</label><input class="input" id="inq-org" name="소속" autocomplete="organization"></div>
           </div>
-          <div class="field"><label class="field__label" for="inq-contact">이메일 또는 전화번호<em>필수</em></label><input class="input" id="inq-contact" name="연락처" required data-msg="답변받을 이메일이나 전화번호를 입력해 주세요."></div>
+          <div class="field"><label class="field__label" for="inq-contact"><span>이메일 또는 전화번호</span><em>필수</em></label><input class="input" id="inq-contact" name="연락처" required data-msg="답변받을 이메일이나 전화번호를 입력해 주세요."></div>
         </fieldset>
         <fieldset class="form__group">
           <legend class="form__legend">개인정보 동의</legend>
@@ -967,7 +972,6 @@
       <a href="#coach">지도자 자격</a>
       <a href="#contact">후원·협력</a>
       <a href="#international">국제교류</a>
-      <a href="#international" lang="en">English</a>
     </nav>
     <div class="ftr__info">
       <p>고유번호 501-82-75112</p>
@@ -976,6 +980,7 @@
       <p data-email-wrap hidden>이메일 <span data-email></span></p>
       <p class="ftr__small">'유소년라크로스지도자'(등록번호 2026-007637)는 자격기본법 규정에 따라 등록한 민간자격으로, 국가로부터 인정받은 공인자격이 아닙니다.</p>
       <p class="ftr__links"><a href="#privacy">개인정보처리방침</a></p>
+      <p class="ftr__lang lang lang--plain" translate="no"><a href="./" lang="ko" hreflang="ko" data-lang-link="ko" aria-current="true">한국어</a><a href="en/" lang="en" hreflang="en" data-lang-link="en">English</a><a href="ja/" lang="ja" hreflang="ja" data-lang-link="ja">日本語</a></p>
       <p class="ftr__small" lang="en">© 2026 Korea Youth Lacrosse Association</p>
     </div>
   </div>
