@@ -52,6 +52,20 @@
   `{ src: "assets/photos/앨범이름/01.jpg", alt: "사진 설명" }` 을 추가합니다.
   긴 변 1600px 정도로 줄인 JPG가 알맞습니다. 보호자 동의를 확인한 사진만 올립니다.
 
+## 2027 제주 국제 교류전 참가 의향 회신
+
+| 언어 | 주소 |
+|---|---|
+| 한국어 | https://koreayouthlacrosse.com/#jeju2027 |
+| English | https://koreayouthlacrosse.com/en/#jeju2027 |
+| 日本語 | https://koreayouthlacrosse.com/ja/#jeju2027 |
+
+- 개최 계획(안)과 회신서 항목은 `index.html` 의 `data-view="jeju2027"` 부분에 있습니다.
+  고친 뒤에는 번역을 맞추고 `python3 tools/build_i18n.py` 를 실행합니다.
+- 일정 목록의 '준비하고 있는 일정'에는 `data.js` 의 `2027-jeju-exchange` 항목으로 나옵니다.
+  일정이 확정되면 이 항목에 날짜를 넣고 상태를 `confirmed` 로 바꿉니다.
+- 회신 이메일과 전화번호는 사이트에 싣지 않습니다. 제안서(PDF)에만 있습니다.
+
 ## 세 언어가 만들어지는 방식
 
 한국어가 원본입니다.
@@ -84,6 +98,7 @@ python3 tools/build_i18n.py           # en/index.html, ja/index.html, assets/js/
 | `assets/img/`, `assets/fonts/` | 로고와 아이콘, 영어 화면 글꼴(Kanit, SIL OFL) |
 | `i18n/catalog.json` | 화면 문구의 영어·일본어 번역 |
 | `tools/build_i18n.py` | 영어·일본어 페이지를 만드는 스크립트 |
+| `tools/form-receiver.gs` | 신청서·문의·참가 의향 회신을 구글 스프레드시트로 받는 스크립트 |
 | `CNAME` | 연결된 도메인. 지우면 도메인 연결이 끊깁니다 |
 | `404.html`, `robots.txt`, `sitemap.xml` | 없는 주소 안내, 검색 엔진용 파일 |
 
@@ -91,4 +106,8 @@ python3 tools/build_i18n.py           # en/index.html, ja/index.html, assets/js/
 
 `data.js` 의 `formEndpoint` 가 비어 있는 동안에는 신청서와 문의가 전송되지 않고,
 적은 내용을 복사해 인스타그램 메시지로 보내도록 안내합니다.
-접수 주소를 넣으면 그 주소로 전송합니다.
+접수 주소를 넣으면 그 주소로 전송합니다. 참가 의향 회신서도 같은 방식입니다.
+
+구글 스프레드시트로 받으려면 `tools/form-receiver.gs` 를 씁니다. 스프레드시트의
+확장 프로그램 → Apps Script 에 붙여 넣고 웹 앱으로 배포한 뒤, 나온 주소를 `formEndpoint` 에 넣습니다.
+제출될 때마다 시트에 한 줄이 쌓이고 시트 주인에게 메일이 갑니다.

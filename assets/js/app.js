@@ -71,7 +71,8 @@
   var VIEW_NAMES = {
     home: '', about: T('협회 소개'), programs: T('유소년 교육'), schedule: T('대회·일정'), coach: T('지도자 자격'),
     international: T('국제교류'), notice: T('공지사항'), gallery: T('사진'), apply: T('신청·문의'),
-    contact: T('후원·협력'), privacy: T('개인정보처리방침')
+    contact: T('후원·협력'), privacy: T('개인정보처리방침'),
+    jeju2027: T('2027 제주 국제 유소년 라크로스 교류전')
   };
   var BASE_TITLE = T('KYLA 한국유소년라크로스협회');
 
@@ -205,7 +206,10 @@
     var tag = e.status === 'completed' ? '' : bib(e.status === 'planned' && e.stage ? e.stage : st.label, st.tone);
     var main = '<span class="row__main">' + tag + '<span class="row__title"' + koAttr(e) + '>' + esc(e.title) + '</span>' +
       (!opts.compact && e.summary ? '<span class="row__sub"' + koAttr(e) + '>' + esc(e.summary) + '</span>' : '') + '</span>';
-    if (e.status === 'planned') return '<li class="row">' + date + main + '</li>';
+    if (e.status === 'planned') {
+      return e.link ? '<li><a class="row" href="' + esc(e.link) + '">' + date + main + icon('chev') + '</a></li>'
+        : '<li class="row">' + date + main + '</li>';
+    }
     return '<li><a class="row" href="#event-' + esc(e.id) + '">' + date + main + icon('chev') + '</a></li>';
   }
 
@@ -410,7 +414,8 @@
     $$('[data-preview-note]').forEach(function (p) {
       var inTeam = !!p.closest('#panel-team');
       p.hidden = !!CFG.formEndpoint || (inTeam && !open.length);
-      if (ig) p.innerHTML = T('온라인 접수는 연결을 준비하고 있습니다. 지금은 인스타그램 {ig} 메시지로 보내 주세요. 아래에 적은 내용은 복사해서 보낼 수 있습니다.', { ig: igLink(ig) });
+      if (ig && p.getAttribute('data-preview-note') === 'eoi') p.innerHTML = T('온라인 접수는 연결을 준비하고 있습니다. 지금은 아래에 적은 내용을 복사해, 제안서에 적힌 회신 이메일이나 인스타그램 {ig} 메시지로 보내 주세요.', { ig: igLink(ig) });
+      else if (ig) p.innerHTML = T('온라인 접수는 연결을 준비하고 있습니다. 지금은 인스타그램 {ig} 메시지로 보내 주세요. 아래에 적은 내용은 복사해서 보낼 수 있습니다.', { ig: igLink(ig) });
       else p.textContent = T('온라인 접수는 연결을 준비하고 있어, 아직 이 양식으로는 전송되지 않습니다.');
     });
   }
@@ -430,9 +435,17 @@
   function validate(form) {
     clearErrors(form);
     var first = null;
+    var groups = {};
     $$('[required]', form).forEach(function (el) {
       if (el.disabled) return;
-      var ok = el.type === 'checkbox' ? el.checked : el.value.trim() !== '';
+      var ok;
+      if (el.type === 'radio') {
+        if (groups[el.name]) return;
+        groups[el.name] = true;
+        ok = $$('input[type="radio"]', form).some(function (r) { return r.name === el.name && r.checked; });
+      } else {
+        ok = el.type === 'checkbox' ? el.checked : el.value.trim() !== '';
+      }
       if (!ok) { markError(el, el.getAttribute('data-msg') || T('필수 항목입니다.')); first = first || el; }
     });
     $$('input[type="email"]', form).forEach(function (el) {
@@ -470,6 +483,13 @@
         out.push([el.name, vals.join(', ')]);
         return;
       }
+      if (el.type === 'radio') {
+        if (seen[el.name]) return;
+        seen[el.name] = true;
+        var on = $$('input[type="radio"]', form).filter(function (r) { return r.name === el.name && r.checked; })[0];
+        out.push([el.name, on ? on.value : '']);
+        return;
+      }
       var v = el.tagName === 'SELECT'
         ? (el.value && el.selectedOptions[0] ? el.selectedOptions[0].textContent : '')
         : el.value.trim();
@@ -481,12 +501,38 @@
   var FORM_TEXT = {
     team: { head: T('대회 참가 신청'), ok: T('참가 신청서를 제출했습니다'), okText: T('담당자가 확인한 뒤 연락드립니다.') },
     inquiry: { head: T('문의'), ok: T('문의를 보냈습니다'), okText: T('담당자가 확인한 뒤 남겨 주신 연락처로 답변드립니다.') },
-    intl: { head: T('국제교류 문의'), ok: T('문의를 보냈습니다'), okText: T('이메일로 답변드립니다.') }
+    intl: { head: T('국제교류 문의'), ok: T('문의를 보냈습니다'), okText: T('이메일로 답변드립니다.') },
+    eoi: {
+      head: T('2027 제주 국제 유소년 라크로스 교류전 참가 의향 회신'), ok: T('참가 의향을 보냈습니다'), okText: T('담당자가 확인한 뒤 이메일로 연락드립니다.'),
+      manual: T('아래 내용을 복사해 제안서에 적힌 회신 이메일이나 인스타그램 메시지로 보내 주세요.')
+    }
   };
 
-  function toText(kind, fields, roster) {
+  // 참가 의향 회신서: 고른 디비전과 예상 인원
+  function readDivisions(form) {
+    return $$('.div', form).filter(function (d) { return $('[data-div]', d).checked; }).map(function (d) {
+      var num = function (k) { return $('[data-div-num="' + k + '"]', d).value.trim(); };
+      return { division: $('.check span', d).textContent.trim(), teams: num('teams'), players: num('players'), staff: num('staff') };
+    });
+  }
+
+  function toText(kind, fields, roster, divisions) {
     var lines = ['[' + FORM_TEXT[kind].head + ']'];
     fields.forEach(function (f) { if (f[1]) lines.push(f[0] + ': ' + f[1]); });
+    if (divisions && divisions.length) {
+      lines.push('', T('참가 가능 디비전과 예상 인원'));
+      divisions.forEach(function (d) {
+        var parts = [];
+        if (d.teams) parts.push(T('{n}팀', { n: d.teams }));
+        if (d.players) parts.push(T('선수 {n}명', { n: d.players }));
+        if (d.staff) parts.push(T('인솔자 {n}명', { n: d.staff }));
+        lines.push('- ' + d.division + (parts.length ? ': ' + parts.join(', ') : ''));
+      });
+    }
+    if (kind === 'eoi') {
+      var now = new Date();
+      lines.push('', T('작성일') + ': ' + now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate()));
+    }
     if (roster && roster.length) {
       lines.push('', T('선수 명단 ({n}명)', { n: roster.length }));
       roster.forEach(function (r, i) {
@@ -520,13 +566,14 @@
     var roster = kind === 'team'
       ? readRoster().filter(function (r) { return r.name; }).map(function (r) { return { name: r.name, birth: r.birth, no: r.no }; })
       : null;
-    var text = toText(kind, fields, roster);
+    var divisions = kind === 'eoi' ? readDivisions(form) : null;
+    var text = toText(kind, fields, roster, divisions);
 
     if (!CFG.formEndpoint) {
       var ig = instagramInfo((CFG.contact || {}).instagram);
       var box = showResult(form, '',
         T('온라인 접수가 아직 연결되지 않아 전송되지 않았습니다'),
-        ig ? T('아래 내용을 복사해 인스타그램 메시지로 보내 주세요.') : T('적은 내용은 아래에서 복사할 수 있습니다.'),
+        ig ? (ft.manual || T('아래 내용을 복사해 인스타그램 메시지로 보내 주세요.')) : T('적은 내용은 아래에서 복사할 수 있습니다.'),
         '<pre>' + esc(text) + '</pre><div class="result__acts"><button class="linkbtn" type="button" data-copy>' + icon('copy') + '<span>' + esc(T('내용 복사')) + '</span></button>' +
         (ig ? igLink(ig, T('인스타그램 열기')) : '') + '</div>');
       box.querySelector('[data-copy]').addEventListener('click', function (e) {
@@ -541,11 +588,16 @@
     var btn = form.querySelector('[type="submit"]'), label = btn.textContent;
     btn.disabled = true;
     btn.textContent = T('보내는 중');
-    var payload = { kind: kind, lang: LANG, submittedAt: new Date().toISOString(), fields: fields, roster: roster, text: text };
+    var payload = { kind: kind, lang: LANG, submittedAt: new Date().toISOString(), fields: fields, roster: roster, divisions: divisions, text: text };
     fetch(CFG.formEndpoint, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) })
       .then(function (res) {
         if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.text().catch(function () { return ''; });
+      })
+      .then(function (body) {
+        if (/^\s*error/i.test(body)) throw new Error(body);
         form.reset();
+        $$('.div__nums', form).forEach(function (n) { n.hidden = true; });
         showResult(form, 'ok', ft.ok, ft.okText);
       })
       .catch(function () {
@@ -957,6 +1009,13 @@
   }, { passive: true });
 
   document.addEventListener('submit', onSubmit);
+  document.addEventListener('change', function (ev) {
+    var t = ev.target;
+    if (t && t.matches && t.matches('[data-div]')) {
+      var nums = $('.div__nums', t.closest('.div'));
+      nums.hidden = !t.checked;
+    }
+  });
   window.addEventListener('hashchange', route);
 
   /* ---------- 시작 ---------- */

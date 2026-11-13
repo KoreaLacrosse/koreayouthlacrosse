@@ -73,6 +73,7 @@ main{display:block;overflow-x:clip}
 
 /* ---------- 글자 ---------- */
 .t-page{font-weight:900;font-size:clamp(34px,9.4vw,64px);line-height:1.14;letter-spacing:-0.045em}
+.t-page--long{font-size:clamp(25px,7.4vw,52px);line-height:1.2}
 .t-2{font-weight:900;font-size:clamp(26px,6.6vw,40px);line-height:1.22;letter-spacing:-0.04em;text-wrap:balance}
 .t-3{font-weight:900;font-size:20px;line-height:1.35;letter-spacing:-0.03em}
 .lead{font-size:17px;line-height:1.7;font-weight:500;max-width:34em}
@@ -265,6 +266,7 @@ a.row:hover .ico{color:var(--red)}
 }
 .pagehead__lead{margin-top:18px;font-size:17px;line-height:1.65;font-weight:500;max-width:31em}
 .pagehead__lead strong{display:block;font-weight:900;font-size:20px;line-height:1.4;letter-spacing:-0.035em;margin-bottom:6px}
+.pagehead .btns{margin-top:26px}
 .pagehead__lead .slogan{font-family:var(--font-num);font-style:italic;font-weight:800;font-size:23px;line-height:1.25;letter-spacing:0;margin-bottom:10px}
 
 .plainhead{padding-top:36px;padding-bottom:22px}
@@ -336,6 +338,7 @@ a.row:hover .ico{color:var(--red)}
 .cta{display:grid;gap:18px;padding:28px 22px 30px;background:var(--tint)}
 .cta h2{font-weight:900;font-size:22px;line-height:1.35;letter-spacing:-0.035em}
 .cta p{color:var(--muted);max-width:32em}
+.cta--top{margin-top:36px}
 
 /* 과목 */
 .subjects{display:grid;gap:0;border-top:2px solid var(--ink)}
@@ -415,6 +418,8 @@ a.row:hover .ico{color:var(--red)}
 .panel > [hidden] + *{margin-top:0}
 .panel--flush{padding-top:8px}
 .narrow{max-width:760px}
+.narrow > .note{margin-bottom:22px}
+.note a{font-weight:700;text-underline-offset:3px}
 
 .form{display:grid;gap:30px;max-width:680px}
 .form__group{display:grid;gap:16px}
@@ -435,6 +440,13 @@ select.input{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
 .check input{width:22px;height:22px;margin:2px 0 0;accent-color:var(--ink)}
 .checks{display:flex;flex-wrap:wrap;gap:10px 22px}
 .checks .check{grid-template-columns:24px auto}
+/* 디비전별 예상 인원: 고른 부문만 칸이 열린다 */
+.divs{border-top:1px solid var(--line)}
+.div{padding:12px 0;border-bottom:1px solid var(--line)}
+.div > .check{font-weight:700}
+.div__nums{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:end;gap:10px;margin:10px 0 4px 36px}
+.div__nums label{display:grid;gap:4px;font-size:13.5px;font-weight:700;color:var(--muted)}
+.div__nums .input{min-height:46px;padding:8px 10px}
 .consent{font-size:14px;line-height:1.65;color:var(--muted);padding:14px 16px;background:var(--tint)}
 .consent dt{font-weight:900;color:var(--ink)}
 .consent dd + dt{margin-top:8px}
@@ -616,6 +628,7 @@ html[lang="ja"] body{line-height:1.8;word-break:normal;line-break:strict;overflo
 html[lang="ja"] *{letter-spacing:0}
 html[lang="ja"] h1,html[lang="ja"] h2,html[lang="ja"] h3,html[lang="ja"] .btn,html[lang="ja"] .mnav__link{font-feature-settings:"palt";letter-spacing:.01em}
 html[lang="ja"] .t-page{font-size:clamp(28px,8.4vw,64px)}
+html[lang="ja"] .t-page--long{font-size:clamp(22px,6.4vw,48px);line-height:1.25}
 @media (max-width:359px){
   html[lang="ja"] .tab{font-size:14.5px}
 }
