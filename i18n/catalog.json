@@ -2215,17 +2215,9 @@
   "en": "Preferred period",
   "ja": "希望時期"
  },
- "2027년 3월": {
-  "en": "March 2027",
-  "ja": "2027年3月"
- },
- "2027년 4월": {
-  "en": "April 2027",
-  "ja": "2027年4月"
- },
- "모두 가능": {
-  "en": "Either month",
-  "ja": "どちらも可能"
+ "2027년 6월": {
+  "en": "June 2027",
+  "ja": "2027年6月"
  },
  "다른 기간 제안": {
   "en": "Suggest another period",
@@ -2291,9 +2283,9 @@
   "en": "2027 Jeju International Youth Lacrosse Exchange",
   "ja": "2027 済州 国際ユースラクロス交流戦"
  },
- "2027년 봄 제주도에서 국제 유소년 교류전 개최를 추진하고 있습니다. 국내외 협회·학교·클럽의 참가 의향과 선호 일정을 먼저 받고 있습니다.": {
-  "en": "We are working towards an international youth exchange tournament on Jeju Island in spring 2027. We are first collecting expressions of interest and preferred dates from associations, schools and clubs in Korea and abroad.",
-  "ja": "2027年春、済州島での国際ユース交流戦の開催を進めています。国内外の協会・学校・クラブの参加意向と希望日程を先に伺っています。"
+ "2027년 6월 제주도에서 국제 유소년 교류전 개최를 추진하고 있습니다. 국내외 협회·학교·클럽의 참가 의향과 선호 일정을 먼저 받고 있습니다.": {
+  "en": "We are working towards an international youth exchange tournament on Jeju Island in June 2027. We are first collecting expressions of interest and preferred dates from associations, schools and clubs in Korea and abroad.",
+  "ja": "2027年6月、済州島での国際ユース交流戦の開催を進めています。国内外の協会・学校・クラブの参加意向と希望日程を先に伺っています。"
  },
  "참가 의향 회신하기": {
   "en": "Send an expression of interest",
@@ -2303,9 +2295,9 @@
   "en": "2027 Jeju<br>International Youth<br>Lacrosse Exchange",
   "ja": "2027 済州<br>国際ユースラクロス交流戦"
  },
- "<1>협력 제안과 사전 참가 의향 조사</1>KYLA는 2027년 봄 제주도에서 국제 유소년 교류전 개최를 추진하고 있습니다. 국내외 협회·학교·클럽의 참가 의향과 선호 일정을 먼저 확인하고, 각 단체와 협력해 대회를 준비하고자 합니다.": {
-  "en": "<1>Partnership proposal and expression of interest</1>KYLA is working towards an international youth exchange tournament on Jeju Island in spring 2027. We want to hear first about interest and preferred dates from associations, schools and clubs in Korea and abroad, and then prepare the event together with each group.",
-  "ja": "<1>協力のご提案と事前の参加意向調査</1>KYLAは、2027年春に済州島で国際ユース交流戦を開催する準備を進めています。国内外の協会・学校・クラブの参加意向と希望日程を先に伺い、各団体と協力して大会を準備したいと考えています。"
+ "<1>협력 제안과 사전 참가 의향 조사</1>KYLA는 2027년 6월 제주도에서 국제 유소년 교류전 개최를 추진하고 있습니다. 국내외 협회·학교·클럽의 참가 의향과 선호 일정을 먼저 확인하고, 각 단체와 협력해 대회를 준비하고자 합니다.": {
+  "en": "<1>Partnership proposal and expression of interest</1>KYLA is working towards an international youth exchange tournament on Jeju Island in June 2027. We want to hear first about interest and preferred dates from associations, schools and clubs in Korea and abroad, and then prepare the event together with each group.",
+  "ja": "<1>協力のご提案と事前の参加意向調査</1>KYLAは、2027年6月に済州島で国際ユース交流戦を開催する準備を進めています。国内外の協会・学校・クラブの参加意向と希望日程を先に伺い、各団体と協力して大会を準備したいと考えています。"
  },
  "개최 계획(안)": {
   "en": "Draft plan",
@@ -2319,9 +2311,9 @@
   "en": "Planned period",
   "ja": "予定時期"
  },
- "2027년 3~4월<1>다른 희망 날짜를 제안하실 수 있습니다.</1>": {
-  "en": "March–April 2027<1>You are welcome to suggest other dates.</1>",
-  "ja": "2027年3〜4月<1>ほかの希望日をご提案いただけます。</1>"
+ "2027년 6월<1>다른 희망 날짜를 제안하실 수 있습니다.</1>": {
+  "en": "June 2027<1>You are welcome to suggest other dates.</1>",
+  "ja": "2027年6月<1>ほかの希望日をご提案いただけます。</1>"
  },
  "기간": {
   "en": "Length",
@@ -2534,5 +2526,13 @@
  "교육·안전위원회를 따로 두어, 경기 운영과 안전 관리를 서로 독립적으로 맡습니다.": {
   "en": "A separate Education and Safety Committee means that game operations and safety management are handled independently of each other.",
   "ja": "教育・安全委員会を別に設け、試合運営と安全管理をそれぞれ独立して担当しています。"
+ },
+ "공석": {
+  "en": "Vacant",
+  "ja": "空席"
+ },
+ "부회장": {
+  "en": "Vice President",
+  "ja": "副会長"
  }
 }

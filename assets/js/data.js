@@ -245,9 +245,9 @@ window.KYLA_DATA = {
       stage: { ko: "참가 의향 조사 중", en: "Collecting interest", ja: "参加意向を調査中" },
       title: { ko: "2027 제주 국제 유소년 라크로스 교류전", en: "2027 Jeju International Youth Lacrosse Exchange", ja: "2027 済州 国際ユースラクロス交流戦" },
       summary: {
-        ko: "2027년 봄 제주도에서 국제 유소년 교류전 개최를 추진하고 있습니다. 국내외 협회·학교·클럽의 참가 의향과 선호 일정을 먼저 받고 있으며, 일정과 장소는 의향을 취합한 뒤 확정합니다.",
-        en: "We are working towards an international youth exchange tournament on Jeju Island in spring 2027. We are first collecting expressions of interest and preferred dates from associations, schools and clubs in Korea and abroad. Dates and venue will be confirmed after that.",
-        ja: "2027年春、済州島での国際ユース交流戦の開催を進めています。国内外の協会・学校・クラブの参加意向と希望日程を先に伺っており、日程と会場は意向を取りまとめたうえで確定します。"
+        ko: "2027년 6월 제주도에서 국제 유소년 교류전 개최를 추진하고 있습니다. 국내외 협회·학교·클럽의 참가 의향과 선호 일정을 먼저 받고 있으며, 일정과 장소는 의향을 취합한 뒤 확정합니다.",
+        en: "We are working towards an international youth exchange tournament on Jeju Island in June 2027. We are first collecting expressions of interest and preferred dates from associations, schools and clubs in Korea and abroad. Dates and venue will be confirmed after that.",
+        ja: "2027年6月、済州島での国際ユース交流戦の開催を進めています。国内外の協会・学校・クラブの参加意向と希望日程を先に伺っており、日程と会場は意向を取りまとめたうえで確定します。"
       },
       // 준비 중인 일정에 안내 화면이 따로 있으면 그 주소를 적습니다. 줄을 누르면 그 화면으로 갑니다.
       link: "#jeju2027",

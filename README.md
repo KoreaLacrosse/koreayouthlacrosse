@@ -66,6 +66,7 @@
   항목을 바꿀 때는 두 곳을 같은 순서로 함께 고칩니다. 휴대폰 화면 아래의 바로가기 5개는 `<nav class="tabbar">` 입니다.
 - 조직도는 `index.html` 의 `id="about-org"` 부분입니다. 사람이나 위원회가 바뀌면 해당 칸의 글자를 고치고,
   이름의 영문·일문 표기를 `i18n/catalog.json` 에 넣은 뒤 `python3 tools/build_i18n.py` 를 실행합니다.
+  회장·부회장 표기는 바로 아래 단체 정보(`id="about-info"`)에도 있으니 함께 고칩니다. 점선 칸은 공석이라는 뜻입니다.
 - 조직도로 바로 가는 주소는 https://koreayouthlacrosse.com/#about-org 입니다.
   `#화면-구역` 꼴의 주소는 그 화면을 열고 해당 구역까지 내려갑니다. 예: `#about-info`(단체 정보), `#jeju2027-form`(회신서).
 

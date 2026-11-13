@@ -310,12 +310,14 @@ a.row:hover .ico{color:var(--red)}
 .values dd span{display:block;font-size:14.5px;color:var(--muted)}
 
 /* ---------- 조직도 ----------
-   좁은 화면: 회장 아래로 사무국과 위원회가 한 줄기에 달린 모양.
-   넓은 화면(900px 이상): 회장 → 옆 가지에 사무국 → 위원회 네 개가 한 줄. */
-.org,.org ul{list-style:none;margin:0;padding:0}
+   좁은 화면: 회장 → 부회장 아래로 사무국과 위원회가 한 줄기에 달린 모양.
+   넓은 화면(1100px 이상): 회장 → 부회장 → 사무국과 위원회 다섯 칸이 한 줄.
+   점선 칸은 비어 있는 자리(공석)입니다. */
+.org,.org__next,.org__units{list-style:none;margin:0;padding:0}
+.org{max-width:560px}
 .org__box{position:relative;display:grid;gap:1px;padding:14px 16px 15px;background:#fff;box-shadow:inset 0 0 0 1.5px var(--line),inset 5px 0 0 var(--tone,var(--ink))}
-.org__box--head{background:var(--ink);color:#fff;box-shadow:none}
-.org__office .org__box{background:var(--tint)}
+.org__box--vacant{padding:12px 14px 13px;border:2px dashed var(--ink);box-shadow:none}
+.org__box--lead{background:var(--ink);color:#fff;box-shadow:none}
 .org [data-tone="red"]{--tone:var(--red)}
 .org [data-tone="orange"]{--tone:var(--orange)}
 .org [data-tone="green"]{--tone:var(--green)}
@@ -323,9 +325,12 @@ a.row:hover .ico{color:var(--red)}
 .org__unit{font-weight:900;font-size:17px;line-height:1.35;letter-spacing:-0.035em}
 .org__name{font-weight:700;font-size:15.5px;line-height:1.5}
 .org__name small{margin-left:6px;font-weight:500;font-size:13px;color:var(--muted);letter-spacing:0}
-.org__box--head .org__name small{color:rgba(255,255,255,.72)}
+.org__box--lead .org__name small{color:rgba(255,255,255,.72)}
+.org__vacant{font-weight:500;font-size:15.5px;line-height:1.5;color:var(--muted)}
 .org__post{font-size:13.5px;color:var(--muted)}
-.org__box--head .org__post{color:rgba(255,255,255,.78)}
+.org__box--lead .org__post{color:rgba(255,255,255,.78)}
+.org__next{position:relative;padding-top:16px}
+.org__next::before{content:"";position:absolute;left:18px;top:0;width:2px;height:16px;background:var(--ink)}
 .org__units{margin-left:18px;padding-top:12px;display:grid;gap:10px}
 .org__units > li{position:relative;padding-left:24px}
 .org__units > li::before{content:"";position:absolute;left:0;top:27px;width:24px;height:2px;background:var(--ink)}
@@ -516,7 +521,6 @@ select.input{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
    ========================================================================== */
 @media (min-width:640px){
   .pair{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .people{grid-template-columns:repeat(2,minmax(0,1fr));gap:32px 28px}
   .albums{grid-template-columns:repeat(2,minmax(0,1fr))}
   .photos{grid-template-columns:repeat(3,minmax(0,1fr))}
   .form__grid--2{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -548,22 +552,6 @@ select.input{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
   .sect{padding:72px 0}
   .sect__grid{grid-template-columns:minmax(0,4fr) minmax(0,8fr);gap:56px}
   .sect__grid.sect__grid--stack{grid-template-columns:minmax(0,1fr);gap:36px}
-  .org > li > .org__box{width:300px;margin:0 auto;text-align:center}
-  .org__units{margin-left:0;padding-top:0;grid-template-columns:repeat(4,minmax(0,1fr));gap:0 14px}
-  .org__units > li{padding-left:0}
-  .org__units > li::before,.org__units > li::after{background:var(--ink)}
-  .org__office{grid-column:1 / -1;padding:26px 0 !important}
-  .org__office::before{left:50% !important;top:0 !important;width:2px !important;height:100% !important;margin-left:-1px}
-  .org__office::after{display:none}
-  .org__office .org__box{width:300px;margin-left:calc(50% + 34px)}
-  .org__office .org__box::before{content:"";position:absolute;right:100%;top:50%;width:34px;height:2px;margin-top:-1px;background:var(--ink)}
-  .org__units > li:not(.org__office){padding-top:28px}
-  .org__units > li:not(.org__office)::before{left:50%;top:0;width:2px;height:28px;margin-left:-1px}
-  .org__units > li:not(.org__office)::after{left:-7px;right:-7px;top:0;width:auto;height:2px}
-  .org__units > li:nth-child(2)::after{left:50%}
-  .org__units > li:last-child::after{left:-7px;right:50%;height:2px}
-  .org__units > li:not(.org__office) .org__box{height:100%;box-shadow:inset 0 0 0 1.5px var(--line),inset 0 5px 0 var(--tone,var(--ink));padding-top:18px;text-align:center}
-  .people{grid-template-columns:repeat(3,minmax(0,1fr))}
   .albums{grid-template-columns:repeat(3,minmax(0,1fr));gap:36px 28px}
   .photos{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
   .cta{grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:32px;padding:40px 44px}
@@ -620,6 +608,19 @@ select.input{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
   .hdr__menu{display:none}
   .hdr__cta{display:inline-flex;flex:none;margin-left:8px;margin-right:6px;white-space:nowrap}
   .mnav{display:none !important}
+  .org{max-width:none}
+  .org > li > .org__box,.org__next > li > .org__box{width:300px;margin:0 auto;text-align:center}
+  .org__next{padding-top:26px}
+  .org__next::before{left:50%;height:26px;margin-left:-1px}
+  .org__units{position:relative;margin-left:0;padding-top:26px;grid-template-columns:repeat(5,minmax(0,1fr));gap:0 12px}
+  .org__units::before{content:"";position:absolute;left:50%;top:0;width:2px;height:26px;margin-left:-1px;background:var(--ink)}
+  .org__units > li{padding-left:0;padding-top:28px}
+  .org__units > li::before{left:50%;top:0;width:2px;height:28px;margin-left:-1px}
+  .org__units > li::after{left:-6px;right:-6px;top:0;width:auto;height:2px}
+  .org__units > li:first-child::after{left:50%}
+  .org__units > li:last-child::after{left:-6px;right:50%;height:2px}
+  .org__units .org__box{height:100%;align-content:start;padding:18px 12px 15px;box-shadow:inset 0 0 0 1.5px var(--line),inset 0 5px 0 var(--tone,var(--ink));text-align:center}
+  .org__units .org__unit{font-size:16px}
 }
 
 @media (prefers-reduced-motion:reduce){
