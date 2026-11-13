@@ -2534,5 +2534,17 @@
  "부회장": {
   "en": "Vice President",
   "ja": "副会長"
+ },
+ "보관하는 곳": {
+  "en": "Where data is stored",
+  "ja": "保管場所"
+ },
+ "참가 의향 회신은 Google의 클라우드 서비스 Firebase(Cloud Firestore, 서울 리전)에 저장하며, 협회가 지정한 관리자만 열람할 수 있습니다.": {
+  "en": "Expressions of interest are stored in Firebase (Cloud Firestore, Seoul region), a Google cloud service, and can be viewed only by administrators designated by the association.",
+  "ja": "参加意向の回答は、Googleのクラウドサービス Firebase（Cloud Firestore、ソウルリージョン）に保存し、協会が指定した管理者のみが閲覧できます。"
+ },
+ "잠시 뒤 다시 제출해 주세요. 급하시면 아래 내용을 복사해 제안서에 적힌 회신 이메일이나 인스타그램 메시지로 보내 주셔도 됩니다. 입력한 내용은 그대로 남아 있습니다.": {
+  "en": "Please try again in a moment. If it is urgent, you can copy the text below and send it to the reply email in the proposal or by Instagram message. What you entered is still in the form.",
+  "ja": "しばらくしてからもう一度送信してください。お急ぎの場合は、下の内容をコピーして、提案書に記載の返信用メールまたはInstagramのメッセージでお送りいただいても構いません。入力内容はそのまま残っています。"
  }
 }

@@ -829,83 +829,83 @@
           <form class="form" id="form-eoi" data-form="eoi" novalidate>
             <fieldset class="form__group">
               <legend class="form__legend">参加希望団体と担当者</legend>
-              <div class="field"><label class="field__label" for="eoi-org"><span>所属団体または参加チーム名</span><em>必須</em></label><input class="input" id="eoi-org" name="所属団体または参加チーム名" required autocomplete="organization" data-msg="所属団体または参加チーム名を入力してください。"></div>
-              <div class="field"><label class="field__label" for="eoi-country"><span>国・地域</span><em>必須</em></label><input class="input" id="eoi-country" name="国・地域" required data-msg="国と地域を入力してください。"></div>
+              <div class="field"><label class="field__label" for="eoi-org"><span>所属団体または参加チーム名</span><em>必須</em></label><input class="input" id="eoi-org" maxlength="200" name="所属団体または参加チーム名" required autocomplete="organization" data-msg="所属団体または参加チーム名を入力してください。"></div>
+              <div class="field"><label class="field__label" for="eoi-country"><span>国・地域</span><em>必須</em></label><input class="input" id="eoi-country" maxlength="120" name="国・地域" required data-msg="国と地域を入力してください。"></div>
               <div class="form__grid form__grid--2">
-                <div class="field"><label class="field__label" for="eoi-name"><span>担当者名</span><em>必須</em></label><input class="input" id="eoi-name" name="担当者名" required autocomplete="name" data-msg="担当者名を入力してください。"></div>
-                <div class="field"><label class="field__label" for="eoi-role">役職</label><input class="input" id="eoi-role" name="役職" autocomplete="organization-title"></div>
+                <div class="field"><label class="field__label" for="eoi-name"><span>担当者名</span><em>必須</em></label><input class="input" id="eoi-name" maxlength="120" name="担当者名" required autocomplete="name" data-msg="担当者名を入力してください。"></div>
+                <div class="field"><label class="field__label" for="eoi-role">役職</label><input class="input" id="eoi-role" maxlength="120" name="役職" autocomplete="organization-title"></div>
               </div>
-              <div class="field"><label class="field__label" for="eoi-email"><span>メールアドレス</span><em>必須</em></label><input class="input" id="eoi-email" name="メールアドレス" type="email" required autocomplete="email" inputmode="email" data-msg="返信先のメールアドレスを入力してください。" data-msg-type="メールアドレスの形式をご確認ください。"></div>
+              <div class="field"><label class="field__label" for="eoi-email"><span>メールアドレス</span><em>必須</em></label><input class="input" id="eoi-email" maxlength="200" name="メールアドレス" type="email" required autocomplete="email" inputmode="email" data-msg="返信先のメールアドレスを入力してください。" data-msg-type="メールアドレスの形式をご確認ください。"></div>
               <fieldset class="field">
                 <legend class="field__label">希望する連絡手段</legend>
                 <div class="checks">
-                  <label class="check"><input type="checkbox" name="希望する連絡手段" value="WhatsApp"><span>WhatsApp</span></label>
-                  <label class="check"><input type="checkbox" name="希望する連絡手段" value="LINE"><span>LINE</span></label>
-                  <label class="check"><input type="checkbox" name="希望する連絡手段" value="KakaoTalk"><span>KakaoTalk</span></label>
-                  <label class="check"><input type="checkbox" name="希望する連絡手段" value="Instagram"><span>Instagram</span></label>
-                  <label class="check"><input type="checkbox" name="希望する連絡手段" value="その他"><span>その他</span></label>
+                  <label class="check"><input type="checkbox" name="希望する連絡手段" value="WhatsApp" data-key="contactMethods" data-code="whatsapp"><span>WhatsApp</span></label>
+                  <label class="check"><input type="checkbox" name="希望する連絡手段" value="LINE" data-key="contactMethods" data-code="line"><span>LINE</span></label>
+                  <label class="check"><input type="checkbox" name="希望する連絡手段" value="KakaoTalk" data-key="contactMethods" data-code="kakaotalk"><span>KakaoTalk</span></label>
+                  <label class="check"><input type="checkbox" name="希望する連絡手段" value="Instagram" data-key="contactMethods" data-code="instagram"><span>Instagram</span></label>
+                  <label class="check"><input type="checkbox" name="希望する連絡手段" value="その他" data-key="contactMethods" data-code="other"><span>その他</span></label>
                 </div>
               </fieldset>
-              <div class="field"><label class="field__label" for="eoi-contact">連絡先ID・リンクまたは電話番号</label><input class="input" id="eoi-contact" name="連絡先ID・リンクまたは電話番号"></div>
+              <div class="field"><label class="field__label" for="eoi-contact">連絡先ID・リンクまたは電話番号</label><input class="input" id="eoi-contact" maxlength="300" name="連絡先ID・リンクまたは電話番号"></div>
             </fieldset>
             <fieldset class="form__group">
               <legend class="form__legend">参加可能なディビジョンと予想人数</legend>
               <p class="field__hint">参加を検討できる部門をすべて選び、予想チーム数、選手数、コーチ・引率者数をご記入ください。協会は、所属する複数チームの意向をまとめてご回答いただけます。</p>
               <div class="divs">
                 <div class="div">
-                  <label class="check"><input type="checkbox" data-div><span>U10 混合</span></label>
+                  <label class="check"><input type="checkbox" data-div="u10mixed"><span>U10 混合</span></label>
                   <div class="div__nums" hidden>
-                    <label><span>チーム数</span><input class="input" type="number" min="0" inputmode="numeric" data-div-num="teams"></label>
-                    <label><span>選手数</span><input class="input" type="number" min="0" inputmode="numeric" data-div-num="players"></label>
-                    <label><span>引率者数</span><input class="input" type="number" min="0" inputmode="numeric" data-div-num="staff"></label>
+                    <label><span>チーム数</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="teams"></label>
+                    <label><span>選手数</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="players"></label>
+                    <label><span>引率者数</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="staff"></label>
                   </div>
                 </div>
                 <div class="div">
-                  <label class="check"><input type="checkbox" data-div><span>U12 男子</span></label>
+                  <label class="check"><input type="checkbox" data-div="u12boys"><span>U12 男子</span></label>
                   <div class="div__nums" hidden>
-                    <label><span>チーム数</span><input class="input" type="number" min="0" inputmode="numeric" data-div-num="teams"></label>
-                    <label><span>選手数</span><input class="input" type="number" min="0" inputmode="numeric" data-div-num="players"></label>
-                    <label><span>引率者数</span><input class="input" type="number" min="0" inputmode="numeric" data-div-num="staff"></label>
+                    <label><span>チーム数</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="teams"></label>
+                    <label><span>選手数</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="players"></label>
+                    <label><span>引率者数</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="staff"></label>
                   </div>
                 </div>
                 <div class="div">
-                  <label class="check"><input type="checkbox" data-div><span>U12 女子</span></label>
+                  <label class="check"><input type="checkbox" data-div="u12girls"><span>U12 女子</span></label>
                   <div class="div__nums" hidden>
-                    <label><span>チーム数</span><input class="input" type="number" min="0" inputmode="numeric" data-div-num="teams"></label>
-                    <label><span>選手数</span><input class="input" type="number" min="0" inputmode="numeric" data-div-num="players"></label>
-                    <label><span>引率者数</span><input class="input" type="number" min="0" inputmode="numeric" data-div-num="staff"></label>
+                    <label><span>チーム数</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="teams"></label>
+                    <label><span>選手数</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="players"></label>
+                    <label><span>引率者数</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="staff"></label>
                   </div>
                 </div>
                 <div class="div">
-                  <label class="check"><input type="checkbox" data-div><span>U14 男子</span></label>
+                  <label class="check"><input type="checkbox" data-div="u14boys"><span>U14 男子</span></label>
                   <div class="div__nums" hidden>
-                    <label><span>チーム数</span><input class="input" type="number" min="0" inputmode="numeric" data-div-num="teams"></label>
-                    <label><span>選手数</span><input class="input" type="number" min="0" inputmode="numeric" data-div-num="players"></label>
-                    <label><span>引率者数</span><input class="input" type="number" min="0" inputmode="numeric" data-div-num="staff"></label>
+                    <label><span>チーム数</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="teams"></label>
+                    <label><span>選手数</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="players"></label>
+                    <label><span>引率者数</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="staff"></label>
                   </div>
                 </div>
                 <div class="div">
-                  <label class="check"><input type="checkbox" data-div><span>U14 女子</span></label>
+                  <label class="check"><input type="checkbox" data-div="u14girls"><span>U14 女子</span></label>
                   <div class="div__nums" hidden>
-                    <label><span>チーム数</span><input class="input" type="number" min="0" inputmode="numeric" data-div-num="teams"></label>
-                    <label><span>選手数</span><input class="input" type="number" min="0" inputmode="numeric" data-div-num="players"></label>
-                    <label><span>引率者数</span><input class="input" type="number" min="0" inputmode="numeric" data-div-num="staff"></label>
+                    <label><span>チーム数</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="teams"></label>
+                    <label><span>選手数</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="players"></label>
+                    <label><span>引率者数</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="staff"></label>
                   </div>
                 </div>
                 <div class="div">
-                  <label class="check"><input type="checkbox" data-div><span>U16 男子</span></label>
+                  <label class="check"><input type="checkbox" data-div="u16boys"><span>U16 男子</span></label>
                   <div class="div__nums" hidden>
-                    <label><span>チーム数</span><input class="input" type="number" min="0" inputmode="numeric" data-div-num="teams"></label>
-                    <label><span>選手数</span><input class="input" type="number" min="0" inputmode="numeric" data-div-num="players"></label>
-                    <label><span>引率者数</span><input class="input" type="number" min="0" inputmode="numeric" data-div-num="staff"></label>
+                    <label><span>チーム数</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="teams"></label>
+                    <label><span>選手数</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="players"></label>
+                    <label><span>引率者数</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="staff"></label>
                   </div>
                 </div>
                 <div class="div">
-                  <label class="check"><input type="checkbox" data-div><span>U16 女子</span></label>
+                  <label class="check"><input type="checkbox" data-div="u16girls"><span>U16 女子</span></label>
                   <div class="div__nums" hidden>
-                    <label><span>チーム数</span><input class="input" type="number" min="0" inputmode="numeric" data-div-num="teams"></label>
-                    <label><span>選手数</span><input class="input" type="number" min="0" inputmode="numeric" data-div-num="players"></label>
-                    <label><span>引率者数</span><input class="input" type="number" min="0" inputmode="numeric" data-div-num="staff"></label>
+                    <label><span>チーム数</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="teams"></label>
+                    <label><span>選手数</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="players"></label>
+                    <label><span>引率者数</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="staff"></label>
                   </div>
                 </div>
               </div>
@@ -915,30 +915,30 @@
               <fieldset class="field">
                 <legend class="field__label">希望時期</legend>
                 <div class="checks">
-                  <label class="check"><input type="radio" name="希望時期" value="2027年6月"><span>2027年6月</span></label>
-                  <label class="check"><input type="radio" name="希望時期" value="別の時期を提案"><span>別の時期を提案</span></label>
+                  <label class="check"><input type="radio" name="希望時期" value="2027年6月" data-key="period" data-code="2027-06"><span>2027年6月</span></label>
+                  <label class="check"><input type="radio" name="希望時期" value="別の時期を提案" data-key="period" data-code="other"><span>別の時期を提案</span></label>
                 </div>
               </fieldset>
-              <div class="field"><label class="field__label" for="eoi-dates">参加可能な週末、または具体的な希望日</label><input class="input" id="eoi-dates" name="参加可能な週末、または具体的な希望日"></div>
+              <div class="field"><label class="field__label" for="eoi-dates">参加可能な週末、または具体的な希望日</label><input class="input" id="eoi-dates" maxlength="300" name="参加可能な週末、または具体的な希望日"></div>
               <fieldset class="field">
                 <legend class="field__label"><span>参加意向</span><em>必須</em></legend>
                 <div class="checks">
-                  <label class="check"><input type="radio" name="参加意向" value="前向きに検討" required data-msg="参加意向を選択してください。"><span>前向きに検討</span></label>
-                  <label class="check"><input type="radio" name="参加意向" value="内部で協議のうえ決定" required data-msg="参加意向を選択してください。"><span>内部で協議のうえ決定</span></label>
-                  <label class="check"><input type="radio" name="参加意向" value="未定" required data-msg="参加意向を選択してください。"><span>未定</span></label>
-                  <label class="check"><input type="radio" name="参加意向" value="現時点では参加が難しい" required data-msg="参加意向を選択してください。"><span>現時点では参加が難しい</span></label>
+                  <label class="check"><input type="radio" name="参加意向" value="前向きに検討" data-key="intent" data-code="active" required data-msg="参加意向を選択してください。"><span>前向きに検討</span></label>
+                  <label class="check"><input type="radio" name="参加意向" value="内部で協議のうえ決定" data-key="intent" data-code="internal" required data-msg="参加意向を選択してください。"><span>内部で協議のうえ決定</span></label>
+                  <label class="check"><input type="radio" name="参加意向" value="未定" data-key="intent" data-code="undecided" required data-msg="参加意向を選択してください。"><span>未定</span></label>
+                  <label class="check"><input type="radio" name="参加意向" value="現時点では参加が難しい" data-key="intent" data-code="unable" required data-msg="参加意向を選択してください。"><span>現時点では参加が難しい</span></label>
                 </div>
               </fieldset>
               <fieldset class="field">
                 <legend class="field__label">予想参加費</legend>
                 <p class="field__hint">1チームあたり150万〜200万ウォンを見込んでおり、変更となる場合があります。</p>
                 <div class="checks">
-                  <label class="check"><input type="radio" name="予想参加費" value="検討可能"><span>検討可能</span></label>
-                  <label class="check"><input type="radio" name="予想参加費" value="要相談"><span>要相談</span></label>
-                  <label class="check"><input type="radio" name="予想参加費" value="判断保留"><span>判断保留</span></label>
+                  <label class="check"><input type="radio" name="予想参加費" value="検討可能" data-key="fee" data-code="ok"><span>検討可能</span></label>
+                  <label class="check"><input type="radio" name="予想参加費" value="要相談" data-key="fee" data-code="discuss"><span>要相談</span></label>
+                  <label class="check"><input type="radio" name="予想参加費" value="判断保留" data-key="fee" data-code="hold"><span>判断保留</span></label>
                 </div>
               </fieldset>
-              <div class="field"><label class="field__label" for="eoi-note">その他のご希望・ご提案</label><textarea class="input" id="eoi-note" name="その他のご希望・ご提案"></textarea></div>
+              <div class="field"><label class="field__label" for="eoi-note">その他のご希望・ご提案</label><textarea class="input" id="eoi-note" maxlength="3000" name="その他のご希望・ご提案"></textarea></div>
             </fieldset>
             <div class="field">
               <label class="check"><input type="checkbox" name="情報利用への同意" value="同意" required data-msg="ご返信のため、同意をお願いします。"><span>KYLAが本大会に関する協議とご案内のため、上記の情報を利用することに同意します。（必須）</span></label>
@@ -1164,6 +1164,8 @@
         <li>国際交流のお問い合わせ：学校・チーム名、国と都市、担当者の氏名と連絡先、ご希望の交流内容。交流の協議に使用します。</li>
         <li>参加意向の回答：所属団体・参加チーム名、国と地域、担当者の氏名・役職と連絡先、参加可能なディビジョンと予想人数、希望日程。当該大会に関する協議とご案内に使用します。</li>
       </ul>
+      <h3 class="t-3">保管場所</h3>
+      <p>参加意向の回答は、Googleのクラウドサービス Firebase（Cloud Firestore、ソウルリージョン）に保存し、協会が指定した管理者のみが閲覧できます。</p>
       <h3 class="t-3">保有期間</h3>
       <p>収集目的を達成した後、遅滞なく破棄します。項目ごとの保有期間は、協会で確定した後こちらに記載します。</p>
       <h3 class="t-3">満14歳未満の児童</h3>

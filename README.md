@@ -83,6 +83,40 @@
 - 일정 목록의 '준비하고 있는 일정'에는 `data.js` 의 `2027-jeju-exchange` 항목으로 나옵니다.
   일정이 확정되면 이 항목에 날짜를 넣고 상태를 `confirmed` 로 바꿉니다.
 - 회신 이메일과 전화번호는 사이트에 싣지 않습니다. 제안서(PDF)에만 있습니다.
+- 제출된 회신은 협회의 Firebase 에 저장되고, 관리자 화면에서 봅니다. 아래 항목을 보세요.
+
+## 참가 의향 회신 저장과 관리자 화면 (Firebase)
+
+참가 의향 회신은 협회의 Firebase 프로젝트 `kyla-homepage` 의 Cloud Firestore(서울 리전)에 저장됩니다.
+
+| 무엇 | 어디 |
+|---|---|
+| 관리자 화면 | https://koreayouthlacrosse.com/admin/ (한국어만 있고, 검색에 나오지 않게 해 두었습니다) |
+| 회신이 쌓이는 곳 | Firestore 의 `eoiReplies` 컬렉션 |
+| 관리자 명단 | Firestore 의 `admins` 컬렉션 |
+| 보안 규칙 | `tools/firestore.rules` (Firebase 콘솔에 붙여 넣어야 적용됩니다) |
+
+관리자 화면에서는 명단에 있는 구글 계정으로 로그인한 사람만 회신을 보고, 엑셀용 파일(CSV)로 내려받고, 지울 수 있습니다.
+
+- **관리자를 더하거나 뺄 때**: Firebase 콘솔 → Firestore Database → `admins` 컬렉션에서 문서를 추가하거나 지웁니다.
+  문서 ID 에 그 사람의 구글 계정 이메일을 소문자로 적습니다. 필드는 없어도 됩니다.
+  관리자 이메일은 이 저장소의 어떤 파일에도 적지 않습니다. 이 저장소는 누구나 볼 수 있습니다.
+- **보안 규칙을 고쳤을 때**: `tools/firestore.rules` 의 내용을 Firebase 콘솔 → Firestore Database → 규칙에
+  통째로 붙여 넣고 게시해야 적용됩니다. 파일만 고쳐서는 바뀌지 않습니다.
+- **회신서의 보기나 항목을 바꿀 때**: 네 곳을 함께 고칩니다. `index.html` 의 `data-key`·`data-code`·`data-div`·`maxlength`,
+  `assets/js/app.js` 의 `eoiRecord`, `assets/js/admin.js` 의 이름표와 내려받기 열, `tools/firestore.rules` 의 허용 값.
+  규칙을 먼저 게시하지 않으면 새 모양의 회신은 저장되지 않습니다.
+- 구글 로그인은 Firebase 콘솔 → Authentication → 설정 → 승인된 도메인에 `koreayouthlacrosse.com` 이 있어야 됩니다.
+- `data.js` 의 `firebase` 설정값(apiKey 등)은 공개되어도 되는 값입니다. 누가 무엇을 할 수 있는지는 보안 규칙이 정합니다.
+  서비스 계정 키(JSON 파일)와 구글 계정 비밀번호는 저장소에 올리지 않습니다.
+- `assets/vendor/` 의 Firebase 파일은 관리자 화면의 구글 로그인에만 씁니다. 방문자가 보는 화면에서는 불러오지 않고,
+  방문 통계(Analytics)도 쓰지 않습니다. 관리자 화면 `admin/index.html` 맨 위의 보안 정책(Content-Security-Policy)에는
+  Firebase 프로젝트 주소가 적혀 있어, 프로젝트를 바꾸면 그 주소도 함께 바꿉니다.
+- 무료 요금제(Spark) 한도 안에서 씁니다(하루 쓰기 2만 건, 읽기 5만 건, 저장 1GiB). 한도를 넘거나 저장에 실패하면
+  회신서에 적은 내용을 복사해 보내 달라는 안내가 나옵니다. 장난 제출이 문제가 되면 Firebase App Check 를 붙이는 방법이 있습니다.
+- **백업**: 관리자 화면에서 내려받은 파일을 보관합니다. 내려받은 파일에서 `=`, `+`, `-`, `@` 로 시작하는 칸은 엑셀이 수식으로
+  읽지 않도록 앞에 작은따옴표(')가 붙습니다. `data.js` 의 `formEndpoint` 에 구글 시트 주소를 넣으면
+  회신이 올 때마다 시트에도 사본이 쌓이고 시트 주인에게 메일이 갑니다.
 
 ## 세 언어가 만들어지는 방식
 
@@ -111,6 +145,9 @@ python3 tools/build_i18n.py           # en/index.html, ja/index.html, assets/js/
 | `en/index.html`, `ja/index.html` | 영어·일본어 페이지 (자동 생성) |
 | `assets/js/data.js` | 공지사항, 대회·일정, 사진 앨범, 연락처. 내용을 바꿀 때 고치는 파일 |
 | `assets/js/app.js` | 화면 전환, 목록, 신청서 동작 |
+| `admin/index.html`, `assets/js/admin.js`, `assets/css/admin.css` | 관리자 화면(참가 의향 회신 보기·내려받기·삭제) |
+| `assets/vendor/` | 관리자 화면의 구글 로그인에 쓰는 Firebase 파일(Apache License 2.0) |
+| `tools/firestore.rules` | Firebase 보안 규칙. 콘솔에 붙여 넣어 게시 |
 | `assets/js/i18n.js` | 영어·일본어 화면 문구 (자동 생성) |
 | `assets/css/site.css` | 디자인 |
 | `assets/img/`, `assets/fonts/` | 로고와 아이콘, 영어 화면 글꼴(Kanit, SIL OFL) |
@@ -122,9 +159,9 @@ python3 tools/build_i18n.py           # en/index.html, ja/index.html, assets/js/
 
 ## 신청서와 문의
 
-`data.js` 의 `formEndpoint` 가 비어 있는 동안에는 신청서와 문의가 전송되지 않고,
-적은 내용을 복사해 인스타그램 메시지로 보내도록 안내합니다.
-접수 주소를 넣으면 그 주소로 전송합니다. 참가 의향 회신서도 같은 방식입니다.
+`data.js` 의 `formEndpoint` 가 비어 있는 동안에는 대회 참가 신청서와 문의가 전송되지 않고,
+적은 내용을 복사해 인스타그램 메시지로 보내도록 안내합니다. 접수 주소를 넣으면 그 주소로 전송합니다.
+참가 의향 회신서는 `formEndpoint` 와 상관없이 Firebase 에 저장되며, 접수 주소가 있으면 사본이 그쪽으로도 갑니다.
 
 구글 스프레드시트로 받으려면 `tools/form-receiver.gs` 를 씁니다. 스프레드시트의
 확장 프로그램 → Apps Script 에 붙여 넣고 웹 앱으로 배포한 뒤, 나온 주소를 `formEndpoint` 에 넣습니다.

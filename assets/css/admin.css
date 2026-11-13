@@ -1,0 +1,120 @@
+/* ==========================================================================
+   KYLA 관리자 화면 (/admin/). 색과 글꼴, 버튼은 site.css 의 것을 그대로 씁니다.
+   좁은 화면에서는 회신 한 건이 한 덩어리로, 넓은 화면(900px 이상)에서는 표처럼 한 줄로 보입니다.
+   ========================================================================== */
+body.adm{padding-bottom:0;background:#fff}
+
+/* ---------- 위쪽 띠 ---------- */
+.adm-bar{border-bottom:4px solid var(--ink);background:#fff}
+.adm-bar__in{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:60px}
+.adm-bar__brand{flex:none;display:flex;align-items:center;gap:12px;text-decoration:none;font-weight:900;font-size:17px;letter-spacing:-0.03em}
+.adm-bar__brand img{width:92px;height:auto}
+.adm-bar__brand span{padding-left:12px;border-left:2px solid var(--line);white-space:nowrap}
+.adm-bar__who{display:flex;align-items:center;gap:14px;min-width:0;font-size:14px;color:var(--muted)}
+.adm-bar__who span{display:none;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}   /* 좁은 화면에서는 계정을 목록 아래에 적습니다 */
+.adm-bar__who .linkbtn{flex:none;color:var(--ink)}
+
+.adm-main{padding-top:36px;padding-bottom:72px}
+
+/* ---------- 로그인 · 권한 없음 ---------- */
+.adm-gate{max-width:34em;padding:8px 0 0}
+.adm-gate h1{margin-bottom:12px}
+.adm-gate__text{margin-bottom:24px}
+.adm-gate__msg{margin-top:20px;padding:14px 16px;background:var(--tint);box-shadow:inset 4px 0 0 var(--red);font-size:15px;line-height:1.6}
+.adm-gate__hint{margin-top:22px;font-size:14px;line-height:1.65;color:var(--muted)}
+
+/* ---------- 목록 머리 ---------- */
+.adm-head{display:grid;gap:18px;margin-bottom:22px}
+.adm-head__sub{margin-top:4px;color:var(--muted);font-size:15px}
+.adm-tools{display:flex;flex-wrap:wrap;gap:12px 18px;padding-inline:6px}
+
+.adm-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 20px;margin-bottom:8px;border-top:2px solid var(--ink)}
+.adm-stats > div{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:10px 0 9px;border-bottom:1px solid var(--line);box-shadow:inset 0 -3px 0 var(--tone,transparent)}
+.adm-stats > div:first-child{grid-column:1 / -1}
+.adm-stats dt{font-size:14px;font-weight:700}
+.adm-stats dd{font-family:var(--font-num);font-weight:600;font-size:24px;line-height:1.1}
+.adm-stats [data-tone="ink"]{--tone:var(--ink)}
+.adm-stats [data-tone="green"]{--tone:var(--green)}
+.adm-stats [data-tone="blue"]{--tone:var(--blue)}
+.adm-stats [data-tone="orange"]{--tone:var(--orange)}
+.adm-stats [data-tone="muted"]{--tone:#8B95A8}
+
+.adm-status{min-height:26px;margin:14px 0 10px;font-size:15px;color:var(--muted)}
+.adm-status.is-error{color:var(--ink);padding:14px 16px;background:var(--tint);box-shadow:inset 4px 0 0 var(--red)}
+.adm-status .linkbtn{margin-left:10px;min-height:0}
+
+/* ---------- 회신 목록 ---------- */
+.adm-cols{display:none}
+.adm-list{border-top:2px solid var(--ink)}
+.adm-list > li{border-bottom:1px solid var(--line)}
+.adm-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:3px 14px;width:100%;padding:15px 2px 14px;border:0;background:none;text-align:left}
+.adm-row[aria-expanded="true"]{background:var(--tint)}
+@media (hover:hover){.adm-row:hover{background:var(--tint)}}
+.adm-row small{display:block;font-size:14px;font-weight:500;color:var(--muted);letter-spacing:-0.01em}
+.adm-row__when{grid-column:1;grid-row:1;align-self:center;font-family:var(--font-num);font-size:14.5px;color:var(--muted);letter-spacing:0}
+.adm-row__intent{grid-column:2;grid-row:1;justify-self:end}
+.adm-row__org{grid-column:1 / -1;grid-row:2;margin-top:3px;font-weight:900;font-size:17.5px;line-height:1.4;letter-spacing:-0.03em}
+.adm-row__who{grid-column:1 / -1;grid-row:3;font-size:15px}
+.adm-row__who small{margin-left:8px}
+.adm-row__divs{grid-column:1 / -1;grid-row:4;margin-top:5px;padding-right:32px;font-size:15px}
+.adm-row .adm-clip{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;line-clamp:3;overflow:hidden}   /* 목록에서는 세 줄까지만, 전체는 펼친 내용에서 */
+.adm-row__who .adm-clip{display:inline;overflow:visible}   /* 좁은 화면: 이름과 직책을 한 줄에 */
+.adm-row__chev{grid-column:2;grid-row:4;align-self:end;justify-self:end;width:18px;height:18px;margin-bottom:3px;fill:none;stroke:currentColor;stroke-width:2.4;transform:rotate(90deg);transition:transform .15s}
+.adm-row[aria-expanded="true"] .adm-row__chev{transform:rotate(-90deg)}
+
+.adm-tag{display:inline-block;padding:3px 9px 2px;font-size:13.5px;font-weight:700;line-height:1.5;white-space:nowrap;box-shadow:inset 0 0 0 1.5px var(--tone,var(--ink));color:var(--tone,var(--ink))}
+.adm-tag[data-intent="active"]{--tone:var(--green)}
+.adm-tag[data-intent="internal"]{--tone:var(--blue)}
+.adm-tag[data-intent="undecided"]{--tone:#A85A00}
+.adm-tag[data-intent="unable"]{--tone:var(--muted)}
+
+/* ---------- 펼친 상세 ---------- */
+.adm-detail{padding:4px 2px 26px}
+.adm-detail dl{border-top:1px solid var(--line)}
+.adm-detail dl > div{display:grid;grid-template-columns:112px minmax(0,1fr);gap:12px;padding:10px 0;border-bottom:1px solid var(--line);font-size:15px}
+.adm-detail dt{font-weight:700}
+.adm-detail dd{min-width:0;white-space:pre-wrap}
+.adm-detail dd a{font-weight:700;text-underline-offset:3px}
+.adm-detail__raw{margin-top:16px}
+.adm-detail__raw summary{display:inline-block;min-height:44px;padding:10px 0;font-weight:700;font-size:15px;text-decoration:underline;text-underline-offset:4px;cursor:pointer}
+.adm-detail__raw pre{margin:4px 0 0;padding:14px 16px;background:var(--tint);font-family:inherit;font-size:14.5px;line-height:1.65;white-space:pre-wrap;overflow-wrap:anywhere}
+.adm-detail__acts{display:flex;flex-wrap:wrap;align-items:center;gap:10px 20px;margin-top:14px}
+.adm-detail__acts .linkbtn--danger{color:var(--red)}
+.adm-confirm{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;margin-top:10px;padding:14px 16px;background:var(--tint);box-shadow:inset 4px 0 0 var(--red);font-size:15px}
+.adm-confirm p{flex:1 1 15em}
+
+.adm-empty{padding:26px 0;border-bottom:1px solid var(--line)}
+.adm-empty strong{display:block;font-size:18px;letter-spacing:-0.03em}
+.adm-foot{margin-top:32px;max-width:44em;font-size:14px;line-height:1.7;color:var(--muted)}
+.adm-foot--who{margin-top:10px;overflow-wrap:anywhere}
+
+@media (min-width:640px){
+  .adm-bar__who span{display:block}
+  .adm-foot--who{display:none}
+  .adm-stats{grid-template-columns:repeat(5,minmax(0,1fr))}
+  .adm-stats > div{display:block;padding:12px 0 12px}
+  .adm-stats > div:first-child{grid-column:auto}
+  .adm-stats dd{margin-top:2px;font-size:30px}
+  .adm-detail dl > div{grid-template-columns:150px minmax(0,1fr)}
+}
+
+@media (min-width:900px){
+  .adm-main{padding-top:52px}
+  .adm-head{grid-template-columns:minmax(0,1fr) auto;align-items:end}
+  .adm-cols,.adm-row{grid-template-columns:104px minmax(0,2.1fr) minmax(0,1.3fr) 146px minmax(0,2.1fr) 20px;gap:0 20px}
+  .adm-cols{display:grid;padding:0 2px 8px;font-size:13.5px;font-weight:700;color:var(--muted)}
+  .adm-row{align-items:start;padding:16px 2px 15px}
+  .adm-row > *{grid-column:auto;grid-row:1;margin-top:0;padding-right:0}
+  .adm-row__when{align-self:start;padding-top:3px}
+  .adm-row__when span{display:block}
+  .adm-row__intent{justify-self:start}
+  .adm-row__org{font-size:17px}
+  .adm-row__who .adm-clip{display:-webkit-box;overflow:hidden}
+  .adm-row__who small{margin-left:0}
+  .adm-row__chev{align-self:start;margin:4px 0 0}
+  .adm-detail{padding:6px 2px 30px 124px}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .adm-row__chev{transition:none}
+}

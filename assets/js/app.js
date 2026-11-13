@@ -413,7 +413,7 @@
     var ig = instagramInfo((CFG.contact || {}).instagram);
     $$('[data-preview-note]').forEach(function (p) {
       var inTeam = !!p.closest('#panel-team');
-      p.hidden = !!CFG.formEndpoint || (inTeam && !open.length);
+      p.hidden = savesOnline(p.getAttribute('data-preview-note')) || (inTeam && !open.length);
       if (ig && p.getAttribute('data-preview-note') === 'eoi') p.innerHTML = T('온라인 접수는 연결을 준비하고 있습니다. 지금은 아래에 적은 내용을 복사해, 제안서에 적힌 회신 이메일이나 인스타그램 {ig} 메시지로 보내 주세요.', { ig: igLink(ig) });
       else if (ig) p.innerHTML = T('온라인 접수는 연결을 준비하고 있습니다. 지금은 인스타그램 {ig} 메시지로 보내 주세요. 아래에 적은 내용은 복사해서 보낼 수 있습니다.', { ig: igLink(ig) });
       else p.textContent = T('온라인 접수는 연결을 준비하고 있어, 아직 이 양식으로는 전송되지 않습니다.');
@@ -450,7 +450,8 @@
     });
     $$('input[type="email"]', form).forEach(function (el) {
       var v = el.value.trim();
-      if (v && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) && !el.hasAttribute('aria-invalid')) {
+      var tooLong = el.maxLength > 0 && v.length > el.maxLength;       // 칸의 글자 수 한도를 넘긴 주소
+      if (v && (tooLong || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) && !el.hasAttribute('aria-invalid')) {
         markError(el, el.getAttribute('data-msg-type') || T('이메일 주소 형식을 확인해 주세요.'));
         first = first || el;
       }
@@ -496,6 +497,87 @@
       out.push([el.name, v]);
     });
     return out;
+  }
+
+  /* ---------- 참가 의향 회신을 Firestore 에 저장 ----------
+     홈페이지에는 서버가 없어, 브라우저가 Firestore 에 바로 한 건을 '만들기'만 합니다.
+     읽기·고치기·지우기는 보안 규칙(tools/firestore.rules)이 막고, 관리자 화면(/admin/)에서 로그인한 관리자만 봅니다. */
+  var FB = CFG.firebase && CFG.firebase.projectId && CFG.firebase.apiKey ? CFG.firebase : null;
+  function savesOnline(kind) { return !!CFG.formEndpoint || (kind === 'eoi' && !!FB); }
+
+  function fsValue(v) {
+    if (v === null || v === undefined) return { nullValue: null };
+    if (typeof v === 'boolean') return { booleanValue: v };
+    if (typeof v === 'number') return { integerValue: String(Math.trunc(v)) };
+    if (Array.isArray(v)) return { arrayValue: { values: v.map(fsValue) } };
+    if (typeof v === 'object') {
+      var f = {};
+      Object.keys(v).forEach(function (k) { f[k] = fsValue(v[k]); });
+      return { mapValue: { fields: f } };
+    }
+    return { stringValue: String(v) };
+  }
+
+  // 화면 언어와 상관없이 같은 모양으로 저장합니다. 글자 수 한도는 보안 규칙과 같습니다.
+  function eoiRecord(form, text) {
+    var val = function (id, max) { var el = $('#' + id, form); return el ? el.value.trim().slice(0, max) : ''; };
+    var code = function (key) {
+      var on = $$('input[data-key="' + key + '"]', form).filter(function (r) { return r.checked; })[0];
+      return on ? on.getAttribute('data-code') : '';
+    };
+    var divisions = {};
+    $$('.div', form).forEach(function (d) {
+      var box = $('[data-div]', d);
+      if (!box.checked) return;
+      var one = {};
+      ['teams', 'players', 'staff'].forEach(function (k) {
+        var n = parseInt($('[data-div-num="' + k + '"]', d).value, 10);
+        if (n >= 0 && n <= 9999) one[k] = n;
+      });
+      divisions[box.getAttribute('data-div')] = one;
+    });
+    return {
+      kind: 'eoi', v: 1, lang: LANG,
+      org: val('eoi-org', 200), country: val('eoi-country', 120), contactName: val('eoi-name', 120), role: val('eoi-role', 120),
+      email: val('eoi-email', 200),
+      contactMethods: $$('input[data-key="contactMethods"]', form).filter(function (c) { return c.checked; })
+        .map(function (c) { return c.getAttribute('data-code'); }),
+      contactDetail: val('eoi-contact', 300), divisions: divisions,
+      period: code('period'), dates: val('eoi-dates', 300), intent: code('intent'), fee: code('fee'), note: val('eoi-note', 3000),
+      consent: true, text: text.slice(0, 8000)
+    };
+  }
+
+  function saveToFirestore(collection, record) {
+    var abc = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789', buf = new Uint8Array(20), id = '';
+    window.crypto.getRandomValues(buf);
+    for (var i = 0; i < buf.length; i++) id += abc.charAt(buf[i] % abc.length);
+    var db = 'projects/' + FB.projectId + '/databases/(default)', fields = {};
+    Object.keys(record).forEach(function (k) { fields[k] = fsValue(record[k]); });
+    var body = JSON.stringify({
+      writes: [{
+        update: { name: db + '/documents/' + collection + '/' + id, fields: fields },
+        currentDocument: { exists: false },                                             // 새로 만들기만
+        updateTransforms: [{ fieldPath: 'submittedAt', setToServerValue: 'REQUEST_TIME' }]   // 접수 시각은 서버 시각
+      }]
+    });
+    // 로그인 없이 보내는 요청이라 Firestore 보안 규칙이 받아들일지 정합니다.
+    // Firebase 가 쓰는 방식 그대로 글자(text/plain)로 보내 브라우저의 사전 확인 요청을 줄입니다.
+    var send = function (withKey) {
+      return fetch('https://firestore.googleapis.com/v1/' + db + '/documents:commit' + (withKey ? '?key=' + encodeURIComponent(FB.apiKey) : ''), {
+        method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: body
+      });
+    };
+    return send(true).then(function (res) {
+      if (res.ok) return res;
+      // 키 설정 때문에 거절된 경우에만 키 없이 한 번 더 보냅니다(보안 규칙이 거절한 것은 다시 보내지 않습니다).
+      return res.text().catch(function () { return ''; }).then(function (t) {
+        return /API[ _]?key/i.test(t) ? send(false) : res;
+      });
+    }).then(function (res) {
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return id;
+    });
   }
 
   var FORM_TEXT = {
@@ -569,11 +651,10 @@
     var divisions = kind === 'eoi' ? readDivisions(form) : null;
     var text = toText(kind, fields, roster, divisions);
 
-    if (!CFG.formEndpoint) {
-      var ig = instagramInfo((CFG.contact || {}).instagram);
-      var box = showResult(form, '',
-        T('온라인 접수가 아직 연결되지 않아 전송되지 않았습니다'),
-        ig ? (ft.manual || T('아래 내용을 복사해 인스타그램 메시지로 보내 주세요.')) : T('적은 내용은 아래에서 복사할 수 있습니다.'),
+    var ig = instagramInfo((CFG.contact || {}).instagram);
+    // 적은 내용을 복사해 직접 보낼 수 있게 보여 주는 상자
+    var showManual = function (tone, title, body) {
+      var box = showResult(form, tone, title, body,
         '<pre>' + esc(text) + '</pre><div class="result__acts"><button class="linkbtn" type="button" data-copy>' + icon('copy') + '<span>' + esc(T('내용 복사')) + '</span></button>' +
         (ig ? igLink(ig, T('인스타그램 열기')) : '') + '</div>');
       box.querySelector('[data-copy]').addEventListener('click', function (e) {
@@ -582,6 +663,10 @@
         try { navigator.clipboard.writeText(text).then(function () { label.textContent = T('복사했습니다'); }, manual); }
         catch (x) { manual(); }
       });
+    };
+    if (!savesOnline(kind)) {
+      showManual('', T('온라인 접수가 아직 연결되지 않아 전송되지 않았습니다'),
+        ig ? (ft.manual || T('아래 내용을 복사해 인스타그램 메시지로 보내 주세요.')) : T('적은 내용은 아래에서 복사할 수 있습니다.'));
       return;
     }
 
@@ -589,19 +674,39 @@
     btn.disabled = true;
     btn.textContent = T('보내는 중');
     var payload = { kind: kind, lang: LANG, submittedAt: new Date().toISOString(), fields: fields, roster: roster, divisions: divisions, text: text };
-    fetch(CFG.formEndpoint, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) })
-      .then(function (res) {
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        return res.text().catch(function () { return ''; });
-      })
-      .then(function (body) {
-        if (/^\s*error/i.test(body)) throw new Error(body);
+    // 구글 스프레드시트 받기 스크립트(formEndpoint)로 보내기
+    var sendToSheet = function () {
+      return fetch(CFG.formEndpoint, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) })
+        .then(function (res) {
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          return res.text().catch(function () { return ''; });
+        })
+        .then(function (body) { if (/^\s*error/i.test(body)) throw new Error(body); });
+    };
+    var sent;
+    if (kind === 'eoi' && FB) {
+      // 참가 의향 회신은 Firestore 가 원본입니다. 시트 주소가 있으면 사본을 함께 남기고, 저장이 안 되면 시트로라도 받습니다.
+      sent = saveToFirestore('eoiReplies', eoiRecord(form, text)).then(function () {
+        if (CFG.formEndpoint) sendToSheet().catch(function () {});
+      }, function (err) {
+        if (CFG.formEndpoint) return sendToSheet();
+        throw err;
+      });
+    } else {
+      sent = sendToSheet();
+    }
+    sent.then(function () {
         form.reset();
         $$('.div__nums', form).forEach(function (n) { n.hidden = true; });
         showResult(form, 'ok', ft.ok, ft.okText);
       })
       .catch(function () {
-        showResult(form, 'err', T('전송하지 못했습니다'), T('인터넷 연결을 확인하고 다시 제출해 주세요. 입력한 내용은 그대로 남아 있습니다.'));
+        if (kind === 'eoi') {
+          showManual('err', T('전송하지 못했습니다'),
+            T('잠시 뒤 다시 제출해 주세요. 급하시면 아래 내용을 복사해 제안서에 적힌 회신 이메일이나 인스타그램 메시지로 보내 주셔도 됩니다. 입력한 내용은 그대로 남아 있습니다.'));
+        } else {
+          showResult(form, 'err', T('전송하지 못했습니다'), T('인터넷 연결을 확인하고 다시 제출해 주세요. 입력한 내용은 그대로 남아 있습니다.'));
+        }
       })
       .then(function () { btn.disabled = false; btn.textContent = label; });
   }

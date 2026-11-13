@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<!-- 이 화면이 불러올 수 있는 것을 좁혀 둡니다. Firebase 프로젝트(authDomain)가 바뀌면 frame-src 의 주소도 함께 바꿉니다. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://apis.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com; frame-src https://kyla-homepage.firebaseapp.com; base-uri 'none'; form-action 'none'">
+<title>관리자 | KYLA 한국유소년라크로스협회</title>
+<meta name="theme-color" content="#ffffff">
+<link rel="icon" type="image/png" href="../assets/img/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gothic+A1:wght@400;500;700;900&family=Kanit:ital,wght@0,400;0,600;1,600;1,800&display=swap">
+<link rel="stylesheet" href="../assets/css/site.css">
+<link rel="stylesheet" href="../assets/css/admin.css">
+</head>
+<body class="adm">
+
+<header class="adm-bar">
+  <div class="wrap adm-bar__in">
+    <a class="adm-bar__brand" href="../" aria-label="KYLA 홈페이지로 가기">
+      <img src="../assets/img/kyla-mark.png" alt="KYLA" width="334" height="101">
+      <span>관리자</span>
+    </a>
+    <div class="adm-bar__who" id="adm-who" hidden>
+      <span id="adm-email"></span>
+      <button class="linkbtn" type="button" id="adm-signout">로그아웃</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap adm-main" id="main">
+
+  <!-- 확인하는 중 -->
+  <section class="adm-gate" id="adm-loading" aria-live="polite">
+    <p class="adm-gate__text">로그인 상태를 확인하고 있습니다.</p>
+  </section>
+
+  <!-- 로그인 -->
+  <section class="adm-gate" id="adm-signin" hidden>
+    <h1 class="t-2" tabindex="-1">관리자 로그인</h1>
+    <p class="adm-gate__text">협회가 관리자로 등록한 구글 계정으로만 들어올 수 있습니다.</p>
+    <div class="btns"><button class="btn" type="button" id="adm-google">구글 계정으로 로그인</button></div>
+    <p class="adm-gate__msg" id="adm-signin-msg" role="alert" hidden></p>
+    <p class="adm-gate__hint">카카오톡이나 인스타그램 안에서 연 화면에서는 구글 로그인이 막힙니다. Chrome이나 Safari에서 열어 주세요.</p>
+  </section>
+
+  <!-- 권한 없음 · 권한 확인 실패 (제목과 본문은 admin.js 가 상황에 맞게 채웁니다) -->
+  <section class="adm-gate" id="adm-denied" hidden>
+    <h1 class="t-2" tabindex="-1" id="adm-denied-title">이 계정에는 관리자 권한이 없습니다</h1>
+    <p class="adm-gate__text" id="adm-denied-text"></p>
+    <div class="btns">
+      <button class="btn" type="button" id="adm-recheck" hidden>다시 확인</button>
+      <button class="btn btn--ghost" type="button" id="adm-switch">다른 계정으로 로그인</button>
+    </div>
+    <p class="adm-gate__msg" id="adm-denied-msg" role="alert" hidden></p>
+  </section>
+
+  <!-- 회신 목록 -->
+  <section id="adm-app" hidden>
+    <div class="adm-head">
+      <div>
+        <h1 class="t-2" tabindex="-1">참가 의향 회신</h1>
+        <p class="adm-head__sub">2027 제주 국제 유소년 라크로스 교류전</p>
+      </div>
+      <div class="adm-tools">
+        <button class="btn btn--sm" type="button" id="adm-csv" disabled>엑셀용 파일 내려받기</button>
+        <button class="btn btn--sm btn--ghost" type="button" id="adm-reload">새로 고침</button>
+      </div>
+    </div>
+
+    <dl class="adm-stats" id="adm-stats" hidden>
+      <div data-tone="ink"><dt>전체</dt><dd data-stat="all">0</dd></div>
+      <div data-tone="green"><dt>적극 검토</dt><dd data-stat="active">0</dd></div>
+      <div data-tone="blue"><dt>내부 협의 후 결정</dt><dd data-stat="internal">0</dd></div>
+      <div data-tone="orange"><dt>미정</dt><dd data-stat="undecided">0</dd></div>
+      <div data-tone="muted"><dt>현재 참가 어려움</dt><dd data-stat="unable">0</dd></div>
+    </dl>
+
+    <p class="adm-status" id="adm-status" role="status" aria-live="polite" tabindex="-1"></p>
+
+    <div class="adm-cols" id="adm-cols" aria-hidden="true" hidden>
+      <span>접수</span><span>단체, 국가</span><span>담당자</span><span>참가 의향</span><span>디비전, 예상 인원</span>
+    </div>
+    <ul class="adm-list" id="adm-list"></ul>
+
+    <p class="adm-foot">자료는 Firebase(Cloud Firestore, 서울 리전)에 저장됩니다. 내려받은 파일에는 담당자 이름과 연락처가 들어 있으니 필요한 사람과만 나눠 주세요. 공용 컴퓨터에서는 일을 마친 뒤 꼭 로그아웃해 주세요.</p>
+    <p class="adm-foot adm-foot--who">로그인한 계정: <span id="adm-email-foot"></span></p>
+  </section>
+
+</main>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/vendor/firebase-app-compat.js"></script>
+<script src="../assets/vendor/firebase-auth-compat.js"></script>
+<script src="../assets/js/admin.js"></script>
+</body>
+</html>

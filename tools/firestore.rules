@@ -1,0 +1,92 @@
+rules_version = '2';
+
+// KYLA 홈페이지의 Firestore 보안 규칙입니다.
+// Firebase 콘솔 > Firestore > 규칙(Rules) 탭에 통째로 붙여 넣고 게시(Publish)합니다.
+// 이 파일을 고치면 콘솔에도 다시 붙여 넣어야 실제로 적용됩니다.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // 로그인한 사람의 확인된 이메일(소문자). 구글 계정으로 로그인한 경우에만 값이 있습니다.
+    function signedInEmail() {
+      return request.auth != null
+        && request.auth.token.email != null
+        && request.auth.token.email_verified == true;
+    }
+
+    // 관리자: admins 컬렉션에 본인 구글 계정 이메일(소문자)을 문서 ID로 한 문서가 있는 사람.
+    // 명단은 Firebase 콘솔에서만 고칩니다. 이메일은 이 파일에 적지 않습니다.
+    function isAdmin() {
+      return signedInEmail()
+        && exists(/databases/$(database)/documents/admins/$(request.auth.token.email.lower()));
+    }
+
+    match /admins/{email} {
+      // 로그인한 사람이 자기 권한이 있는지만 확인할 수 있습니다. 명단 전체는 아무도 볼 수 없습니다.
+      allow get: if signedInEmail() && request.auth.token.email.lower() == email;
+      allow list, create, update, delete: if false;
+    }
+
+    function shortText(d, key, max) {
+      return d[key] is string && d[key].size() <= max;
+    }
+
+    function validCount(m, key) {
+      return !(key in m) || (m[key] is int && m[key] >= 0 && m[key] <= 9999);
+    }
+
+    function validDivision(divs, code) {
+      return !(code in divs)
+        || (divs[code] is map
+            && divs[code].keys().hasOnly(['teams', 'players', 'staff'])
+            && validCount(divs[code], 'teams')
+            && validCount(divs[code], 'players')
+            && validCount(divs[code], 'staff'));
+    }
+
+    // 2027 제주 교류전 참가 의향 회신 한 건의 모양과 크기
+    function validReply(d) {
+      return d.keys().hasOnly(['kind', 'v', 'lang', 'org', 'country', 'contactName', 'role', 'email',
+                               'contactMethods', 'contactDetail', 'divisions', 'period', 'dates',
+                               'intent', 'fee', 'note', 'consent', 'text', 'submittedAt'])
+        && d.keys().hasAll(['kind', 'v', 'lang', 'org', 'country', 'contactName', 'role', 'email',
+                            'contactMethods', 'contactDetail', 'divisions', 'period', 'dates',
+                            'intent', 'fee', 'note', 'consent', 'text', 'submittedAt'])
+        && d.kind == 'eoi'
+        && d.v == 1
+        && d.lang in ['ko', 'en', 'ja']
+        && shortText(d, 'org', 200) && d.org.size() > 0
+        && shortText(d, 'country', 120) && d.country.size() > 0
+        && shortText(d, 'contactName', 120) && d.contactName.size() > 0
+        && shortText(d, 'role', 120)
+        && shortText(d, 'email', 200) && d.email.matches('^[^@ ]+@[^@ ]+[.][^@ ]+$')
+        && d.contactMethods is list
+        && d.contactMethods.size() <= 5
+        && d.contactMethods.hasOnly(['whatsapp', 'line', 'kakaotalk', 'instagram', 'other'])
+        && shortText(d, 'contactDetail', 300)
+        && d.divisions is map
+        && d.divisions.keys().hasOnly(['u10mixed', 'u12boys', 'u12girls', 'u14boys', 'u14girls', 'u16boys', 'u16girls'])
+        && validDivision(d.divisions, 'u10mixed')
+        && validDivision(d.divisions, 'u12boys')
+        && validDivision(d.divisions, 'u12girls')
+        && validDivision(d.divisions, 'u14boys')
+        && validDivision(d.divisions, 'u14girls')
+        && validDivision(d.divisions, 'u16boys')
+        && validDivision(d.divisions, 'u16girls')
+        && d.period in ['', '2027-06', 'other']
+        && shortText(d, 'dates', 300)
+        && d.intent in ['active', 'internal', 'undecided', 'unable']
+        && d.fee in ['', 'ok', 'discuss', 'hold']
+        && shortText(d, 'note', 3000)
+        && d.consent == true
+        && shortText(d, 'text', 8000)
+        && d.submittedAt == request.time;
+    }
+
+    // 참가 의향 회신: 누구나 제출만 할 수 있고, 읽기와 삭제는 관리자만 합니다. 고쳐 쓰기는 막습니다.
+    match /eoiReplies/{id} {
+      allow create: if id.matches('^[A-Za-z0-9]{20}$') && validReply(request.resource.data);
+      allow get, list, delete: if isAdmin();
+      allow update: if false;
+    }
+  }
+}

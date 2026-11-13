@@ -45,11 +45,20 @@
 window.KYLA_DATA = {
 
   config: {
-    // 신청서와 문의가 모이는 접수 주소입니다. 비어 있는 동안에는 전송하지 않고, 적은 내용을 복사해 인스타그램으로 보내도록 안내합니다.
+    // 신청서와 문의가 모이는 접수 주소(구글 스프레드시트 받기 스크립트)입니다. 비어 있는 동안 신청서와 문의는 전송하지 않고,
+    // 적은 내용을 복사해 인스타그램으로 보내도록 안내합니다. 주소를 넣으면 참가 의향 회신의 사본도 이 시트에 함께 쌓입니다.
     formEndpoint: "",
     // 인스타그램 아이디(@ 없이)나 프로필 주소를 적으면 푸터, 모바일 메뉴, 문의 화면에 링크가 나옵니다.
     // 전화번호는 싣지 않습니다. 비어 있는 항목은 화면에 나오지 않습니다.
-    contact: { instagram: "korea_youth_lacrosse", email: "" }
+    contact: { instagram: "korea_youth_lacrosse", email: "" },
+    // 참가 의향 회신을 저장하는 Firebase 프로젝트입니다. 지우거나 고치면 회신 저장과 관리자 화면(/admin/)이 멈춥니다.
+    // 여기 적힌 값은 공개돼도 되는 식별용 값입니다. 자료는 Firestore 보안 규칙(tools/firestore.rules)이 지킵니다.
+    firebase: {
+      apiKey: "AIzaSyDNNXb-Ke_UeNLdj5c23NhJ0gR78mTaETU",
+      authDomain: "kyla-homepage.firebaseapp.com",
+      projectId: "kyla-homepage",
+      appId: "1:1029222949342:web:d8a85f5a64a69cf867fd4f"
+    }
   },
 
   /* ---------------- 공지사항 ---------------- */

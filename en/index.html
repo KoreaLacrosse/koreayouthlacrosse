@@ -829,83 +829,83 @@
           <form class="form" id="form-eoi" data-form="eoi" novalidate>
             <fieldset class="form__group">
               <legend class="form__legend">Organization and contact person</legend>
-              <div class="field"><label class="field__label" for="eoi-org"><span>Organization or team name</span><em>required</em></label><input class="input" id="eoi-org" name="Organization or team name" required autocomplete="organization" data-msg="Enter your organization or team name."></div>
-              <div class="field"><label class="field__label" for="eoi-country"><span>Country / region</span><em>required</em></label><input class="input" id="eoi-country" name="Country / region" required data-msg="Enter your country and region."></div>
+              <div class="field"><label class="field__label" for="eoi-org"><span>Organization or team name</span><em>required</em></label><input class="input" id="eoi-org" maxlength="200" name="Organization or team name" required autocomplete="organization" data-msg="Enter your organization or team name."></div>
+              <div class="field"><label class="field__label" for="eoi-country"><span>Country / region</span><em>required</em></label><input class="input" id="eoi-country" maxlength="120" name="Country / region" required data-msg="Enter your country and region."></div>
               <div class="form__grid form__grid--2">
-                <div class="field"><label class="field__label" for="eoi-name"><span>Contact name</span><em>required</em></label><input class="input" id="eoi-name" name="Contact name" required autocomplete="name" data-msg="Enter a contact name."></div>
-                <div class="field"><label class="field__label" for="eoi-role">Position</label><input class="input" id="eoi-role" name="Position" autocomplete="organization-title"></div>
+                <div class="field"><label class="field__label" for="eoi-name"><span>Contact name</span><em>required</em></label><input class="input" id="eoi-name" maxlength="120" name="Contact name" required autocomplete="name" data-msg="Enter a contact name."></div>
+                <div class="field"><label class="field__label" for="eoi-role">Position</label><input class="input" id="eoi-role" maxlength="120" name="Position" autocomplete="organization-title"></div>
               </div>
-              <div class="field"><label class="field__label" for="eoi-email"><span>Email</span><em>required</em></label><input class="input" id="eoi-email" name="Email" type="email" required autocomplete="email" inputmode="email" data-msg="Enter an email address we can reply to." data-msg-type="Check the email address format."></div>
+              <div class="field"><label class="field__label" for="eoi-email"><span>Email</span><em>required</em></label><input class="input" id="eoi-email" maxlength="200" name="Email" type="email" required autocomplete="email" inputmode="email" data-msg="Enter an email address we can reply to." data-msg-type="Check the email address format."></div>
               <fieldset class="field">
                 <legend class="field__label">Preferred contact method</legend>
                 <div class="checks">
-                  <label class="check"><input type="checkbox" name="Preferred contact method" value="WhatsApp"><span>WhatsApp</span></label>
-                  <label class="check"><input type="checkbox" name="Preferred contact method" value="LINE"><span>LINE</span></label>
-                  <label class="check"><input type="checkbox" name="Preferred contact method" value="KakaoTalk"><span>KakaoTalk</span></label>
-                  <label class="check"><input type="checkbox" name="Preferred contact method" value="Instagram"><span>Instagram</span></label>
-                  <label class="check"><input type="checkbox" name="Preferred contact method" value="Other"><span>Other</span></label>
+                  <label class="check"><input type="checkbox" name="Preferred contact method" value="WhatsApp" data-key="contactMethods" data-code="whatsapp"><span>WhatsApp</span></label>
+                  <label class="check"><input type="checkbox" name="Preferred contact method" value="LINE" data-key="contactMethods" data-code="line"><span>LINE</span></label>
+                  <label class="check"><input type="checkbox" name="Preferred contact method" value="KakaoTalk" data-key="contactMethods" data-code="kakaotalk"><span>KakaoTalk</span></label>
+                  <label class="check"><input type="checkbox" name="Preferred contact method" value="Instagram" data-key="contactMethods" data-code="instagram"><span>Instagram</span></label>
+                  <label class="check"><input type="checkbox" name="Preferred contact method" value="Other" data-key="contactMethods" data-code="other"><span>Other</span></label>
                 </div>
               </fieldset>
-              <div class="field"><label class="field__label" for="eoi-contact">Contact ID, link or phone number</label><input class="input" id="eoi-contact" name="Contact ID, link or phone number"></div>
+              <div class="field"><label class="field__label" for="eoi-contact">Contact ID, link or phone number</label><input class="input" id="eoi-contact" maxlength="300" name="Contact ID, link or phone number"></div>
             </fieldset>
             <fieldset class="form__group">
               <legend class="form__legend">Divisions and expected numbers</legend>
               <p class="field__hint">Select every division you could consider entering, and give the expected number of teams, players, and coaches or chaperones. An association may reply on behalf of several of its member teams.</p>
               <div class="divs">
                 <div class="div">
-                  <label class="check"><input type="checkbox" data-div><span>U10 mixed</span></label>
+                  <label class="check"><input type="checkbox" data-div="u10mixed"><span>U10 mixed</span></label>
                   <div class="div__nums" hidden>
-                    <label><span>Teams</span><input class="input" type="number" min="0" inputmode="numeric" data-div-num="teams"></label>
-                    <label><span>Players</span><input class="input" type="number" min="0" inputmode="numeric" data-div-num="players"></label>
-                    <label><span>Staff</span><input class="input" type="number" min="0" inputmode="numeric" data-div-num="staff"></label>
+                    <label><span>Teams</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="teams"></label>
+                    <label><span>Players</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="players"></label>
+                    <label><span>Staff</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="staff"></label>
                   </div>
                 </div>
                 <div class="div">
-                  <label class="check"><input type="checkbox" data-div><span>U12 boys</span></label>
+                  <label class="check"><input type="checkbox" data-div="u12boys"><span>U12 boys</span></label>
                   <div class="div__nums" hidden>
-                    <label><span>Teams</span><input class="input" type="number" min="0" inputmode="numeric" data-div-num="teams"></label>
-                    <label><span>Players</span><input class="input" type="number" min="0" inputmode="numeric" data-div-num="players"></label>
-                    <label><span>Staff</span><input class="input" type="number" min="0" inputmode="numeric" data-div-num="staff"></label>
+                    <label><span>Teams</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="teams"></label>
+                    <label><span>Players</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="players"></label>
+                    <label><span>Staff</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="staff"></label>
                   </div>
                 </div>
                 <div class="div">
-                  <label class="check"><input type="checkbox" data-div><span>U12 girls</span></label>
+                  <label class="check"><input type="checkbox" data-div="u12girls"><span>U12 girls</span></label>
                   <div class="div__nums" hidden>
-                    <label><span>Teams</span><input class="input" type="number" min="0" inputmode="numeric" data-div-num="teams"></label>
-                    <label><span>Players</span><input class="input" type="number" min="0" inputmode="numeric" data-div-num="players"></label>
-                    <label><span>Staff</span><input class="input" type="number" min="0" inputmode="numeric" data-div-num="staff"></label>
+                    <label><span>Teams</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="teams"></label>
+                    <label><span>Players</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="players"></label>
+                    <label><span>Staff</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="staff"></label>
                   </div>
                 </div>
                 <div class="div">
-                  <label class="check"><input type="checkbox" data-div><span>U14 boys</span></label>
+                  <label class="check"><input type="checkbox" data-div="u14boys"><span>U14 boys</span></label>
                   <div class="div__nums" hidden>
-                    <label><span>Teams</span><input class="input" type="number" min="0" inputmode="numeric" data-div-num="teams"></label>
-                    <label><span>Players</span><input class="input" type="number" min="0" inputmode="numeric" data-div-num="players"></label>
-                    <label><span>Staff</span><input class="input" type="number" min="0" inputmode="numeric" data-div-num="staff"></label>
+                    <label><span>Teams</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="teams"></label>
+                    <label><span>Players</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="players"></label>
+                    <label><span>Staff</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="staff"></label>
                   </div>
                 </div>
                 <div class="div">
-                  <label class="check"><input type="checkbox" data-div><span>U14 girls</span></label>
+                  <label class="check"><input type="checkbox" data-div="u14girls"><span>U14 girls</span></label>
                   <div class="div__nums" hidden>
-                    <label><span>Teams</span><input class="input" type="number" min="0" inputmode="numeric" data-div-num="teams"></label>
-                    <label><span>Players</span><input class="input" type="number" min="0" inputmode="numeric" data-div-num="players"></label>
-                    <label><span>Staff</span><input class="input" type="number" min="0" inputmode="numeric" data-div-num="staff"></label>
+                    <label><span>Teams</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="teams"></label>
+                    <label><span>Players</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="players"></label>
+                    <label><span>Staff</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="staff"></label>
                   </div>
                 </div>
                 <div class="div">
-                  <label class="check"><input type="checkbox" data-div><span>U16 boys</span></label>
+                  <label class="check"><input type="checkbox" data-div="u16boys"><span>U16 boys</span></label>
                   <div class="div__nums" hidden>
-                    <label><span>Teams</span><input class="input" type="number" min="0" inputmode="numeric" data-div-num="teams"></label>
-                    <label><span>Players</span><input class="input" type="number" min="0" inputmode="numeric" data-div-num="players"></label>
-                    <label><span>Staff</span><input class="input" type="number" min="0" inputmode="numeric" data-div-num="staff"></label>
+                    <label><span>Teams</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="teams"></label>
+                    <label><span>Players</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="players"></label>
+                    <label><span>Staff</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="staff"></label>
                   </div>
                 </div>
                 <div class="div">
-                  <label class="check"><input type="checkbox" data-div><span>U16 girls</span></label>
+                  <label class="check"><input type="checkbox" data-div="u16girls"><span>U16 girls</span></label>
                   <div class="div__nums" hidden>
-                    <label><span>Teams</span><input class="input" type="number" min="0" inputmode="numeric" data-div-num="teams"></label>
-                    <label><span>Players</span><input class="input" type="number" min="0" inputmode="numeric" data-div-num="players"></label>
-                    <label><span>Staff</span><input class="input" type="number" min="0" inputmode="numeric" data-div-num="staff"></label>
+                    <label><span>Teams</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="teams"></label>
+                    <label><span>Players</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="players"></label>
+                    <label><span>Staff</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="staff"></label>
                   </div>
                 </div>
               </div>
@@ -915,30 +915,30 @@
               <fieldset class="field">
                 <legend class="field__label">Preferred period</legend>
                 <div class="checks">
-                  <label class="check"><input type="radio" name="Preferred period" value="June 2027"><span>June 2027</span></label>
-                  <label class="check"><input type="radio" name="Preferred period" value="Suggest another period"><span>Suggest another period</span></label>
+                  <label class="check"><input type="radio" name="Preferred period" value="June 2027" data-key="period" data-code="2027-06"><span>June 2027</span></label>
+                  <label class="check"><input type="radio" name="Preferred period" value="Suggest another period" data-key="period" data-code="other"><span>Suggest another period</span></label>
                 </div>
               </fieldset>
-              <div class="field"><label class="field__label" for="eoi-dates">Available weekends or specific preferred dates</label><input class="input" id="eoi-dates" name="Available weekends or specific preferred dates"></div>
+              <div class="field"><label class="field__label" for="eoi-dates">Available weekends or specific preferred dates</label><input class="input" id="eoi-dates" maxlength="300" name="Available weekends or specific preferred dates"></div>
               <fieldset class="field">
                 <legend class="field__label"><span>Level of interest</span><em>required</em></legend>
                 <div class="checks">
-                  <label class="check"><input type="radio" name="Level of interest" value="Strongly considering" required data-msg="Select your level of interest."><span>Strongly considering</span></label>
-                  <label class="check"><input type="radio" name="Level of interest" value="To be decided after internal discussion" required data-msg="Select your level of interest."><span>To be decided after internal discussion</span></label>
-                  <label class="check"><input type="radio" name="Level of interest" value="Undecided" required data-msg="Select your level of interest."><span>Undecided</span></label>
-                  <label class="check"><input type="radio" name="Level of interest" value="Unable to take part at this time" required data-msg="Select your level of interest."><span>Unable to take part at this time</span></label>
+                  <label class="check"><input type="radio" name="Level of interest" value="Strongly considering" data-key="intent" data-code="active" required data-msg="Select your level of interest."><span>Strongly considering</span></label>
+                  <label class="check"><input type="radio" name="Level of interest" value="To be decided after internal discussion" data-key="intent" data-code="internal" required data-msg="Select your level of interest."><span>To be decided after internal discussion</span></label>
+                  <label class="check"><input type="radio" name="Level of interest" value="Undecided" data-key="intent" data-code="undecided" required data-msg="Select your level of interest."><span>Undecided</span></label>
+                  <label class="check"><input type="radio" name="Level of interest" value="Unable to take part at this time" data-key="intent" data-code="unable" required data-msg="Select your level of interest."><span>Unable to take part at this time</span></label>
                 </div>
               </fieldset>
               <fieldset class="field">
                 <legend class="field__label">Estimated entry fee</legend>
                 <p class="field__hint">Estimated at KRW 1,500,000–2,000,000 per team. This may change.</p>
                 <div class="checks">
-                  <label class="check"><input type="radio" name="Estimated entry fee" value="Can consider"><span>Can consider</span></label>
-                  <label class="check"><input type="radio" name="Estimated entry fee" value="Needs discussion"><span>Needs discussion</span></label>
-                  <label class="check"><input type="radio" name="Estimated entry fee" value="No view yet"><span>No view yet</span></label>
+                  <label class="check"><input type="radio" name="Estimated entry fee" value="Can consider" data-key="fee" data-code="ok"><span>Can consider</span></label>
+                  <label class="check"><input type="radio" name="Estimated entry fee" value="Needs discussion" data-key="fee" data-code="discuss"><span>Needs discussion</span></label>
+                  <label class="check"><input type="radio" name="Estimated entry fee" value="No view yet" data-key="fee" data-code="hold"><span>No view yet</span></label>
                 </div>
               </fieldset>
-              <div class="field"><label class="field__label" for="eoi-note">Other requests or suggestions</label><textarea class="input" id="eoi-note" name="Other requests or suggestions"></textarea></div>
+              <div class="field"><label class="field__label" for="eoi-note">Other requests or suggestions</label><textarea class="input" id="eoi-note" maxlength="3000" name="Other requests or suggestions"></textarea></div>
             </fieldset>
             <div class="field">
               <label class="check"><input type="checkbox" name="Consent to use of details" value="Agreed" required data-msg="Please agree so we can reply to you."><span>I agree that KYLA may use the details above to discuss and send information about this event. (Required)</span></label>
@@ -1164,6 +1164,8 @@
         <li>International exchange inquiries: school or team name, country and city, contact person's name and contact details, and the exchange you have in mind. Used to discuss the exchange.</li>
         <li>Expressions of interest: organization or team name, country and region, contact person's name, position and contact details, possible divisions and expected numbers, and preferred dates. Used to discuss and send information about that event.</li>
       </ul>
+      <h3 class="t-3">Where data is stored</h3>
+      <p>Expressions of interest are stored in Firebase (Cloud Firestore, Seoul region), a Google cloud service, and can be viewed only by administrators designated by the association.</p>
       <h3 class="t-3">Retention period</h3>
       <p>Information is destroyed without delay once the purpose of collection has been fulfilled. Retention periods for each item will be listed here once the association has confirmed them.</p>
       <h3 class="t-3">Children under 14</h3>
