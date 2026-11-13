@@ -56,13 +56,32 @@
       <span class="brand__name">한국유소년<br>라크로스협회</span>
     </a>
     <nav class="nav" aria-label="주요 메뉴">
-      <a data-ctx="nav" href="#about">협회 소개</a>
-      <a data-ctx="nav" href="#programs">유소년 교육</a>
-      <a data-ctx="nav" href="#schedule">대회·일정</a>
-      <a data-ctx="nav" href="#coach">지도자 자격</a>
-      <a data-ctx="nav" href="#international">국제교류</a>
-      <a data-ctx="nav" href="#notice">공지사항</a>
-      <a data-ctx="nav" href="#gallery">사진</a>
+      <div class="nav__item">
+        <button class="nav__top" type="button" aria-expanded="false" aria-controls="nav-about"><span data-ctx="nav">협회 소개</span><svg class="ico" aria-hidden="true"><use href="#i-chev"/></svg></button>
+        <div class="nav__sub" id="nav-about">
+          <a href="#about">협회 안내</a>
+          <a href="#about-org">조직도</a>
+          <a href="#programs">유소년 교육</a>
+          <a href="#contact">후원·협력</a>
+        </div>
+      </div>
+      <a class="nav__top" data-ctx="nav" href="#schedule">대회·일정</a>
+      <a class="nav__top" data-ctx="nav" href="#coach">지도자 자격</a>
+      <div class="nav__item">
+        <button class="nav__top" type="button" aria-expanded="false" aria-controls="nav-intl"><span data-ctx="nav">국제교류</span><svg class="ico" aria-hidden="true"><use href="#i-chev"/></svg></button>
+        <div class="nav__sub" id="nav-intl">
+          <a href="#international">국제교류 안내</a>
+          <a href="#jeju2027">2027 제주 교류전</a>
+        </div>
+      </div>
+      <div class="nav__item">
+        <button class="nav__top" type="button" aria-expanded="false" aria-controls="nav-community"><span data-ctx="nav">커뮤니티</span><svg class="ico" aria-hidden="true"><use href="#i-chev"/></svg></button>
+        <div class="nav__sub" id="nav-community">
+          <a href="#notice">공지사항</a>
+          <a href="#apply-inquiry">문의사항</a>
+          <a href="#gallery">포토갤러리</a>
+        </div>
+      </div>
     </nav>
     <a class="btn btn--sm hdr__cta" href="#apply" data-ctx="cta">신청·문의</a>
     <button class="hdr__menu" type="button" id="menu-btn" aria-expanded="false" aria-controls="mnav">
@@ -74,15 +93,33 @@
 
 <nav class="mnav" id="mnav" aria-label="전체 메뉴" hidden>
   <a class="mnav__link" href="#home">홈</a>
-  <a class="mnav__link" href="#notice">공지사항</a>
+  <div class="mnav__group">
+    <button class="mnav__link mnav__toggle" type="button" aria-expanded="false" aria-controls="mnav-about"><span>협회 소개</span><svg class="ico" aria-hidden="true"><use href="#i-chev"/></svg></button>
+    <div class="mnav__sub" id="mnav-about" hidden>
+      <a href="#about">협회 안내</a>
+      <a href="#about-org">조직도</a>
+      <a href="#programs">유소년 교육</a>
+      <a href="#contact">후원·협력</a>
+    </div>
+  </div>
   <a class="mnav__link" href="#schedule">대회·일정</a>
-  <a class="mnav__link" href="#gallery">사진</a>
-  <a class="mnav__link" href="#apply">신청·문의</a>
-  <a class="mnav__link" href="#about">협회 소개</a>
-  <a class="mnav__link" href="#programs">유소년 교육</a>
   <a class="mnav__link" href="#coach">지도자 자격</a>
-  <a class="mnav__link" href="#international">국제교류</a>
-  <a class="mnav__link" href="#contact">후원·협력</a>
+  <div class="mnav__group">
+    <button class="mnav__link mnav__toggle" type="button" aria-expanded="false" aria-controls="mnav-intl"><span>국제교류</span><svg class="ico" aria-hidden="true"><use href="#i-chev"/></svg></button>
+    <div class="mnav__sub" id="mnav-intl" hidden>
+      <a href="#international">국제교류 안내</a>
+      <a href="#jeju2027">2027 제주 교류전</a>
+    </div>
+  </div>
+  <div class="mnav__group">
+    <button class="mnav__link mnav__toggle" type="button" aria-expanded="false" aria-controls="mnav-community"><span>커뮤니티</span><svg class="ico" aria-hidden="true"><use href="#i-chev"/></svg></button>
+    <div class="mnav__sub" id="mnav-community" hidden>
+      <a href="#notice">공지사항</a>
+      <a href="#apply-inquiry">문의사항</a>
+      <a href="#gallery">포토갤러리</a>
+    </div>
+  </div>
+  <a class="mnav__link" href="#apply">신청·문의</a>
   <p class="mnav__foot">
     <a class="extlink" data-instagram="인스타그램" rel="noopener" hidden></a>
     <a href="#privacy">개인정보처리방침</a>
@@ -229,8 +266,8 @@
     <button type="button" data-jump="about-mission">미션과 비전</button>
     <button type="button" data-jump="about-values">핵심 가치</button>
     <button type="button" data-jump="about-history">연혁</button>
-    <button type="button" data-jump="about-people">운영진</button>
-    <button type="button" data-jump="about-org">단체 정보</button>
+    <button type="button" data-jump="about-org">조직도</button>
+    <button type="button" data-jump="about-info">단체 정보</button>
   </div></div>
 
   <div class="wrap">
@@ -305,27 +342,31 @@
       </div>
     </section>
 
-    <section class="sect" id="about-people">
-      <div class="sect__grid">
+    <section class="sect" id="about-org">
+      <div class="sect__grid sect__grid--stack">
         <div>
-          <h2 class="t-2">운영진</h2>
-          <p class="secintro">국가대표 선수와 지도자 출신, 학교 체육 현장에서 오래 가르친 교사들이 함께 운영합니다.</p>
+          <h2 class="t-2">조직도</h2>
+          <p class="secintro">국가대표 출신 라크로스 선수 4명과 체육 전문가 3명이 함께 설립해 운영하고 있습니다. 기능별 위원회가 역할을 나누어 맡고, 리그 총괄 아래에서 협업합니다.</p>
         </div>
         <div class="sect__body">
-          <ul class="people">
-            <li class="person"><p class="person__role">회장, 리그 총괄</p><h3 class="person__name">송종철</h3><ul class="person__facts"><li>체육교사 경력 20년 이상</li><li>학교 체육 행정과 교육 프로그램 기획</li><li>청소년 스포츠 교육과 안전관리 운영</li></ul></li>
-            <li class="person"><p class="person__role">사무국, 행정 총괄</p><h3 class="person__name">김태훈</h3><ul class="person__facts"><li>라크로스 국가대표 선수</li><li>대학 강의와 팀 코칭</li><li>국내외 대회 참가와 운영</li></ul></li>
-            <li class="person"><p class="person__role">경기·기술위원회</p><h3 class="person__name">류은규</h3><ul class="person__facts"><li>라크로스 국가대표 선수</li><li>성인 여자 국가대표팀 코치</li><li>청소년 남자 국가대표팀 코치, 고등학교 팀 코치</li></ul></li>
-            <li class="person"><p class="person__role">이벤트·홍보위원회</p><h3 class="person__name">한인수</h3><ul class="person__facts"><li>라크로스 국가대표 선수</li><li>고등학교 팀 코치</li><li>여성 라크로스 리그 개최와 운영</li></ul></li>
-            <li class="person"><p class="person__role">대외협력위원회 (국내·국제)</p><h3 class="person__name">박재한</h3><ul class="person__facts"><li>라크로스 국가대표 선수</li><li>청소년 남자 국가대표 코치, 고등학교 코치</li><li>국내외 팀 교류와 협력 네트워크</li></ul></li>
-            <li class="person"><p class="person__role">교육·안전위원회</p><h3 class="person__name">김일수</h3><ul class="person__facts"><li>체육 교육 경력 30년 이상</li><li>축구, 컬링 등 여러 종목 지도</li><li>학교 스포츠 안전 지도와 학생 관리</li></ul></li>
-            <li class="person"><p class="person__role">교육·안전위원회</p><h3 class="person__name">이원준</h3><ul class="person__facts"><li>체육 교육 경력 10년 이상</li><li>다양한 스포츠 프로그램 운영</li><li>청소년 스포츠 안전관리와 생활지도</li></ul></li>
+          <ul class="org">
+            <li>
+              <div class="org__box org__box--head"><span class="org__unit">회장</span><strong class="org__name">송종철</strong><span class="org__post">리그 총괄</span></div>
+              <ul class="org__units">
+                <li class="org__office"><div class="org__box"><span class="org__unit">사무국</span><strong class="org__name">김태훈</strong><span class="org__post">사무국장, 행정 총괄</span></div></li>
+                <li data-tone="red"><div class="org__box"><span class="org__unit">경기·기술위원회</span><strong class="org__name">류은규</strong></div></li>
+                <li data-tone="orange"><div class="org__box"><span class="org__unit">이벤트·홍보위원회</span><strong class="org__name">한인수</strong></div></li>
+                <li data-tone="green"><div class="org__box"><span class="org__unit">대외협력위원회 (국내·국제)</span><strong class="org__name">박재한</strong></div></li>
+                <li data-tone="blue"><div class="org__box"><span class="org__unit">교육·안전위원회</span><strong class="org__name">김일수</strong><strong class="org__name">이원준</strong></div></li>
+              </ul>
+            </li>
           </ul>
+          <p class="org__note">교육·안전위원회를 따로 두어, 경기 운영과 안전 관리를 서로 독립적으로 맡습니다.</p>
         </div>
       </div>
     </section>
 
-    <section class="sect" id="about-org">
+    <section class="sect" id="about-info">
       <div class="sect__grid">
         <h2 class="t-2">단체 정보</h2>
         <div class="sect__body">
@@ -926,7 +967,7 @@
 <section class="view" data-view="gallery">
   <div id="gallery-main">
     <div class="wrap plainhead">
-      <h1 class="t-page" tabindex="-1"><span class="oblique">사진</span></h1>
+      <h1 class="t-page" tabindex="-1"><span class="oblique">포토갤러리</span></h1>
       <p class="plainhead__lead">대회와 교육 현장을 앨범으로 모읍니다. 사진은 보호자 동의를 확인한 뒤 올립니다.</p>
     </div>
     <div class="wrap panel panel--flush">
@@ -1143,7 +1184,7 @@
       <a href="#about">협회 소개</a>
       <a href="#notice">공지사항</a>
       <a href="#programs">유소년 교육</a>
-      <a href="#gallery">사진</a>
+      <a href="#gallery">포토갤러리</a>
       <a href="#schedule">대회·일정</a>
       <a href="#apply">신청·문의</a>
       <a href="#coach">지도자 자격</a>

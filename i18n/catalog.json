@@ -315,10 +315,6 @@
   "en": "Notices",
   "ja": "お知らせ"
  },
- "사진": {
-  "en": "Photos",
-  "ja": "写真"
- },
  "신청·문의": {
   "en": "Apply & contact",
   "ja": "申込・お問い合わせ"
@@ -527,10 +523,6 @@
   "en": "History",
   "ja": "沿革"
  },
- "운영진": {
-  "en": "Our team",
-  "ja": "運営メンバー"
- },
  "단체 정보": {
   "en": "Organization details",
   "ja": "団体情報"
@@ -723,49 +715,13 @@
   "en": "Korea Youth Lacrosse Association founded",
   "ja": "韓国ユースラクロス協会設立"
  },
- "국가대표 선수와 지도자 출신, 학교 체육 현장에서 오래 가르친 교사들이 함께 운영합니다.": {
-  "en": "KYLA is run by former national team players and coaches together with teachers who have long taught PE in schools.",
-  "ja": "元韓国代表の選手・指導者と、学校体育の現場で長く教えてきた教員が共に運営しています。"
- },
- "회장, 리그 총괄": {
-  "en": "President, league director",
-  "ja": "会長、リーグ統括"
- },
  "송종철": {
   "en": "Song Jong-cheol <small lang=\"ko\">송종철</small>",
   "ja": "ソン・ジョンチョル <small lang=\"ko\">송종철</small>"
  },
- "체육교사 경력 20년 이상": {
-  "en": "More than 20 years as a PE teacher",
-  "ja": "体育教員歴20年以上"
- },
- "학교 체육 행정과 교육 프로그램 기획": {
-  "en": "School sports administration and program planning",
-  "ja": "学校体育の行政と教育プログラムの企画"
- },
- "청소년 스포츠 교육과 안전관리 운영": {
-  "en": "Youth sports education and safety management",
-  "ja": "青少年スポーツ教育と安全管理の運営"
- },
- "사무국, 행정 총괄": {
-  "en": "Secretariat, head of administration",
-  "ja": "事務局、事務統括"
- },
  "김태훈": {
   "en": "Kim Tae-hoon <small lang=\"ko\">김태훈</small>",
   "ja": "キム・テフン <small lang=\"ko\">김태훈</small>"
- },
- "라크로스 국가대표 선수": {
-  "en": "Korea national lacrosse team player",
-  "ja": "ラクロス韓国代表選手"
- },
- "대학 강의와 팀 코칭": {
-  "en": "University lecturing and team coaching",
-  "ja": "大学での講義とチームコーチング"
- },
- "국내외 대회 참가와 운영": {
-  "en": "Playing in and running tournaments in Korea and abroad",
-  "ja": "国内外の大会への出場と運営"
  },
  "경기·기술위원회": {
   "en": "Competition and Technical Committee",
@@ -775,14 +731,6 @@
   "en": "Ryu Eun-gyu <small lang=\"ko\">류은규</small>",
   "ja": "リュ・ウンギュ <small lang=\"ko\">류은규</small>"
  },
- "성인 여자 국가대표팀 코치": {
-  "en": "Coach, senior women's national team",
-  "ja": "女子韓国代表（シニア）チームのコーチ"
- },
- "청소년 남자 국가대표팀 코치, 고등학교 팀 코치": {
-  "en": "Coach, youth men's national team and high school team",
-  "ja": "男子ユース韓国代表チームのコーチ、高校チームのコーチ"
- },
  "이벤트·홍보위원회": {
   "en": "Events and PR Committee",
   "ja": "イベント・広報委員会"
@@ -790,14 +738,6 @@
  "한인수": {
   "en": "Han In-su <small lang=\"ko\">한인수</small>",
   "ja": "ハン・インス <small lang=\"ko\">한인수</small>"
- },
- "고등학교 팀 코치": {
-  "en": "High school team coach",
-  "ja": "高校チームのコーチ"
- },
- "여성 라크로스 리그 개최와 운영": {
-  "en": "Hosting and running a women's lacrosse league",
-  "ja": "女子ラクロスリーグの開催と運営"
  },
  "대외협력위원회 (국내·국제)": {
   "en": "External Relations Committee (domestic and international)",
@@ -807,14 +747,6 @@
   "en": "Park Jae-han <small lang=\"ko\">박재한</small>",
   "ja": "パク・ジェハン <small lang=\"ko\">박재한</small>"
  },
- "청소년 남자 국가대표 코치, 고등학교 코치": {
-  "en": "Coach, youth men's national team and high school",
-  "ja": "男子ユース韓国代表のコーチ、高校のコーチ"
- },
- "국내외 팀 교류와 협력 네트워크": {
-  "en": "Network for team exchange and cooperation in Korea and abroad",
-  "ja": "国内外のチーム交流と協力ネットワーク"
- },
  "교육·안전위원회": {
   "en": "Education and Safety Committee",
   "ja": "教育・安全委員会"
@@ -823,33 +755,9 @@
   "en": "Kim Il-su <small lang=\"ko\">김일수</small>",
   "ja": "キム・イルス <small lang=\"ko\">김일수</small>"
  },
- "체육 교육 경력 30년 이상": {
-  "en": "More than 30 years in physical education",
-  "ja": "体育教育歴30年以上"
- },
- "축구, 컬링 등 여러 종목 지도": {
-  "en": "Coaching several sports, including soccer and curling",
-  "ja": "サッカー、カーリングなど複数競技の指導"
- },
- "학교 스포츠 안전 지도와 학생 관리": {
-  "en": "School sports safety instruction and student supervision",
-  "ja": "学校スポーツの安全指導と生徒管理"
- },
  "이원준": {
   "en": "Lee Won-jun <small lang=\"ko\">이원준</small>",
   "ja": "イ・ウォンジュン <small lang=\"ko\">이원준</small>"
- },
- "체육 교육 경력 10년 이상": {
-  "en": "More than 10 years in physical education",
-  "ja": "体育教育歴10年以上"
- },
- "다양한 스포츠 프로그램 운영": {
-  "en": "Running a range of sports programs",
-  "ja": "さまざまなスポーツプログラムの運営"
- },
- "청소년 스포츠 안전관리와 생활지도": {
-  "en": "Youth sports safety management and student guidance",
-  "ja": "青少年スポーツの安全管理と生活指導"
  },
  "단체명": {
   "en": "Organization",
@@ -2255,10 +2163,6 @@
   "en": "About",
   "ja": "協会紹介"
  },
- "유소년 교육 [nav]": {
-  "en": "Programs",
-  "ja": "ユース教育"
- },
  "대회·일정 [nav]": {
   "en": "Events",
   "ja": "大会・日程"
@@ -2270,14 +2174,6 @@
  "국제교류 [nav]": {
   "en": "International",
   "ja": "国際交流"
- },
- "공지사항 [nav]": {
-  "en": "Notices",
-  "ja": "お知らせ"
- },
- "사진 [nav]": {
-  "en": "Photos",
-  "ja": "写真"
  },
  "신청·문의 [cta]": {
   "en": "Apply & contact",
@@ -2586,5 +2482,57 @@
  "참가 의향 회신: 소속 단체·참가팀 이름, 국가와 지역, 담당자 이름·직책과 연락처, 참가 가능 디비전과 예상 인원, 희망 일정. 해당 행사에 대한 협의와 안내에 씁니다.": {
   "en": "Expressions of interest: organization or team name, country and region, contact person's name, position and contact details, possible divisions and expected numbers, and preferred dates. Used to discuss and send information about that event.",
   "ja": "参加意向の回答：所属団体・参加チーム名、国と地域、担当者の氏名・役職と連絡先、参加可能なディビジョンと予想人数、希望日程。当該大会に関する協議とご案内に使用します。"
+ },
+ "협회 안내": {
+  "en": "Overview",
+  "ja": "協会概要"
+ },
+ "조직도": {
+  "en": "Organization chart",
+  "ja": "組織図"
+ },
+ "국제교류 안내": {
+  "en": "Exchange overview",
+  "ja": "国際交流のご案内"
+ },
+ "2027 제주 교류전": {
+  "en": "2027 Jeju Exchange",
+  "ja": "2027 済州交流戦"
+ },
+ "커뮤니티": {
+  "en": "Community",
+  "ja": "コミュニティ"
+ },
+ "커뮤니티 [nav]": {
+  "en": "Community",
+  "ja": "コミュニティ"
+ },
+ "문의사항": {
+  "en": "Inquiries",
+  "ja": "お問い合わせ"
+ },
+ "포토갤러리": {
+  "en": "Photo gallery",
+  "ja": "フォトギャラリー"
+ },
+ "국가대표 출신 라크로스 선수 4명과 체육 전문가 3명이 함께 설립해 운영하고 있습니다. 기능별 위원회가 역할을 나누어 맡고, 리그 총괄 아래에서 협업합니다.": {
+  "en": "KYLA was founded and is run by four former national team lacrosse players and three physical education professionals. Committees divide the work by function and collaborate under the league director.",
+  "ja": "ラクロス元韓国代表選手4人と体育の専門家3人が共同で設立し、運営しています。機能別の委員会が役割を分担し、リーグ統括のもとで連携しています。"
+ },
+ "리그 총괄": {
+  "en": "League director",
+  "ja": "リーグ統括"
+ },
+ "사무국": {
+  "en": "Secretariat",
+  "ja": "事務局"
+ },
+ "사무국장, 행정 총괄": {
+  "en": "Secretary general, head of administration",
+  "ja": "事務局長、事務統括"
+ },
+ "교육·안전위원회를 따로 두어, 경기 운영과 안전 관리를 서로 독립적으로 맡습니다.": {
+  "en": "A separate Education and Safety Committee means that game operations and safety management are handled independently of each other.",
+  "ja": "教育・安全委員会を別に設け、試合運営と安全管理をそれぞれ独立して担当しています。"
  }
 }

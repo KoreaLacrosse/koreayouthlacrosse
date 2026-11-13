@@ -56,13 +56,32 @@
       <span class="brand__name">韓国ユース<br>ラクロス協会</span>
     </a>
     <nav class="nav" aria-label="メインメニュー">
-      <a data-ctx="nav" href="#about">協会紹介</a>
-      <a data-ctx="nav" href="#programs">ユース教育</a>
-      <a data-ctx="nav" href="#schedule">大会・日程</a>
-      <a data-ctx="nav" href="#coach">指導者資格</a>
-      <a data-ctx="nav" href="#international">国際交流</a>
-      <a data-ctx="nav" href="#notice">お知らせ</a>
-      <a data-ctx="nav" href="#gallery">写真</a>
+      <div class="nav__item">
+        <button class="nav__top" type="button" aria-expanded="false" aria-controls="nav-about"><span data-ctx="nav">協会紹介</span><svg class="ico" aria-hidden="true"><use href="#i-chev"/></svg></button>
+        <div class="nav__sub" id="nav-about">
+          <a href="#about">協会概要</a>
+          <a href="#about-org">組織図</a>
+          <a href="#programs">ユース教育</a>
+          <a href="#contact">協賛・協力</a>
+        </div>
+      </div>
+      <a class="nav__top" data-ctx="nav" href="#schedule">大会・日程</a>
+      <a class="nav__top" data-ctx="nav" href="#coach">指導者資格</a>
+      <div class="nav__item">
+        <button class="nav__top" type="button" aria-expanded="false" aria-controls="nav-intl"><span data-ctx="nav">国際交流</span><svg class="ico" aria-hidden="true"><use href="#i-chev"/></svg></button>
+        <div class="nav__sub" id="nav-intl">
+          <a href="#international">国際交流のご案内</a>
+          <a href="#jeju2027">2027 済州交流戦</a>
+        </div>
+      </div>
+      <div class="nav__item">
+        <button class="nav__top" type="button" aria-expanded="false" aria-controls="nav-community"><span data-ctx="nav">コミュニティ</span><svg class="ico" aria-hidden="true"><use href="#i-chev"/></svg></button>
+        <div class="nav__sub" id="nav-community">
+          <a href="#notice">お知らせ</a>
+          <a href="#apply-inquiry">お問い合わせ</a>
+          <a href="#gallery">フォトギャラリー</a>
+        </div>
+      </div>
     </nav>
     <a class="btn btn--sm hdr__cta" href="#apply" data-ctx="cta">申込・問合せ</a>
     <button class="hdr__menu" type="button" id="menu-btn" aria-expanded="false" aria-controls="mnav">
@@ -74,15 +93,33 @@
 
 <nav class="mnav" id="mnav" aria-label="全メニュー" hidden>
   <a class="mnav__link" href="#home">ホーム</a>
-  <a class="mnav__link" href="#notice">お知らせ</a>
+  <div class="mnav__group">
+    <button class="mnav__link mnav__toggle" type="button" aria-expanded="false" aria-controls="mnav-about"><span>協会紹介</span><svg class="ico" aria-hidden="true"><use href="#i-chev"/></svg></button>
+    <div class="mnav__sub" id="mnav-about" hidden>
+      <a href="#about">協会概要</a>
+      <a href="#about-org">組織図</a>
+      <a href="#programs">ユース教育</a>
+      <a href="#contact">協賛・協力</a>
+    </div>
+  </div>
   <a class="mnav__link" href="#schedule">大会・日程</a>
-  <a class="mnav__link" href="#gallery">写真</a>
-  <a class="mnav__link" href="#apply">申込・お問い合わせ</a>
-  <a class="mnav__link" href="#about">協会紹介</a>
-  <a class="mnav__link" href="#programs">ユース教育</a>
   <a class="mnav__link" href="#coach">指導者資格</a>
-  <a class="mnav__link" href="#international">国際交流</a>
-  <a class="mnav__link" href="#contact">協賛・協力</a>
+  <div class="mnav__group">
+    <button class="mnav__link mnav__toggle" type="button" aria-expanded="false" aria-controls="mnav-intl"><span>国際交流</span><svg class="ico" aria-hidden="true"><use href="#i-chev"/></svg></button>
+    <div class="mnav__sub" id="mnav-intl" hidden>
+      <a href="#international">国際交流のご案内</a>
+      <a href="#jeju2027">2027 済州交流戦</a>
+    </div>
+  </div>
+  <div class="mnav__group">
+    <button class="mnav__link mnav__toggle" type="button" aria-expanded="false" aria-controls="mnav-community"><span>コミュニティ</span><svg class="ico" aria-hidden="true"><use href="#i-chev"/></svg></button>
+    <div class="mnav__sub" id="mnav-community" hidden>
+      <a href="#notice">お知らせ</a>
+      <a href="#apply-inquiry">お問い合わせ</a>
+      <a href="#gallery">フォトギャラリー</a>
+    </div>
+  </div>
+  <a class="mnav__link" href="#apply">申込・お問い合わせ</a>
   <p class="mnav__foot">
     <a class="extlink" data-instagram="Instagram" rel="noopener" hidden></a>
     <a href="#privacy">プライバシーポリシー</a>
@@ -229,8 +266,8 @@
     <button type="button" data-jump="about-mission">ミッションとビジョン</button>
     <button type="button" data-jump="about-values">コアバリュー</button>
     <button type="button" data-jump="about-history">沿革</button>
-    <button type="button" data-jump="about-people">運営メンバー</button>
-    <button type="button" data-jump="about-org">団体情報</button>
+    <button type="button" data-jump="about-org">組織図</button>
+    <button type="button" data-jump="about-info">団体情報</button>
   </div></div>
 
   <div class="wrap">
@@ -305,27 +342,31 @@
       </div>
     </section>
 
-    <section class="sect" id="about-people">
-      <div class="sect__grid">
+    <section class="sect" id="about-org">
+      <div class="sect__grid sect__grid--stack">
         <div>
-          <h2 class="t-2">運営メンバー</h2>
-          <p class="secintro">元韓国代表の選手・指導者と、学校体育の現場で長く教えてきた教員が共に運営しています。</p>
+          <h2 class="t-2">組織図</h2>
+          <p class="secintro">ラクロス元韓国代表選手4人と体育の専門家3人が共同で設立し、運営しています。機能別の委員会が役割を分担し、リーグ統括のもとで連携しています。</p>
         </div>
         <div class="sect__body">
-          <ul class="people">
-            <li class="person"><p class="person__role">会長、リーグ統括</p><h3 class="person__name">ソン・ジョンチョル <small lang="ko">송종철</small></h3><ul class="person__facts"><li>体育教員歴20年以上</li><li>学校体育の行政と教育プログラムの企画</li><li>青少年スポーツ教育と安全管理の運営</li></ul></li>
-            <li class="person"><p class="person__role">事務局、事務統括</p><h3 class="person__name">キム・テフン <small lang="ko">김태훈</small></h3><ul class="person__facts"><li>ラクロス韓国代表選手</li><li>大学での講義とチームコーチング</li><li>国内外の大会への出場と運営</li></ul></li>
-            <li class="person"><p class="person__role">競技・技術委員会</p><h3 class="person__name">リュ・ウンギュ <small lang="ko">류은규</small></h3><ul class="person__facts"><li>ラクロス韓国代表選手</li><li>女子韓国代表（シニア）チームのコーチ</li><li>男子ユース韓国代表チームのコーチ、高校チームのコーチ</li></ul></li>
-            <li class="person"><p class="person__role">イベント・広報委員会</p><h3 class="person__name">ハン・インス <small lang="ko">한인수</small></h3><ul class="person__facts"><li>ラクロス韓国代表選手</li><li>高校チームのコーチ</li><li>女子ラクロスリーグの開催と運営</li></ul></li>
-            <li class="person"><p class="person__role">対外協力委員会（国内・国際）</p><h3 class="person__name">パク・ジェハン <small lang="ko">박재한</small></h3><ul class="person__facts"><li>ラクロス韓国代表選手</li><li>男子ユース韓国代表のコーチ、高校のコーチ</li><li>国内外のチーム交流と協力ネットワーク</li></ul></li>
-            <li class="person"><p class="person__role">教育・安全委員会</p><h3 class="person__name">キム・イルス <small lang="ko">김일수</small></h3><ul class="person__facts"><li>体育教育歴30年以上</li><li>サッカー、カーリングなど複数競技の指導</li><li>学校スポーツの安全指導と生徒管理</li></ul></li>
-            <li class="person"><p class="person__role">教育・安全委員会</p><h3 class="person__name">イ・ウォンジュン <small lang="ko">이원준</small></h3><ul class="person__facts"><li>体育教育歴10年以上</li><li>さまざまなスポーツプログラムの運営</li><li>青少年スポーツの安全管理と生活指導</li></ul></li>
+          <ul class="org">
+            <li>
+              <div class="org__box org__box--head"><span class="org__unit">会長</span><strong class="org__name">ソン・ジョンチョル <small lang="ko">송종철</small></strong><span class="org__post">リーグ統括</span></div>
+              <ul class="org__units">
+                <li class="org__office"><div class="org__box"><span class="org__unit">事務局</span><strong class="org__name">キム・テフン <small lang="ko">김태훈</small></strong><span class="org__post">事務局長、事務統括</span></div></li>
+                <li data-tone="red"><div class="org__box"><span class="org__unit">競技・技術委員会</span><strong class="org__name">リュ・ウンギュ <small lang="ko">류은규</small></strong></div></li>
+                <li data-tone="orange"><div class="org__box"><span class="org__unit">イベント・広報委員会</span><strong class="org__name">ハン・インス <small lang="ko">한인수</small></strong></div></li>
+                <li data-tone="green"><div class="org__box"><span class="org__unit">対外協力委員会（国内・国際）</span><strong class="org__name">パク・ジェハン <small lang="ko">박재한</small></strong></div></li>
+                <li data-tone="blue"><div class="org__box"><span class="org__unit">教育・安全委員会</span><strong class="org__name">キム・イルス <small lang="ko">김일수</small></strong><strong class="org__name">イ・ウォンジュン <small lang="ko">이원준</small></strong></div></li>
+              </ul>
+            </li>
           </ul>
+          <p class="org__note">教育・安全委員会を別に設け、試合運営と安全管理をそれぞれ独立して担当しています。</p>
         </div>
       </div>
     </section>
 
-    <section class="sect" id="about-org">
+    <section class="sect" id="about-info">
       <div class="sect__grid">
         <h2 class="t-2">団体情報</h2>
         <div class="sect__body">
@@ -926,7 +967,7 @@
 <section class="view" data-view="gallery">
   <div id="gallery-main">
     <div class="wrap plainhead">
-      <h1 class="t-page" tabindex="-1"><span class="oblique">写真</span></h1>
+      <h1 class="t-page" tabindex="-1"><span class="oblique">フォトギャラリー</span></h1>
       <p class="plainhead__lead">大会と教育の現場をアルバムにまとめています。写真は保護者の同意を確認したうえで掲載します。</p>
     </div>
     <div class="wrap panel panel--flush">
@@ -1143,7 +1184,7 @@
       <a href="#about">協会紹介</a>
       <a href="#notice">お知らせ</a>
       <a href="#programs">ユース教育</a>
-      <a href="#gallery">写真</a>
+      <a href="#gallery">フォトギャラリー</a>
       <a href="#schedule">大会・日程</a>
       <a href="#apply">申込・お問い合わせ</a>
       <a href="#coach">指導者資格</a>

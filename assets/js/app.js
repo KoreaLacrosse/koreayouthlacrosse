@@ -70,7 +70,7 @@
   };
   var VIEW_NAMES = {
     home: '', about: T('협회 소개'), programs: T('유소년 교육'), schedule: T('대회·일정'), coach: T('지도자 자격'),
-    international: T('국제교류'), notice: T('공지사항'), gallery: T('사진'), apply: T('신청·문의'),
+    international: T('국제교류'), notice: T('공지사항'), gallery: T('포토갤러리'), apply: T('신청·문의'),
     contact: T('후원·협력'), privacy: T('개인정보처리방침'),
     jeju2027: T('2027 제주 국제 유소년 라크로스 교류전')
   };
@@ -860,6 +860,11 @@
     if ((m = h.match(/^event-(.+)$/))) return { view: 'schedule', id: m[1] };
     if ((m = h.match(/^album-(.+)$/))) return { view: 'gallery', id: m[1] };
     if ((m = h.match(/^apply-(team|coach|inquiry)$/))) return { view: 'apply', tab: m[1] };
+    // '#about-org' 처럼 화면 이름으로 시작하는 주소는 그 화면 안의 구역으로 바로 갑니다.
+    if ((m = h.match(/^([a-z0-9]+)-/)) && VIEWS.indexOf(m[1]) >= 0) {
+      var sec = document.getElementById(h);
+      if (sec && sec.closest('.view[data-view="' + m[1] + '"]')) return { view: m[1], jump: h };
+    }
     return { view: 'home' };
   }
 
@@ -872,6 +877,33 @@
     $('#menu-label').textContent = T('메뉴');
     $('#menu-ico').setAttribute('href', '#i-menu');
     document.body.classList.remove('menu-open');
+  }
+
+  // 지금 보고 있는 화면을 메뉴에 표시합니다. 주소가 정확히 같은 항목이 있으면 그것만,
+  // 없으면 같은 화면의 대표 항목을 표시하고, 그 항목이 든 묶음(협회 소개, 커뮤니티 등)에도 표시합니다.
+  function markCurrent(r) {
+    var hash = location.hash || '#home';
+    ['.nav', '.mnav', '.tabbar'].forEach(function (sel) {
+      var box = $(sel);
+      if (!box) return;
+      var links = $$('a[href^="#"]', box);
+      var on = links.filter(function (a) { return a.getAttribute('href') === hash; });
+      if (!on.length) on = links.filter(function (a) { return a.getAttribute('href') === '#' + r.view; });
+      links.forEach(function (a) {
+        if (on.indexOf(a) >= 0) a.setAttribute('aria-current', 'page');
+        else a.removeAttribute('aria-current');
+      });
+      $$('.nav__item, .mnav__group', box).forEach(function (g) {
+        g.classList.toggle('is-current', !!$('a[aria-current="page"]', g));
+      });
+    });
+  }
+  // PC 상단 메뉴의 하위 메뉴
+  function closeDropdowns() {
+    $$('.nav__item.is-open').forEach(function (item) {
+      item.classList.remove('is-open');
+      $('.nav__top', item).setAttribute('aria-expanded', 'false');
+    });
   }
 
   function route() {
@@ -902,15 +934,16 @@
     }
     pendingInquiry = null;
 
-    $$('.nav a, .tabbar a, .mnav__link').forEach(function (a) {
-      if (a.getAttribute('href') === '#' + r.view) a.setAttribute('aria-current', 'page');
-      else a.removeAttribute('aria-current');
-    });
+    markCurrent(r);
+    closeDropdowns();
     document.title = title ? title + ' | KYLA' : BASE_TITLE;
     closeMenu();
     if (board) board.setActive(r.view === 'home');
 
-    if (!firstRoute) {
+    var target = r.jump && document.getElementById(r.jump);
+    if (target) {
+      setTimeout(function () { target.scrollIntoView({ block: 'start' }); }, firstRoute ? 80 : 0);
+    } else if (!firstRoute) {
       window.scrollTo(0, 0);
       var active = $('.view.is-active');
       var h = active && $$('h1[tabindex="-1"]', active).filter(function (x) { return x.offsetParent !== null; })[0];
@@ -928,6 +961,19 @@
       $('#main').focus();
       return;
     }
+    if ((el = t.closest('.nav__top[aria-expanded]'))) {
+      var item = el.parentNode, opening = !item.classList.contains('is-open');
+      closeDropdowns();
+      if (opening) { item.classList.add('is-open'); el.setAttribute('aria-expanded', 'true'); }
+      return;
+    }
+    if (!t.closest('.nav__sub')) closeDropdowns();
+    if ((el = t.closest('.mnav__toggle'))) {
+      var sub = document.getElementById(el.getAttribute('aria-controls')), show = sub.hidden;
+      sub.hidden = !show;
+      el.setAttribute('aria-expanded', show ? 'true' : 'false');
+      return;
+    }
     if ((el = t.closest('[data-lang-link]'))) {
       // 보고 있던 화면 그대로 다른 언어로 넘어갑니다.
       el.setAttribute('href', el.getAttribute('href').split('#')[0] + location.hash);
@@ -936,7 +982,7 @@
     if ((el = t.closest('a[href^="#"]'))) {
       var href = el.getAttribute('href');
       if (el.hasAttribute('data-inquiry')) pendingInquiry = el.getAttribute('data-inquiry');
-      if (href === location.hash || (href === '#home' && !location.hash)) { ev.preventDefault(); route(); window.scrollTo(0, 0); }
+      if (href === location.hash || (href === '#home' && !location.hash)) { ev.preventDefault(); route(); if (!parseHash().jump) window.scrollTo(0, 0); }
       return;
     }
     if ((el = t.closest('#menu-btn'))) {
@@ -944,6 +990,11 @@
       if (m.hidden) {
         // 맨 위 언어 선택 줄이 보이는 동안에는 머리말이 그만큼 내려와 있으므로, 메뉴를 머리말 바로 아래에 맞춥니다.
         m.style.top = Math.round($('.hdr').getBoundingClientRect().bottom) + 'px';
+        $$('.mnav__group', m).forEach(function (g) {
+          var on = g.classList.contains('is-current');
+          $('.mnav__sub', g).hidden = !on;
+          $('.mnav__toggle', g).setAttribute('aria-expanded', on ? 'true' : 'false');
+        });
         m.hidden = false;
         el.setAttribute('aria-expanded', 'true');
         $('#menu-label').textContent = T('닫기');
@@ -990,7 +1041,11 @@
       if (ev.key === 'ArrowRight') lbShow(lbIndex + 1);
       return;
     }
-    if (ev.key === 'Escape') { var open = !$('#mnav').hidden; closeMenu(); if (open) $('#menu-btn').focus(); }
+    if (ev.key === 'Escape') {
+      var drop = $('.nav__item.is-open');
+      if (drop) { closeDropdowns(); $('.nav__top', drop).focus(); }
+      var open = !$('#mnav').hidden; closeMenu(); if (open) $('#menu-btn').focus();
+    }
     var tab = ev.target.closest && ev.target.closest('.tab');
     if (tab && (ev.key === 'ArrowRight' || ev.key === 'ArrowLeft')) {
       var i = TABS.indexOf(tab.getAttribute('data-tab'));
