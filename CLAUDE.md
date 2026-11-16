@@ -26,18 +26,22 @@ https://koreayouthlacrosse.com 에 그대로 게시됩니다. 파일 구성과 �
 - 한 화면 안의 구역으로 바로 가는 주소는 `#화면-구역`(예: `#about-org`) 꼴입니다. 그 id 를 가진 요소가
   해당 화면 안에 있으면 따로 등록하지 않아도 열립니다. 화면 이름에는 하이픈을 쓰지 않습니다.
 
-## 참가 의향 회신 DB와 관리자 화면
+## DB와 관리자 화면
 
-- 참가 의향 회신은 협회 Firebase(프로젝트 `kyla-homepage`, Firestore 서울 리전)에 저장하고, `/admin/` 에서 구글 로그인한
-  관리자만 봅니다. 구성과 관리자 추가 방법은 README.md 에 있습니다.
-- 관리자 이메일은 저장소의 어떤 파일에도, 커밋 메시지에도 적지 않습니다. 명단은 Firebase 콘솔의 `admins` 컬렉션에서만 관리합니다.
+- 참가 의향 회신(`eoiReplies`)과 회원 명부(`members`)는 협회 Firebase(프로젝트 `kyla-homepage`, Firestore 서울 리전)에 있고,
+  `/admin/` 에서 구글 로그인한 관리자만 보고 고칩니다. 구성과 메뉴, 관리자 추가 방법은 README.md 에 있습니다.
+- 관리자 이메일은 저장소의 어떤 파일에도, 커밋 메시지에도 적지 않습니다. 명단은 Firestore 의 `admins` 컬렉션에만 있고,
+  마스터가 관리자 화면에서 고칩니다(처음 한 명만 Firebase 콘솔에서 만듭니다).
 - 서비스 계정 키와 구글 계정 비밀번호는 받지도, 저장소에 남기지도 않습니다. Claude 계정은 여러 사람이 함께 쓰므로
   DB 관리 권한을 연결하지 않습니다. 정기 백업을 Claude 가 대신 돌리지 않는 것도 같은 이유입니다.
-- 보안 규칙(`tools/firestore.rules`)은 담당자가 Firebase 콘솔에 붙여 넣고 게시해야 적용됩니다. 규칙이 바뀌는 수정은
-  초안에 붙여 넣을 내용을 함께 주고, 규칙 게시가 끝난 뒤에 사이트에 반영합니다.
-- 회신서의 보기나 항목을 바꿀 때는 `index.html`(`data-key`·`data-code`·`data-div`·`maxlength`), `assets/js/app.js`(`eoiRecord`),
-  `assets/js/admin.js`(이름표, 내려받기 열), `tools/firestore.rules`(허용 값)를 함께 고칩니다.
-- 관리자 화면에서 회신 내용(방문자가 적은 글)을 화면에 넣을 때는 `textContent` 만 씁니다.
+- 누가 무엇을 할 수 있는지는 보안 규칙(`tools/firestore.rules`)이 정합니다. 규칙은 담당자가 Firebase 콘솔에 붙여 넣고 게시해야
+  적용됩니다. 규칙이 바뀌는 수정은 초안에 붙여 넣을 내용을 함께 주고, 규칙 게시가 끝난 뒤에 사이트에 반영합니다.
+- 화면이 보내는 내용과 규칙은 늘 짝입니다. 회신서의 보기나 항목을 바꿀 때는 `index.html`(`data-key`·`data-code`·`data-div`·`maxlength`),
+  `assets/js/app.js`(`eoiRecord`), `assets/js/admin/eoi.js`, `tools/firestore.rules` 를 함께 고치고,
+  회원의 항목을 바꿀 때는 `assets/js/admin/members.js` 와 규칙을 함께 고칩니다.
+- 회원 명부에는 생년월일과 집 주소 칸을 만들지 않습니다. 선수는 대부분 미성년이고, 연락처는 보호자 것을 받습니다.
+- 관리자 화면에서 DB 에서 온 글을 화면에 넣을 때는 `textContent` 만 씁니다. 내려받는 파일은 수식으로 읽힐 칸을 막습니다(`core.js` 의 `cell`).
+- 삭제는 휴지통(문서에 `deletedAt` 표시)을 거칩니다. 화면에서 바로 지우는 길을 따로 만들지 않습니다.
 - `/admin/` 은 한국어만 있고 `build_i18n.py` 의 번역 대상이 아닙니다. 방문자가 보는 화면에는
   Firebase 로그인 파일(`assets/vendor/`)과 방문 통계(Analytics)를 넣지 않습니다.
 - 무료 요금제(Spark)를 유지합니다. 결제 등록이 필요한 기능은 담당자가 정한 뒤에만 씁니다.

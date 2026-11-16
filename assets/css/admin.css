@@ -1,120 +1,253 @@
 /* ==========================================================================
-   KYLA 관리자 화면 (/admin/). 색과 글꼴, 버튼은 site.css 의 것을 그대로 씁니다.
-   좁은 화면에서는 회신 한 건이 한 덩어리로, 넓은 화면(900px 이상)에서는 표처럼 한 줄로 보입니다.
+   KYLA 관리자 화면 (/admin/). 색과 글꼴, 버튼, 입력 칸은 site.css 의 것을 그대로 씁니다.
+   넓은 화면(900px 이상)은 왼쪽 메뉴 + 본문, 좁은 화면은 위쪽 가로 메뉴 + 본문입니다.
+   표는 열이 많아, 좁은 화면에서는 표만 옆으로 밀어 봅니다(첫 열은 고정).
+   그림 색: 막대는 한 가지 색(--series)만 쓰고, 참가 의향 같은 구분은 글자 옆의 점으로 나타냅니다.
    ========================================================================== */
-body.adm{padding-bottom:0;background:#fff}
+body.adm{padding-bottom:0;background:#fff;--series:var(--blue);--pad:20px}
+.adm-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 
 /* ---------- 위쪽 띠 ---------- */
 .adm-bar{border-bottom:4px solid var(--ink);background:#fff}
-.adm-bar__in{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:60px}
+.adm-bar__in{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:60px;padding-inline:var(--pad)}
 .adm-bar__brand{flex:none;display:flex;align-items:center;gap:12px;text-decoration:none;font-weight:900;font-size:17px;letter-spacing:-0.03em}
 .adm-bar__brand img{width:92px;height:auto}
 .adm-bar__brand span{padding-left:12px;border-left:2px solid var(--line);white-space:nowrap}
 .adm-bar__who{display:flex;align-items:center;gap:14px;min-width:0;font-size:14px;color:var(--muted)}
-.adm-bar__who span{display:none;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}   /* 좁은 화면에서는 계정을 목록 아래에 적습니다 */
+.adm-bar__who span{display:none;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}   /* 좁은 화면에서는 계정을 감춥니다 */
 .adm-bar__who .linkbtn{flex:none;color:var(--ink)}
 
-.adm-main{padding-top:36px;padding-bottom:72px}
-
-/* ---------- 로그인 · 권한 없음 ---------- */
+/* ---------- 들어오기 전: 로그인, 권한 없음 ---------- */
+.adm-gates{padding:36px var(--pad) 72px}
 .adm-gate{max-width:34em;padding:8px 0 0}
 .adm-gate h1{margin-bottom:12px}
 .adm-gate__text{margin-bottom:24px}
 .adm-gate__msg{margin-top:20px;padding:14px 16px;background:var(--tint);box-shadow:inset 4px 0 0 var(--red);font-size:15px;line-height:1.6}
 .adm-gate__hint{margin-top:22px;font-size:14px;line-height:1.65;color:var(--muted)}
 
-/* ---------- 목록 머리 ---------- */
-.adm-head{display:grid;gap:18px;margin-bottom:22px}
-.adm-head__sub{margin-top:4px;color:var(--muted);font-size:15px}
-.adm-tools{display:flex;flex-wrap:wrap;gap:12px 18px;padding-inline:6px}
+/* ---------- 메뉴와 본문 ---------- */
+.adm-nav{border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none}
+.adm-nav::-webkit-scrollbar{display:none}
+.adm-nav ul{display:flex;gap:4px;padding-inline:calc(var(--pad) - 10px)}
+.adm-nav__a{display:flex;align-items:center;gap:8px;min-height:48px;padding:0 10px;font-weight:700;font-size:15.5px;white-space:nowrap;text-decoration:none;color:var(--muted);box-shadow:inset 0 -3px 0 transparent}
+.adm-nav__a:hover{color:var(--ink)}
+.adm-nav__a[aria-current="page"]{color:var(--ink);font-weight:900;box-shadow:inset 0 -3px 0 var(--red)}
+.adm-nav__n{min-width:22px;padding:1px 6px 0;background:var(--red);color:#fff;font-family:var(--font-num);font-weight:600;font-size:13px;line-height:20px;text-align:center}
+.adm-main{min-width:0;padding:26px var(--pad) 72px}
+.adm-sec > * + *{margin-top:18px}
+.adm-sec.is-stale{opacity:.45;pointer-events:none}
+.adm-loading{color:var(--muted)}
+.adm-loading.is-error{padding:14px 16px;background:var(--tint);box-shadow:inset 4px 0 0 var(--red);color:var(--ink)}
 
-.adm-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 20px;margin-bottom:8px;border-top:2px solid var(--ink)}
-.adm-stats > div{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:10px 0 9px;border-bottom:1px solid var(--line);box-shadow:inset 0 -3px 0 var(--tone,transparent)}
-.adm-stats > div:first-child{grid-column:1 / -1}
-.adm-stats dt{font-size:14px;font-weight:700}
-.adm-stats dd{font-family:var(--font-num);font-weight:600;font-size:24px;line-height:1.1}
-.adm-stats [data-tone="ink"]{--tone:var(--ink)}
-.adm-stats [data-tone="green"]{--tone:var(--green)}
-.adm-stats [data-tone="blue"]{--tone:var(--blue)}
-.adm-stats [data-tone="orange"]{--tone:var(--orange)}
-.adm-stats [data-tone="muted"]{--tone:#8B95A8}
+.adm-head{display:grid;gap:16px}
+.adm-head__sub{margin-top:2px;color:var(--muted);font-size:15px}
+.adm-tools{display:flex;flex-wrap:wrap;align-items:center;gap:10px 20px;padding-inline:6px}
 
-.adm-status{min-height:26px;margin:14px 0 10px;font-size:15px;color:var(--muted)}
-.adm-status.is-error{color:var(--ink);padding:14px 16px;background:var(--tint);box-shadow:inset 4px 0 0 var(--red)}
-.adm-status .linkbtn{margin-left:10px;min-height:0}
+/* ---------- 걸러 보기 ---------- */
+.adm-filters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 12px;padding:14px;background:var(--tint)}
+.adm-filter{display:grid;grid-template-columns:minmax(0,1fr);gap:3px;min-width:0}   /* 긴 보기가 있어도 칸이 늘어나지 않게 */
+.adm-filter--search{grid-column:1 / -1}
+.adm-filter__label{font-size:13px;font-weight:700;color:var(--muted)}
+.adm-filter--search input::placeholder{color:#7A8498}
+.adm-filters .input{min-height:42px;padding:7px 12px;font-size:15px}
+.adm-filters select.input{padding-right:36px;background-position:right 10px center}
+.adm-chips{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.adm-chips .adm-filter__label{margin-right:4px}
+.adm-chip{min-height:38px;padding:0 13px;border:1.5px solid #8F9BB0;background:#fff;font-size:14.5px;font-weight:700;line-height:1.2}
+.adm-chip:hover{border-color:var(--ink)}
+.adm-chip[aria-pressed="true"]{border-color:var(--ink);background:var(--ink);color:#fff}
+.adm-viewline{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px}
+.adm-viewline__end{margin-left:auto}
+.adm-tabs{display:inline-flex;box-shadow:inset 0 0 0 1.5px var(--ink)}
+.adm-tab{min-height:38px;padding:0 15px;border:0;background:none;font-size:14.5px;font-weight:700}
+.adm-tab[aria-pressed="true"]{background:var(--ink);color:#fff}
+.adm-filternote{font-size:14.5px;color:var(--muted)}
+.adm-filternote .linkbtn{min-height:0;margin-left:6px;color:var(--ink)}
+.adm-results > * + *{margin-top:16px}
 
-/* ---------- 회신 목록 ---------- */
-.adm-cols{display:none}
-.adm-list{border-top:2px solid var(--ink)}
-.adm-list > li{border-bottom:1px solid var(--line)}
-.adm-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:3px 14px;width:100%;padding:15px 2px 14px;border:0;background:none;text-align:left}
-.adm-row[aria-expanded="true"]{background:var(--tint)}
-@media (hover:hover){.adm-row:hover{background:var(--tint)}}
-.adm-row small{display:block;font-size:14px;font-weight:500;color:var(--muted);letter-spacing:-0.01em}
-.adm-row__when{grid-column:1;grid-row:1;align-self:center;font-family:var(--font-num);font-size:14.5px;color:var(--muted);letter-spacing:0}
-.adm-row__intent{grid-column:2;grid-row:1;justify-self:end}
-.adm-row__org{grid-column:1 / -1;grid-row:2;margin-top:3px;font-weight:900;font-size:17.5px;line-height:1.4;letter-spacing:-0.03em}
-.adm-row__who{grid-column:1 / -1;grid-row:3;font-size:15px}
-.adm-row__who small{margin-left:8px}
-.adm-row__divs{grid-column:1 / -1;grid-row:4;margin-top:5px;padding-right:32px;font-size:15px}
-.adm-row .adm-clip{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;line-clamp:3;overflow:hidden}   /* 목록에서는 세 줄까지만, 전체는 펼친 내용에서 */
-.adm-row__who .adm-clip{display:inline;overflow:visible}   /* 좁은 화면: 이름과 직책을 한 줄에 */
-.adm-row__chev{grid-column:2;grid-row:4;align-self:end;justify-self:end;width:18px;height:18px;margin-bottom:3px;fill:none;stroke:currentColor;stroke-width:2.4;transform:rotate(90deg);transition:transform .15s}
-.adm-row[aria-expanded="true"] .adm-row__chev{transform:rotate(-90deg)}
+/* ---------- 주요 숫자 ---------- */
+.adm-tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 18px}
+.adm-tile{padding:12px 0 13px;border-top:2px solid var(--ink)}
+.adm-tile dt{font-size:14px;font-weight:700;line-height:1.4}
+.adm-tile dd{font-family:var(--font-num);font-weight:600;font-size:34px;line-height:1.15;letter-spacing:0}
+.adm-tile dd small{margin-left:3px;font-family:var(--font-text);font-weight:700;font-size:15px;letter-spacing:-0.02em}
+.adm-tile dd.adm-tile__note{font-family:var(--font-text);font-weight:500;font-size:13px;line-height:1.5;letter-spacing:-0.01em;color:var(--muted)}
+.adm-tile .linkbtn{min-height:0;padding:3px 0;font-size:13.5px;color:var(--ink)}
 
-.adm-tag{display:inline-block;padding:3px 9px 2px;font-size:13.5px;font-weight:700;line-height:1.5;white-space:nowrap;box-shadow:inset 0 0 0 1.5px var(--tone,var(--ink));color:var(--tone,var(--ink))}
-.adm-tag[data-intent="active"]{--tone:var(--green)}
-.adm-tag[data-intent="internal"]{--tone:var(--blue)}
-.adm-tag[data-intent="undecided"]{--tone:#A85A00}
-.adm-tag[data-intent="unable"]{--tone:var(--muted)}
-
-/* ---------- 펼친 상세 ---------- */
-.adm-detail{padding:4px 2px 26px}
-.adm-detail dl{border-top:1px solid var(--line)}
-.adm-detail dl > div{display:grid;grid-template-columns:112px minmax(0,1fr);gap:12px;padding:10px 0;border-bottom:1px solid var(--line);font-size:15px}
-.adm-detail dt{font-weight:700}
-.adm-detail dd{min-width:0;white-space:pre-wrap}
-.adm-detail dd a{font-weight:700;text-underline-offset:3px}
-.adm-detail__raw{margin-top:16px}
-.adm-detail__raw summary{display:inline-block;min-height:44px;padding:10px 0;font-weight:700;font-size:15px;text-decoration:underline;text-underline-offset:4px;cursor:pointer}
-.adm-detail__raw pre{margin:4px 0 0;padding:14px 16px;background:var(--tint);font-family:inherit;font-size:14.5px;line-height:1.65;white-space:pre-wrap;overflow-wrap:anywhere}
-.adm-detail__acts{display:flex;flex-wrap:wrap;align-items:center;gap:10px 20px;margin-top:14px}
-.adm-detail__acts .linkbtn--danger{color:var(--red)}
-.adm-confirm{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;margin-top:10px;padding:14px 16px;background:var(--tint);box-shadow:inset 4px 0 0 var(--red);font-size:15px}
-.adm-confirm p{flex:1 1 15em}
-
-.adm-empty{padding:26px 0;border-bottom:1px solid var(--line)}
+/* ---------- 표 ---------- */
+.adm-tablewrap{position:relative;overflow-x:auto;border-top:2px solid var(--ink);-webkit-overflow-scrolling:touch}   /* relative: 표 안의 숨긴 글자(.adm-sr)가 화면 밖으로 삐져나오지 않게 */
+.adm-table{width:100%;border-collapse:collapse;font-size:15px;line-height:1.5}
+.adm-table th,.adm-table td{padding:11px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;font-weight:500;word-break:keep-all;overflow-wrap:anywhere}
+.adm-table thead th{padding-block:9px;font-size:13.5px;font-weight:700;color:var(--muted);white-space:nowrap;vertical-align:bottom}
+.adm-table .is-rowhead{position:sticky;left:0;z-index:1;background:#fff;box-shadow:1px 0 0 var(--line)}   /* 좁은 화면: 옆으로 밀어도 줄의 이름은 남습니다 */
+.adm-table thead .is-rowhead{z-index:2}
+.adm-rowlink{display:block;width:100%;padding:0;border:0;background:none;font:inherit;color:inherit;text-align:left;overflow-wrap:anywhere}
+.adm-rowlink:hover .adm-strong{text-decoration:underline;text-underline-offset:3px}
+.adm-table tbody tr:hover > *{background:var(--tint)}
+.adm-table .is-num{text-align:right;font-family:var(--font-num);font-variant-numeric:tabular-nums;letter-spacing:0;white-space:nowrap}
+.adm-table thead .is-num{font-family:var(--font-text)}
+.adm-table tfoot th,.adm-table tfoot td{border-top:2px solid var(--ink);border-bottom:0;font-weight:900}
+.adm-table tfoot .is-num{font-weight:600}
+.adm-table__act{width:1%;white-space:nowrap;text-align:right !important}
+.adm-table__act > * + *{margin-left:4px}
+.adm-col-date{white-space:nowrap}
+.adm-col-nowrap{white-space:nowrap}
+.adm-col-main{min-width:8.5em}
+.adm-col-name{min-width:5.5em}
+.adm-col-text{min-width:6em}
+.adm-col-wide{min-width:9.5em}
+.adm-col-email{min-width:8.5em}
+.adm-nb{white-space:nowrap}
+.adm-col-bar{width:30%;min-width:120px;vertical-align:middle !important}
+.adm-th{display:inline-flex;align-items:center;gap:3px;min-height:28px;padding:0;border:0;background:none;font:inherit;color:inherit;white-space:nowrap}
+.adm-th:hover{color:var(--ink)}
+.adm-th__dir{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.6}
+.adm-table th[aria-sort] .adm-th{color:var(--ink)}
+.adm-rowbtn{min-height:34px;padding:0 12px;border:1.5px solid var(--ink);background:#fff;font-size:14px;font-weight:700;line-height:1.2;white-space:nowrap}
+.adm-rowbtn:hover{background:var(--ink);color:#fff}
+.adm-rowbtn--danger{border-color:var(--red);color:var(--red)}
+.adm-rowbtn--danger:hover{background:var(--red);color:#fff}
+.adm-when{font-family:var(--font-num);font-size:14.5px;letter-spacing:0;white-space:nowrap}
+.adm-when small{display:block;font-size:13px;color:var(--muted)}
+.adm-strong{font-weight:700}
+.adm-mark{display:inline-block;margin-left:4px;padding:0 6px;background:var(--tint);font-size:12.5px;font-weight:700;color:var(--muted);white-space:nowrap}
+.adm-faint{color:var(--muted);font-size:14px}
+.adm-tag{display:inline-flex;align-items:center;gap:7px;white-space:nowrap}
+.adm-dot{flex:none;width:9px;height:9px;border-radius:50%;background:#8B95A8}
+.adm-dot--green{background:var(--green)}
+.adm-dot--blue{background:var(--blue)}
+.adm-dot--orange{background:var(--orange)}
+.adm-dot--red{background:var(--red)}
+.adm-dot--muted{background:#fff;box-shadow:inset 0 0 0 2px #8B95A8}
+.adm-pager{display:flex;align-items:center;justify-content:flex-end;gap:18px;margin-top:10px;font-size:14px;color:var(--muted)}
+.adm-pager .linkbtn[disabled]{color:#8B95A8;text-decoration:none;cursor:default}
+.adm-empty{padding:26px 0;border-top:2px solid var(--ink);border-bottom:1px solid var(--line)}
 .adm-empty strong{display:block;font-size:18px;letter-spacing:-0.03em}
-.adm-foot{margin-top:32px;max-width:44em;font-size:14px;line-height:1.7;color:var(--muted)}
-.adm-foot--who{margin-top:10px;overflow-wrap:anywhere}
+.adm-empty span{color:var(--muted)}
+.adm-foot{max-width:52em;font-size:14px;line-height:1.7;color:var(--muted)}
+.adm-none{color:var(--muted);font-size:15px}
 
+/* ---------- 통계 카드와 그림 ---------- */
+.adm-cards{display:grid;gap:28px 32px}
+.adm-card{min-width:0;padding-top:12px;border-top:2px solid var(--ink)}
+.adm-card__h{font-size:17px;font-weight:900;letter-spacing:-0.03em;line-height:1.4}
+.adm-card__note{margin-top:2px;font-size:13.5px;line-height:1.6;color:var(--muted)}
+.adm-card > * + *{margin-top:12px}
+.adm-card .adm-tablewrap{border-top:0}
+
+.adm-bars{display:grid;gap:2px}
+.adm-bars__row{display:grid;grid-template-columns:minmax(0,9.5em) minmax(40px,1fr) auto;align-items:center;gap:12px;padding:6px 0;font-size:15px}
+.adm-bars__name{overflow-wrap:anywhere;line-height:1.35}
+.adm-bars__track{display:block;height:12px;box-shadow:inset 1px 0 0 var(--line)}
+.adm-bars__bar{display:block;min-width:2px;height:12px;border-radius:0 4px 4px 0;background:var(--series)}
+.adm-bars__val{min-width:3.2em;font-family:var(--font-num);font-size:15.5px;letter-spacing:0;text-align:right;white-space:nowrap}
+.adm-bars__row:hover .adm-bars__bar,.adm-bars__row:focus-visible .adm-bars__bar,.adm-bars__track:hover .adm-bars__bar,.adm-bars__track:focus-visible .adm-bars__bar{background:var(--blue-bright)}
+
+.adm-colchart__plot{display:grid;gap:2px;align-items:end}
+.adm-colchart__col{display:grid;gap:5px;min-width:0}
+.adm-colchart__stack{display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:3px;height:132px;box-shadow:inset 0 -1px 0 var(--line)}
+.adm-colchart__bar{display:block;width:min(24px,62%);min-height:2px;border-radius:4px 4px 0 0;background:var(--series)}
+.adm-colchart__col:hover .adm-colchart__bar,.adm-colchart__col:focus-visible .adm-colchart__bar{background:var(--blue-bright)}
+.adm-colchart__val{font-family:var(--font-num);font-size:13.5px;line-height:1;letter-spacing:0}
+.adm-colchart__x{font-size:12px;line-height:1.2;color:var(--muted);text-align:center;white-space:nowrap}
+.adm-colchart__table{margin-top:8px;font-size:14px}
+.adm-colchart__table summary{display:inline-block;min-height:32px;padding:5px 0;font-weight:700;text-decoration:underline;text-underline-offset:4px;cursor:pointer}
+.adm-table--mini{width:auto;font-size:14px}
+.adm-table--mini th,.adm-table--mini td{padding:5px 22px 5px 0;position:static !important;box-shadow:none !important}
+
+.adm-recent{display:grid}
+.adm-recent li{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:baseline;gap:14px;padding:9px 0;border-bottom:1px solid var(--line);font-size:15px}
+.adm-recent__main small{display:block;font-size:13.5px;color:var(--muted)}
+.adm-recent + .linkbtn{margin-top:4px}
+.adm-kv > div{display:flex;justify-content:space-between;gap:16px;padding:9px 0;border-bottom:1px solid var(--line);font-size:15px}
+.adm-kv dt{font-weight:700}
+.adm-kv dd{text-align:right}
+
+/* ---------- 추가·수정 창 ---------- */
+.adm-dlg{width:100vw;max-width:100vw;height:100dvh;max-height:100dvh;margin:0;padding:0;border:0;background:#fff;color:var(--ink)}
+.adm-dlg::backdrop{background:rgba(20,33,63,.55)}
+.adm-dlg__box{display:flex;flex-direction:column;height:100%;min-height:0}
+.adm-dlg__head{flex:none;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 10px 12px var(--pad);border-bottom:4px solid var(--ink)}
+.adm-x{flex:none;display:grid;place-items:center;width:44px;height:44px;border:0;background:none}
+.adm-x svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.6}
+.adm-dlg__body{flex:1 1 auto;min-height:0;overflow-y:auto;padding:18px var(--pad) 22px}
+.adm-dlg__body > * + *{margin-top:18px}
+.adm-dlg__lead{font-size:14.5px;line-height:1.65;color:var(--muted)}
+.adm-dlg__msg{flex:none;margin:0;padding:11px var(--pad);background:var(--tint);box-shadow:inset 4px 0 0 var(--red);font-size:14.5px;line-height:1.55}
+.adm-dlg__foot{flex:none;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 20px;padding:12px calc(var(--pad) + 6px) calc(12px + env(safe-area-inset-bottom)) var(--pad);border-top:1px solid var(--line)}
+.adm-dlg__left,.adm-dlg__right{display:flex;align-items:center;gap:20px}
+.adm-dlg__right{margin-left:auto}
+.adm-dlg button[disabled]{opacity:.55;cursor:default}
+.linkbtn--danger{color:var(--red)}
+
+.adm-form{display:grid;gap:14px 16px}
+.adm-form .input{min-height:46px;padding:9px 12px}
+.adm-form textarea.input{min-height:84px}
+.adm-form__h{margin-top:8px;padding-top:14px;border-top:2px solid var(--ink);font-size:16px;font-weight:900;letter-spacing:-0.03em}
+.adm-form__set{min-width:0;margin:0;padding:0;border:0}
+.adm-form__set legend{padding:0;margin-bottom:6px}
+.adm-form__static{font-size:15.5px;overflow-wrap:anywhere}
+.adm .field__hint{font-size:13.5px;line-height:1.55;color:var(--muted)}
+.adm .field__err{font-size:14px;font-weight:700;line-height:1.5;color:var(--red)}
+.adm-form .input[aria-invalid="true"]{border-color:var(--red)}
+.adm-form .checks{display:flex;flex-wrap:wrap;gap:8px 20px}
+.adm-divgrid{display:grid;grid-template-columns:minmax(0,1fr) repeat(3,minmax(54px,84px));align-items:center;gap:8px 8px}
+.adm-divgrid__h{font-size:13px;font-weight:700;color:var(--muted)}
+.adm-divgrid .check{font-weight:700;font-size:15px}
+.adm-divgrid .input{min-height:42px;padding:6px 8px;text-align:right;font-family:var(--font-num)}
+.adm-divgrid .input[disabled]{background:var(--tint);border-color:var(--line)}
+.adm-meta{display:grid;gap:4px;padding-top:14px;border-top:1px solid var(--line);font-size:14px;color:var(--muted)}
+.adm-meta > div{display:grid;grid-template-columns:7em minmax(0,1fr);gap:10px}
+.adm-meta dt{font-weight:700}
+.adm-meta dd{overflow-wrap:anywhere}
+.adm-raw summary{display:inline-block;min-height:40px;padding:8px 0;font-weight:700;font-size:15px;text-decoration:underline;text-underline-offset:4px;cursor:pointer}
+.adm-raw pre{margin:4px 0 0;padding:14px 16px;background:var(--tint);font-family:inherit;font-size:14.5px;line-height:1.65;white-space:pre-wrap;overflow-wrap:anywhere}
+
+.adm-dlg--ask{width:min(440px,calc(100vw - 32px));max-width:none;height:auto;max-height:none;margin:auto;border-top:4px solid var(--ink)}
+.adm-dlg--ask .adm-dlg__box{height:auto;padding:22px 22px 6px}
+.adm-ask__text{margin-top:8px;font-size:15.5px;line-height:1.65;overflow-wrap:anywhere}
+.adm-dlg--ask .adm-dlg__foot{justify-content:flex-end;margin-top:14px;padding:12px 6px 12px 0;border-top:0}
+
+/* ---------- 알림과 설명 ---------- */
+.adm-toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));z-index:30;transform:translate(-50%,12px);width:max-content;max-width:calc(100vw - 32px);padding:12px 18px;background:var(--ink);color:#fff;font-size:15px;font-weight:500;line-height:1.55;opacity:0;pointer-events:none;transition:opacity .15s,transform .15s}
+.adm-toast.is-on{opacity:1;transform:translate(-50%,0)}
+.adm-toast.is-error{box-shadow:inset 5px 0 0 var(--red)}
+.adm-tip{position:fixed;z-index:40;max-width:260px;padding:6px 10px;background:var(--ink);color:#fff;font-size:13.5px;font-weight:500;line-height:1.45;pointer-events:none}
+
+@media (min-width:560px){
+  .adm-filters{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .adm-tiles{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+  .adm-form{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .adm-form__wide,.adm-form__h{grid-column:1 / -1}
+}
 @media (min-width:640px){
   .adm-bar__who span{display:block}
-  .adm-foot--who{display:none}
-  .adm-stats{grid-template-columns:repeat(5,minmax(0,1fr))}
-  .adm-stats > div{display:block;padding:12px 0 12px}
-  .adm-stats > div:first-child{grid-column:auto}
-  .adm-stats dd{margin-top:2px;font-size:30px}
-  .adm-detail dl > div{grid-template-columns:150px minmax(0,1fr)}
 }
-
+@media (min-width:760px){
+  .adm-dlg:not(.adm-dlg--ask){width:min(760px,calc(100vw - 48px));max-width:none;height:auto;max-height:calc(100dvh - 48px);margin:auto}
+  .adm-dlg:not(.adm-dlg--ask) .adm-dlg__box{height:auto;max-height:calc(100dvh - 48px)}
+  .adm-cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .adm-card:has(> .adm-tablebox){grid-column:1 / -1}
+}
 @media (min-width:900px){
-  .adm-main{padding-top:52px}
+  body.adm{--pad:28px}
+  .adm-shell{display:grid;grid-template-columns:196px minmax(0,1fr);align-items:start;max-width:1680px}
+  .adm-nav{position:sticky;top:0;border-bottom:0;padding:26px 0 26px var(--pad);overflow:visible}
+  .adm-nav ul{display:grid;gap:2px;padding:0}
+  .adm-nav__a{justify-content:space-between;min-height:46px;padding:0 12px 0 14px;box-shadow:inset 3px 0 0 var(--line)}
+  .adm-nav__a[aria-current="page"]{background:var(--tint);box-shadow:inset 3px 0 0 var(--red)}
+  .adm-main{padding-top:28px}
   .adm-head{grid-template-columns:minmax(0,1fr) auto;align-items:end}
-  .adm-cols,.adm-row{grid-template-columns:104px minmax(0,2.1fr) minmax(0,1.3fr) 146px minmax(0,2.1fr) 20px;gap:0 20px}
-  .adm-cols{display:grid;padding:0 2px 8px;font-size:13.5px;font-weight:700;color:var(--muted)}
-  .adm-row{align-items:start;padding:16px 2px 15px}
-  .adm-row > *{grid-column:auto;grid-row:1;margin-top:0;padding-right:0}
-  .adm-row__when{align-self:start;padding-top:3px}
-  .adm-row__when span{display:block}
-  .adm-row__intent{justify-self:start}
-  .adm-row__org{font-size:17px}
-  .adm-row__who .adm-clip{display:-webkit-box;overflow:hidden}
-  .adm-row__who small{margin-left:0}
-  .adm-row__chev{align-self:start;margin:4px 0 0}
-  .adm-detail{padding:6px 2px 30px 124px}
+  .adm-filters{grid-template-columns:minmax(200px,1.6fr) repeat(5,minmax(0,1fr))}
+  .adm-filter--search{grid-column:auto}
+  .adm-table .is-rowhead{position:static;box-shadow:none}
+  .adm-table__act{position:sticky;right:0;z-index:1;background:#fff;box-shadow:-1px 0 0 var(--line)}   /* 넓은 화면: 표가 길어도 수정 단추는 늘 보입니다 */
+  .adm-col-main{min-width:12em}
 }
-
+@media (min-width:1400px){
+  .adm-cards{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .adm-card:has(> .adm-tablebox){grid-column:span 2}
+}
 @media (prefers-reduced-motion:reduce){
-  .adm-row__chev{transition:none}
+  .adm-toast{transition:none}
 }
