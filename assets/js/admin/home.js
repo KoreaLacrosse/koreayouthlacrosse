@@ -1,6 +1,7 @@
 /* ==========================================================================
    관리자 화면 : 대시보드
    회원과 참가 의향 회신의 주요 숫자, 확인이 필요한 일, 간단한 통계를 한 화면에 모읍니다.
+   직원(관리자) 여부를 알려면 관리자 명단이 필요해 admins 도 함께 읽습니다.
    숫자는 모두 휴지통에 있는 것을 뺀 값입니다.
    ========================================================================== */
 (function () {
@@ -10,7 +11,8 @@
   function render(root) {
     var E = A.eoi, M = A.members;
     var replies = E.all().filter(function (r) { return !r.deleted; }), members = M.all().filter(function (m) { return !m.deleted; });
-    var active = members.filter(function (m) { return m.status === 'active'; }), pending = members.filter(function (m) { return m.status === 'pending'; });
+    var active = members.filter(function (m) { return m.status === 'active'; });
+    var month = A.today().slice(0, 7), joined = members.filter(function (m) { return M.joinedMonth(m) === month; });
     var fresh = replies.filter(function (r) { return r.status === 'new'; });
     var likely = replies.filter(function (r) { return r.intent === 'active' || r.intent === 'internal'; });
     var players = likely.reduce(function (t, r) { return t + (E.sum(r.divisions, 'players') || 0); }, 0);
@@ -21,15 +23,14 @@
 
     add(root, A.ui.tiles([
       { label: '활동 회원', value: active.length, unit: '명', note: '명부 전체 ' + num(members.length) + '명' },
-      { label: '승인 대기 회원', value: pending.length, unit: '명', go: '회원에서 보기', onGo: pending.length ? function () { M.open({ status: 'pending' }); } : null },
+      { label: '이번 달 새 회원', value: joined.length, unit: '명', note: '가입일 기준' },
       { label: '참가 의향 회신', value: replies.length, unit: '건', note: '적극 검토 ' + num(replies.filter(function (r) { return r.intent === 'active'; }).length) + '건' },
       { label: '아직 확인하지 않은 회신', value: fresh.length, unit: '건', go: '회신에서 보기', onGo: fresh.length ? function () { E.open({ status: 'new' }); } : null },
       { label: '예상 참가 선수', value: players, unit: '명', note: '적극 검토와 내부 협의 회신 기준' }
     ]));
 
     var cards = el('div', 'adm-cards');
-    var typeCount = A.countBy(active, function (m) { return m.type; });
-    add(cards, A.ui.card('구분별 활동 회원', A.ui.bars(M.TYPES.map(function (t) { return { label: t[1], value: typeCount[t[0]] || 0 }; }), { unit: '명' })));
+    add(cards, A.ui.card('종류별 활동 회원', A.ui.bars(M.byType(active), { unit: '명' }), M.MULTI));
     add(cards, A.ui.card('달마다 새로 가입한 회원', A.ui.columns(M.months(members), { unit: '명' }), '최근 12개월, 가입일 기준입니다.'));
 
     var intentCount = A.countBy(replies, function (r) { return r.intent; });
@@ -63,5 +64,5 @@
     add(root, cards);
   }
 
-  A.section({ id: 'home', title: '대시보드', needs: ['eoiReplies', 'members'], render: render });
+  A.section({ id: 'home', title: '대시보드', needs: ['eoiReplies', 'members', 'admins'], render: render });
 })();

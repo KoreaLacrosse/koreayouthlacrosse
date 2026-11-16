@@ -1,38 +1,54 @@
 /* ==========================================================================
    관리자 화면 : 회원
    Firestore 의 members 컬렉션(회원 명부)을 표로 보고, 거르고, 집계하고, 추가·수정·삭제합니다.
-   선수는 대부분 미성년이라 생년월일과 집 주소는 받지 않습니다. 연락처는 보호자 것을 적습니다.
-   아래 구분·상태 값은 tools/firestore.rules 의 허용 값과 같아야 합니다.
+
+   회원 종류는 선수·학부모·지도자·직원·일반 다섯 가지이고, 한 사람이 여러 종류일 수 있습니다.
+   문서의 types 에는 선수·학부모·지도자·일반만 적습니다. 직원은 곧 관리자라서 따로 적지 않고,
+   관리자 명단(admins)에 그 회원의 이메일이 있으면 직원으로 봅니다. 그래서 직원 표시를 켜고 끄는 일은
+   관리자 명단을 고치는 일이고, 마스터만 할 수 있습니다(보안 규칙도 그렇게 막습니다).
+
+   가입하면 바로 활동 회원입니다(승인 단계가 없습니다). 시합에 참가하는 회원에게는 협회가 '시합 참가 권한'을
+   따로 켜 줍니다. 선수는 대부분 미성년이라 생년월일과 집 주소는 받지 않고, 연락처는 보호자 것을 적습니다.
+   아래 종류·상태 값은 tools/firestore.rules 의 허용 값과 같아야 합니다.
    ========================================================================== */
 (function () {
   'use strict';
   var A = window.KYLA_ADMIN, el = A.el, add = A.add, num = A.num, text = A.text;
-  var COL = 'members';
+  var COL = 'members', ADMINS = 'admins';
 
-  var TYPES = [['player', '선수'], ['parent', '학부모'], ['coach', '지도자'], ['staff', '임원·운영진'], ['other', '기타']];
-  var STATUSES = [['active', '활동'], ['pending', '승인 대기'], ['paused', '휴면'], ['left', '탈퇴']];
+  var TYPES = [['player', '선수'], ['parent', '학부모'], ['coach', '지도자'], ['staff', '직원'], ['general', '일반']];
+  var OWN = ['player', 'parent', 'coach', 'general'];                 // 문서에 적는 종류(직원은 관리자 명단으로 정해집니다)
+  var STATUSES = [['active', '활동'], ['paused', '휴면'], ['left', '탈퇴']];
+  var ACCESS = [['yes', '있음'], ['no', '없음']];
   var DIVISIONS = [['u10', 'U10'], ['u12', 'U12'], ['u14', 'U14'], ['u16', 'U16'], ['adult', '성인']];
   var GENDERS = [['m', '남'], ['f', '여']];
   function name(list, code) { var hit = list.filter(function (p) { return p[0] === code; })[0]; return hit ? hit[1] : ''; }
   function withAll(list, first) { return [['', first]].concat(list); }
+  function typeNames(m) { return m.types.map(function (t) { return name(TYPES, t); }); }
 
-  var state = { tab: 'list', q: '', type: '', status: '', division: '', gender: '', team: '', trash: false, sort: { key: 'joined', dir: 'desc' }, page: 1 };
+  var state = { tab: 'list', q: '', type: '', status: '', access: '', division: '', gender: '', team: '', trash: false, sort: { key: 'joined', dir: 'desc' }, page: 1 };
 
-  function model(d) {
+  // 관리자 명단: { 소문자 이메일: 명단 문서 }
+  function adminMap() { var map = {}; A.store.all(ADMINS).forEach(function (a) { map[a.id] = a; }); return map; }
+  function model(d, admins) {
+    var own = (Array.isArray(d.types) ? d.types : []).map(text), email = text(d.email), staff = !!(email && admins[email.toLowerCase()]);
     return {
-      id: d.id, doc: d, name: text(d.name), type: text(d.type), status: text(d.status), team: text(d.team), division: text(d.division), gender: text(d.gender),
-      contactName: text(d.contactName), email: text(d.email), phone: text(d.phone), joinedOn: text(d.joinedOn), note: text(d.note),
+      id: d.id, doc: d, name: text(d.name), status: text(d.status), access: d.matchAccess === true, staff: staff,
+      types: TYPES.map(function (t) { return t[0]; }).filter(function (t) { return t === 'staff' ? staff : own.indexOf(t) >= 0; }),   // 화면에 보이는 순서대로
+      team: text(d.team), division: text(d.division), gender: text(d.gender),
+      contactName: text(d.contactName), email: email, phone: text(d.phone), joinedOn: text(d.joinedOn), note: text(d.note),
       created: A.time(text(d.createdAt) || d._createTime), deleted: !!d.deletedAt
     };
   }
-  function all() { return A.store.all(COL).map(model); }
+  function all() { var admins = adminMap(); return A.store.all(COL).map(function (d) { return model(d, admins); }); }
   // 가입한 달(YYYY-MM): 가입일이 비어 있으면 명부에 올린 날로 봅니다.
   function joinedMonth(m) { return m.joinedOn ? m.joinedOn.slice(0, 7) : (m.created ? m.created.ym : ''); }
 
   function matches(m) {
     if (m.deleted !== state.trash) return false;
-    if (state.type && m.type !== state.type) return false;
+    if (state.type && m.types.indexOf(state.type) < 0) return false;
     if (state.status && m.status !== state.status) return false;
+    if (state.access && m.access !== (state.access === 'yes')) return false;
     if (state.division && m.division !== state.division) return false;
     if (state.gender && m.gender !== state.gender) return false;
     if (state.team && m.team !== state.team) return false;
@@ -42,19 +58,26 @@
     }
     return true;
   }
-  function filtersOn() { return !!(state.q || state.type || state.status || state.division || state.gender || state.team); }
+  function filtersOn() { return !!(state.q || state.type || state.status || state.access || state.division || state.gender || state.team); }
 
   var COLUMNS = [
     { key: 'name', label: '이름', cls: 'adm-col-name', head: true, text: function (m) { return m.name; }, node: function (m) { return el('span', 'adm-strong', m.name || '(이름 없음)'); } },
-    { key: 'type', label: '구분', cls: 'adm-col-nowrap', sort: function (m) { return TYPES.map(function (t) { return t[0]; }).indexOf(m.type); }, text: function (m) { return name(TYPES, m.type); } },
+    { key: 'types', label: '종류', cls: 'adm-col-text', sort: function (m) { return m.types.length ? TYPES.map(function (t) { return t[0]; }).indexOf(m.types[0]) : null; },
+      text: function (m) { return typeNames(m).join(', '); },
+      node: function (m) {
+        if (!m.types.length) return el('span', 'adm-faint', '고르지 않음');
+        return typeNames(m).map(function (n, i) { return [i ? ', ' : '', el('span', 'adm-nb', n)]; });
+      } },
     { key: 'team', label: '소속', cls: 'adm-col-wide', text: function (m) { return m.team; } },
     { key: 'division', label: '연령 구분', cls: 'adm-col-nowrap', sort: function (m) { var i = DIVISIONS.map(function (t) { return t[0]; }).indexOf(m.division); return i < 0 ? null : i; }, text: function (m) { return name(DIVISIONS, m.division); } },
     { key: 'gender', label: '성별', cls: 'adm-col-nowrap', text: function (m) { return name(GENDERS, m.gender); } },
     { key: 'contact', label: '보호자·연락 담당', cls: 'adm-col-text', text: function (m) { return m.contactName; } },
     { key: 'phone', label: '전화', cls: 'adm-col-nowrap', text: function (m) { return m.phone; } },
     { key: 'email', label: '이메일', cls: 'adm-col-email', text: function (m) { return m.email; }, node: function (m) { return A.ui.email(m.email); } },
+    { key: 'access', label: '시합 권한', cls: 'adm-col-nowrap', sort: function (m) { return m.access ? 0 : 1; },
+      node: function (m) { return m.access ? A.ui.tag('있음', 'blue') : el('span', 'adm-faint', '없음'); } },
     { key: 'status', label: '상태', sort: function (m) { return STATUSES.map(function (t) { return t[0]; }).indexOf(m.status); },
-      node: function (m) { return A.ui.tag(name(STATUSES, m.status) || m.status, m.status === 'pending' ? 'red' : (m.status === 'active' ? 'green' : 'muted')); } },
+      node: function (m) { return A.ui.tag(name(STATUSES, m.status) || m.status, m.status === 'active' ? 'green' : 'muted'); } },
     { key: 'joined', label: '가입일', cls: 'adm-col-date', sort: function (m) { return m.joinedOn || (m.created ? m.created.ymd : ''); }, text: function (m) { return m.joinedOn ? m.joinedOn.replace(/-/g, '.') : ''; } }
   ];
 
@@ -74,8 +97,9 @@
     var bar = el('div', 'adm-filters'), set = function (key) { return function (v) { state[key] = v; state.page = 1; update(); }; };
     add(bar,
       A.ui.search('이름, 소속, 연락처, 메모', state.q, set('q')),
-      A.ui.select('구분', withAll(TYPES, '전체'), state.type, set('type')),
+      A.ui.select('종류', withAll(TYPES, '전체'), state.type, set('type')),
       A.ui.select('상태', withAll(STATUSES, '전체'), state.status, set('status')),
+      A.ui.select('시합 권한', withAll(ACCESS, '전체'), state.access, set('access')),
       A.ui.select('연령 구분', withAll(DIVISIONS, '전체'), state.division, set('division')),
       A.ui.select('성별', withAll(GENDERS, '전체'), state.gender, set('gender')),
       A.ui.select('소속', [['', '전체']].concat(teams.map(function (t) { return [t, t]; })), state.team, set('team')));
@@ -100,12 +124,12 @@
     results.textContent = '';
     var n = function (code) { return list.filter(function (m) { return m.status === code; }).length; };
     var clear = filtersOn() ? A.button('linkbtn', '필터 지우기', function () {
-      state.q = ''; state.type = ''; state.status = ''; state.division = ''; state.gender = ''; state.team = ''; state.page = 1; A.render();
+      state.q = ''; state.type = ''; state.status = ''; state.access = ''; state.division = ''; state.gender = ''; state.team = ''; state.page = 1; A.render();
     }) : null;
     add(results, A.ui.tiles([
       { label: state.trash ? '휴지통의 회원' : (filtersOn() ? '걸러 낸 회원' : '전체 회원'), value: list.length, unit: '명' },
       { label: '활동', value: n('active'), unit: '명' },
-      { label: '승인 대기', value: n('pending'), unit: '명' },
+      { label: '시합 권한', value: list.filter(function (m) { return m.access; }).length, unit: '명' },
       { label: '휴면·탈퇴', value: n('paused') + n('left'), unit: '명' }
     ]), clear ? add(el('p', 'adm-filternote'), '필터를 걸어 본 결과입니다. ', clear) : null);
     if (state.tab === 'stats') { add(results, stats(list)); return; }
@@ -126,13 +150,17 @@
     }));
   }
 
+  // 종류별 인원. 한 사람이 여러 종류일 수 있어, 더하면 회원 수보다 클 수 있습니다.
+  function byType(list) { return TYPES.map(function (t) { return { label: t[1], value: list.filter(function (m) { return m.types.indexOf(t[0]) >= 0; }).length }; }); }
+  var MULTI = '한 사람이 여러 종류일 수 있어, 더한 값이 회원 수보다 클 수 있습니다.';
+
   function stats(list) {
     var box = el('div', 'adm-cards');
     var by = function (key, order) {
       var m = A.countBy(list, function (x) { return x[key]; });
       return order.map(function (p) { return { label: p[1], value: m[p[0]] || 0 }; });
     };
-    add(box, A.ui.card('구분별 회원', A.ui.bars(by('type', TYPES), { unit: '명' })));
+    add(box, A.ui.card('종류별 회원', A.ui.bars(byType(list), { unit: '명' }), MULTI));
     add(box, A.ui.card('상태별 회원', A.ui.bars(by('status', STATUSES), { unit: '명' })));
     add(box, A.ui.card('연령 구분별 회원', A.ui.bars(by('division', DIVISIONS), { unit: '명' }), '연령 구분을 적은 회원만 셉니다.'));
     var tm = A.countBy(list, function (x) { return x.team || '(소속 없음)'; });
@@ -155,30 +183,40 @@
   function download() {
     var list = A.ui.sortRows(all().filter(matches), COLUMNS, state.sort.key, state.sort.dir);
     if (!list.length) { A.ui.toast('내려받을 회원이 없습니다.', true); return; }
-    A.ui.download('KYLA-회원명부', ['이름', '구분', '상태', '소속', '연령 구분', '성별', '보호자·연락 담당', '전화', '이메일', '가입일', '메모', '명부에 올린 날', '문서 ID'],
+    A.ui.download('KYLA-회원명부', ['이름', '종류', '상태', '시합 권한', '소속', '연령 구분', '성별', '보호자·연락 담당', '전화', '이메일', '가입일', '메모', '명부에 올린 날', '문서 ID'],
       list.map(function (m) {
-        return [m.name, name(TYPES, m.type), name(STATUSES, m.status), m.team, name(DIVISIONS, m.division), name(GENDERS, m.gender), m.contactName, m.phone, m.email,
+        return [m.name, typeNames(m).join(', '), name(STATUSES, m.status), m.access ? '있음' : '없음', m.team, name(DIVISIONS, m.division), name(GENDERS, m.gender), m.contactName, m.phone, m.email,
           m.joinedOn, m.note, m.created ? m.created.ymd : '', m.id];
       }));
   }
 
+  /* ---------- 추가·수정 창 ---------- */
+  var EMAIL = /^[^@\s\/]+@[^@\s\/]+\.[^@\s\/]+$/;
   function edit(m) {
-    var isNew = !m, d = m ? m.doc : {};
+    var isNew = !m, d = m ? m.doc : {}, master = A.role === 'master';
+    var wasStaff = !!(m && m.staff), oldEmail = m ? m.email.toLowerCase() : '', self = !!oldEmail && oldEmail === A.email;
+    var locked = {};
+    if (!master) locked.staff = '직원 지정은 마스터만 바꿀 수 있습니다.';
+    else if (self) locked.staff = '본인의 관리자 권한은 여기서 바꿀 수 없습니다.';
     var fields = [
       { key: 'name', label: '이름', required: true, max: 60 },
-      { key: 'type', label: '구분', type: 'select', options: TYPES },
       { key: 'status', label: '상태', type: 'select', options: STATUSES },
+      { key: 'types', label: '회원 종류', type: 'checks', options: TYPES, min: 1, minText: '회원 종류를 하나 이상 골라 주세요.', locked: locked, wide: true,
+        hint: master ? '여러 개를 함께 고를 수 있습니다. 직원은 관리자와 같습니다. 직원으로 지정하면 아래 이메일의 구글 계정으로 이 관리자 화면에 들어올 수 있게 됩니다.'
+          : '여러 개를 함께 고를 수 있습니다. 직원은 관리자와 같아서, 직원 지정은 마스터만 바꿀 수 있습니다.' },
+      { key: 'matchAccess', label: '시합 참가 권한', type: 'toggle', text: '시합 일정과 사진을 볼 수 있게 합니다', wide: true,
+        hint: '시합에 참가하는 회원에게 협회가 따로 켜 주는 권한입니다. 회원이 로그인하는 화면이 열리면 그때부터 적용됩니다.' },
       { key: 'team', label: '소속', max: 80, placeholder: '팀, 클럽 또는 학교' },
       { key: 'division', label: '연령 구분', type: 'select', options: withAll(DIVISIONS, '해당 없음') },
       { key: 'gender', label: '성별', type: 'select', options: withAll(GENDERS, '적지 않음') },
       { key: 'contactName', label: '보호자·연락 담당 이름', max: 60, hint: '선수는 보호자 이름을 적습니다.' },
       { key: 'phone', label: '전화번호', type: 'tel', max: 40 },
-      { key: 'email', label: '이메일', type: 'email', max: 200 },
+      { key: 'email', label: '이메일', type: 'email', max: 200, check: function (v) { return /[\/\s]/.test(v) ? '이메일 주소 형식을 확인해 주세요.' : ''; } },
       { key: 'joinedOn', label: '가입일', type: 'date' },
       { key: 'note', label: '메모', type: 'textarea', max: 1000, wide: true }
     ];
-    var values = isNew ? { type: 'player', status: 'active', joinedOn: A.today() } : {
-      name: m.name, type: name(TYPES, m.type) ? m.type : 'other', status: name(STATUSES, m.status) ? m.status : 'active', team: m.team, division: m.division, gender: m.gender,
+    var values = isNew ? { types: [], status: 'active', matchAccess: false, joinedOn: A.today() } : {
+      name: m.name, types: m.types, status: name(STATUSES, m.status) ? m.status : 'active', matchAccess: m.access, team: m.team, division: m.division, gender: m.gender,
       contactName: m.contactName, phone: m.phone, email: m.email, joinedOn: m.joinedOn, note: m.note
     };
     var form = A.ui.form(fields, values), body = el('div');
@@ -190,20 +228,61 @@
       row('마지막 수정', A.stampText(d.updatedAt, text(d.updatedBy)));
       add(body, meta);
     }
-    var save = function () {
-      var got = form.read();
-      if (!got.ok) { A.ui.dialogError('표시된 칸을 고친 뒤 다시 저장해 주세요.'); return; }
+
+    var commit = function (data, extra, done) {
       A.ui.dialogError(''); A.ui.busy(true);
-      var data = A.stamp(got.data), id = isNew ? A.newId() : m.id, times = isNew ? ['createdAt', 'updatedAt'] : ['updatedAt'];
+      var id = isNew ? A.newId() : m.id, times = isNew ? ['createdAt', 'updatedAt'] : ['updatedAt'];
       var write = isNew ? A.write.set(COL, id, data, { create: true, times: times }) : A.write.set(COL, id, data, { mask: Object.keys(data), times: times, base: d._updateTime });
-      A.api.commit([write]).then(function (res) {
+      A.api.commit([write].concat(extra ? [extra.write] : [])).then(function (res) {
         var doc = isNew ? { id: id } : d;
         Object.keys(data).forEach(function (k) { doc[k] = data[k]; });
         A.store.put(COL, id, A.committed(doc, res, times));
+        if (extra) extra.after(res);
         A.ui.busy(false); A.ui.close(true);
-        A.ui.toast(isNew ? '회원을 추가했습니다.' : '고친 내용을 저장했습니다.');
+        A.ui.toast(done);
         A.render();
       }, function (err) { A.ui.busy(false); A.ui.dialogError('저장하지 못했습니다. ' + A.errorText(err)); });
+    };
+    var save = function () {
+      var got = form.read();
+      if (!got.ok) { A.ui.dialogError('표시된 칸을 고친 뒤 다시 저장해 주세요.'); return; }
+      var g = got.data, wantStaff = g.types.indexOf('staff') >= 0, email = g.email.toLowerCase(), admins = adminMap();
+      var data = A.stamp({ name: g.name, types: g.types.filter(function (t) { return OWN.indexOf(t) >= 0; }), status: g.status, matchAccess: g.matchAccess,
+        team: g.team, division: g.division, gender: g.gender, contactName: g.contactName, phone: g.phone, email: g.email, joinedOn: g.joinedOn, note: g.note });
+      var saved = isNew ? '회원을 추가했습니다.' : '고친 내용을 저장했습니다.';
+
+      // 직원 표시를 그대로 둔 경우: 관리자 명단은 건드리지 않습니다.
+      if (wantStaff === wasStaff) {
+        if (wasStaff && email !== oldEmail) {
+          A.ui.dialogError('직원(관리자)의 이메일은 여기서 바꿀 수 없습니다. 직원 표시를 풀어 저장한 다음, 이메일을 바꾸고 다시 지정해 주세요.');
+          return;
+        }
+        commit(data, null, saved);
+        return;
+      }
+      if (!master) { A.ui.dialogError('직원 지정은 마스터만 바꿀 수 있습니다.'); return; }
+
+      if (wantStaff) {
+        // 직원으로 지정: 관리자 명단에 이 이메일을 더합니다(이미 있으면 그대로 둡니다).
+        if (!email || !EMAIL.test(email)) { A.ui.dialogError('직원으로 지정하려면 관리자 화면에 로그인할 구글 계정 이메일을 적어 주세요.'); return; }
+        if (admins[email]) { commit(data, null, saved); return; }
+        A.ui.ask({ title: '직원(관리자)으로 지정할까요?', text: email + ' 구글 계정으로 이 관리자 화면에 들어와 회원과 회신의 모든 내용을 보고 고칠 수 있게 됩니다.', yes: '직원으로 지정' }).then(function (yes) {
+          if (!yes) return;
+          var ad = A.stamp({ role: 'admin', memo: g.name });
+          commit(data, {
+            write: A.write.set(ADMINS, email, ad, { create: true, times: ['updatedAt'] }),
+            after: function (res) { var doc = { id: email, role: ad.role, memo: ad.memo, updatedBy: ad.updatedBy }; A.store.put(ADMINS, email, A.committed(doc, res, ['updatedAt'])); }
+          }, g.name + ' 회원을 직원(관리자)으로 지정했습니다.');
+        });
+        return;
+      }
+      // 직원 지정 풀기: 관리자 명단에서 원래 이메일을 뺍니다.
+      var had = admins[oldEmail];
+      if (!had) { commit(data, null, saved); return; }
+      A.ui.ask({ title: '직원 지정을 풀까요?', text: oldEmail + ' 계정은 더 이상 관리자 화면에 들어올 수 없게 됩니다.' + (had.role === 'master' ? ' 마스터 권한도 함께 사라집니다.' : ''), yes: '지정 풀기', danger: true }).then(function (yes) {
+        if (!yes) return;
+        commit(data, { write: A.write.del(ADMINS, oldEmail, had._updateTime), after: function () { A.store.put(ADMINS, oldEmail, null); } }, g.name + ' 회원의 직원 지정을 풀었습니다.');
+      });
     };
     A.ui.open({
       title: isNew ? '회원 추가' : '회원 수정', body: body, dirty: form.dirty, focus: form.focus,
@@ -215,7 +294,10 @@
     });
   }
 
+  /* ---------- 휴지통 ---------- */
+  var STAFF_FIRST = '직원으로 지정된 회원입니다. 먼저 회원 수정에서 직원 표시를 풀어 주세요(마스터만 할 수 있습니다).';
   function trash(m) {
+    if (m.staff) { A.ui.dialogError(STAFF_FIRST); return; }
     A.ui.busy(true);
     A.trash.move(COL, m.doc).then(function () {
       A.ui.busy(false); A.ui.close(true);
@@ -228,6 +310,7 @@
       function (err) { A.ui.toast('되돌리지 못했습니다. ' + A.errorText(err), true); });
   }
   function purge(m) {
+    if (m.staff) { A.ui.toast('직원으로 지정된 회원입니다. 목록으로 되돌린 뒤 회원 수정에서 직원 표시를 먼저 풀어 주세요.', true); return; }
     A.ui.ask({ title: '완전히 삭제할까요?', text: m.name + ' 회원을 DB에서 지웁니다. 되돌릴 수 없습니다.', yes: '완전히 삭제', danger: true }).then(function (yes) {
       if (!yes) return;
       A.trash.purge(COL, m.doc).then(function () { A.ui.toast('완전히 삭제했습니다.'); A.render(); },
@@ -236,11 +319,8 @@
   }
 
   // 다른 화면(대시보드)에서 쓰는 것
-  A.members = { all: all, TYPES: TYPES, STATUSES: STATUSES, months: months,
-    open: function (o) { state.q = ''; state.type = ''; state.division = ''; state.gender = ''; state.team = ''; state.trash = false; state.tab = 'list'; state.page = 1; state.status = (o && o.status) || ''; A.go('members'); } };
+  A.members = { all: all, TYPES: TYPES, STATUSES: STATUSES, months: months, byType: byType, MULTI: MULTI, joinedMonth: joinedMonth,
+    open: function (o) { state.q = ''; state.type = ''; state.access = ''; state.division = ''; state.gender = ''; state.team = ''; state.trash = false; state.tab = 'list'; state.page = 1; state.status = (o && o.status) || ''; A.go('members'); } };
 
-  A.section({
-    id: 'members', title: '회원', needs: [COL], render: render,
-    badge: function () { return all().filter(function (m) { return !m.deleted && m.status === 'pending'; }).length; }
-  });
+  A.section({ id: 'members', title: '회원', needs: [COL, ADMINS], render: render });
 })();

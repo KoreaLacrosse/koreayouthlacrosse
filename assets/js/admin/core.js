@@ -342,7 +342,7 @@
 
   /* ---------- 입력 양식 ----------
      fields: [{ key, label, type, options, required, max, hint, wide, min, placeholder, build }]
-     type: text(기본) | email | tel | date | number | textarea | select | checks | static | custom(build 가 직접 만듦) */
+     type: text(기본) | email | tel | date | number | textarea | select | checks(여러 개 고르기) | toggle(켜고 끄기) | static | custom(build 가 직접 만듦) */
   var fieldSerial = 0;
   A.ui.form = function (fields, values) {
     var node = el('div', 'adm-form'), readers = [];
@@ -359,16 +359,37 @@
         return;
       }
       if (f.type === 'checks') {
-        var fs = el('fieldset', 'adm-form__set'), boxes = [];
-        add(fs, el('legend', 'field__label', f.label));
+        // 여러 개를 함께 고르는 칸. min: 적어도 골라야 하는 개수, locked: { 값: 바꿀 수 없는 까닭 }
+        var fs = el('fieldset', 'adm-form__set'), boxes = [], locked = f.locked || {};
+        add(fs, add(el('legend', 'field__label'), el('span', '', f.label), f.min ? el('em', '', '필수') : null));
         var row = el('div', 'checks');
         f.options.forEach(function (o) {
           var lab = el('label', 'check'), cb = el('input');
           cb.type = 'checkbox'; cb.value = o[0]; cb.checked = Array.isArray(v) && v.indexOf(o[0]) >= 0;
+          if (locked[o[0]]) { cb.disabled = true; lab.classList.add('is-locked'); lab.title = locked[o[0]]; }
           add(lab, cb, el('span', '', o[1])); row.appendChild(lab); boxes.push(cb);
         });
-        add(fs, row); add(wrap, fs);
-        readers.push(function (out) { out[f.key] = boxes.filter(function (b) { return b.checked; }).map(function (b) { return b.value; }); return null; });
+        add(fs, row);
+        if (f.hint) add(fs, el('p', 'field__hint', f.hint));
+        add(fs, err); add(wrap, fs);
+        readers.push(function (out) {
+          var got = boxes.filter(function (b) { return b.checked; }).map(function (b) { return b.value; });
+          var msg = f.min && got.length < f.min ? (f.minText || f.label + '을(를) 골라 주세요.') : '';
+          err.textContent = msg; err.hidden = !msg;
+          out[f.key] = got;
+          return msg ? (boxes.filter(function (b) { return !b.disabled; })[0] || boxes[0]) : null;
+        });
+        node.appendChild(wrap);
+        return;
+      }
+      if (f.type === 'toggle') {
+        // 켜고 끄는 칸 하나. text 가 상자 옆에 붙는 글입니다.
+        var tfs = el('fieldset', 'adm-form__set'), tl = el('label', 'check'), tb = el('input');
+        tb.type = 'checkbox'; tb.checked = v === true; tb.id = id;
+        add(tfs, el('legend', 'field__label', f.label), add(tl, tb, el('span', '', f.text || f.label)));
+        if (f.hint) add(tfs, el('p', 'field__hint', f.hint));
+        add(wrap, tfs);
+        readers.push(function (out) { out[f.key] = tb.checked; return null; });
         node.appendChild(wrap);
         return;
       }
@@ -583,7 +604,15 @@
       add(out, empty);
       return out;
     }
-    add(out, wrap);
+    add(out, el('p', 'adm-scrollhint', '표가 화면보다 넓습니다. 옆으로 밀면 나머지 열이 보입니다.'), wrap);
+    // 표가 화면보다 넓어 옆으로 밀어야 할 때: 안내 글을 보이고, 줄의 이름 열을 왼쪽에 붙여 두고, 더 볼 열이 남은 쪽에 그림자를 둡니다(admin.css).
+    var mark = function () {
+      var wide = wrap.scrollWidth > wrap.clientWidth + 1;
+      wrap.classList.toggle('is-wide', wide); out.classList.toggle('is-wide', wide);
+      out.classList.toggle('has-more', wide && wrap.scrollLeft + wrap.clientWidth < wrap.scrollWidth - 1);
+    };
+    wrap.addEventListener('scroll', mark, { passive: true });
+    if (window.ResizeObserver) new window.ResizeObserver(mark).observe(wrap); else setTimeout(mark, 0);
     if (o.rows.length > size && o.onPage) {
       var pager = el('div', 'adm-pager'), last = Math.ceil(o.rows.length / size);
       var prev = button('linkbtn', '이전', function () { o.onPage(page - 1); }), next = button('linkbtn', '다음', function () { o.onPage(page + 1); });
@@ -753,11 +782,25 @@
     }).catch(function (err) {
       if (A.user !== u || current !== s) return;
       if (err && err.status === 401) { A.signOut(); return; }
-      if (err && err.status === 403) { verify(); return; }
-      root.textContent = '';
-      root.classList.remove('is-stale'); root.removeAttribute('data-drawn');
-      var p = el('p', 'adm-loading is-error', '자료를 불러오지 못했습니다. ' + A.errorText(err));
-      add(root, el('h1', 't-2', s.title), p, button('btn btn--sm btn--ghost', '다시 시도', function () { A.render(); }));
+      var failed = function (text) {
+        root.textContent = '';
+        root.classList.remove('is-stale'); root.removeAttribute('data-drawn');
+        add(root, el('h1', 't-2', s.title), el('p', 'adm-loading is-error', '자료를 불러오지 못했습니다. ' + text), button('btn btn--sm btn--ghost', '다시 시도', function () { A.render(); }));
+      };
+      if (err && err.status === 403) {
+        // 거절당했을 때: 그 사이 관리자 명단에서 빠졌는지 확인합니다. 여전히 관리자라면 게시된 보안 규칙이 이 화면의 자료를
+        // 내주지 않는 것이니(규칙이 옛것일 때), 화면을 다시 그리지 않고 알립니다. 다시 그리면 같은 거절이 끝없이 되풀이됩니다.
+        A.api.get('admins', A.email).then(function (doc) {
+          if (A.user !== u || current !== s) return;
+          if (!doc) { A.role = ''; setDenied('none'); return; }
+          failed('게시된 보안 규칙이 이 화면의 자료를 내주지 않습니다. Firebase 콘솔의 Firestore > 규칙에 최신 보안 규칙(tools/firestore.rules)을 게시했는지 확인해 주세요.');
+        }, function (e) {
+          if (A.user !== u) return;
+          A.role = ''; setDenied(e && e.status === 403 ? 'blocked' : 'error');
+        });
+        return;
+      }
+      failed(A.errorText(err));
     });
     buildNav();
   };

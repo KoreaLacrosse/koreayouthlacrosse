@@ -1,6 +1,7 @@
 /* ==========================================================================
    관리자 화면 : 관리자 (마스터만 봅니다)
    Firestore 의 admins 컬렉션이 관리자 명단입니다. 문서 ID 가 구글 계정 이메일(소문자)이고, role 이 master 또는 admin 입니다.
+   협회에서는 관리자를 '직원'이라고 부릅니다. 회원 화면에서 어떤 회원을 직원으로 지정하면 그 이메일이 이 명단에 올라옵니다.
    처음 마스터 한 명은 Firebase 콘솔에서 직접 만들고, 그 뒤로는 이 화면에서 더하고 뺍니다.
    본인 계정은 여기서 고치거나 뺄 수 없습니다(보안 규칙도 막습니다). 실수로 권한을 잃지 않게 하려는 것입니다.
    ========================================================================== */
@@ -20,7 +21,7 @@
   function render(root) {
     var list = all(), head = el('div', 'adm-head'), tools = el('div', 'adm-tools');
     add(tools, A.button('btn btn--sm', '관리자 추가', function () { edit(null); }, 'tool:add'), A.button('linkbtn', '새로 고침', function () { A.reload(); }, 'tool:reload'));
-    add(head, add(el('div'), el('h1', 't-2', '관리자'), el('p', 'adm-head__sub', '이 화면에 들어올 수 있는 구글 계정')), tools);
+    add(head, add(el('div'), el('h1', 't-2', '관리자'), el('p', 'adm-head__sub', '직원(관리자): 이 화면에 들어올 수 있는 구글 계정')), tools);
     add(root, head);
     add(root, A.ui.table({
       caption: '관리자 명단', rows: list, size: 100, rowKey: function (a) { return a.id; },
@@ -37,7 +38,7 @@
         return [b];
       }
     }));
-    add(root, el('p', 'adm-foot', '관리자는 회원과 참가 의향 회신을 보고 고칠 수 있습니다. 마스터는 거기에 더해 이 명단을 고칠 수 있습니다. 본인 계정은 여기서 바꿀 수 없으니, 마스터를 바꾸려면 먼저 다른 계정을 마스터로 올려 주세요.'));
+    add(root, el('p', 'adm-foot', '관리자(직원)는 회원과 참가 의향 회신을 보고 고칠 수 있습니다. 마스터는 거기에 더해 이 명단을 고칠 수 있습니다. 회원 화면에서 직원으로 지정한 회원의 이메일도 여기에 올라옵니다. 본인 계정은 여기서 바꿀 수 없으니, 마스터를 바꾸려면 먼저 다른 계정을 마스터로 올려 주세요.'));
   }
 
   function edit(a) {

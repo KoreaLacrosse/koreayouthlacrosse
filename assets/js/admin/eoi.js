@@ -45,7 +45,7 @@
       lang: text(d.lang), org: text(d.org), country: text(d.country), contactName: text(d.contactName), role: text(d.role), email: text(d.email),
       methods: (Array.isArray(d.contactMethods) ? d.contactMethods : []).map(text), contactDetail: text(d.contactDetail), divisions: divisions,
       period: text(d.period), dates: text(d.dates), intent: text(d.intent), fee: text(d.fee), note: text(d.note), text: text(d.text),
-      status: STATUSES.indexOf(d.status) >= 0 ? d.status : 'new', adminNote: text(d.adminNote), manual: d.source === 'manual', deleted: !!d.deletedAt
+      status: STATUSES.indexOf(d.status) >= 0 ? d.status : 'new', phone: text(d.phone), adminNote: text(d.adminNote), manual: d.source === 'manual', deleted: !!d.deletedAt
     };
   }
   function all() { return A.store.all(COL).map(model); }
@@ -66,7 +66,7 @@
     if (state.lang && r.lang !== state.lang) return false;
     if (state.divs.length && !shown(r).length) return false;
     if (state.q) {
-      var hay = [r.org, r.country, r.contactName, r.role, r.email, r.contactDetail, r.note, r.adminNote].join('\n').toLowerCase();
+      var hay = [r.org, r.country, r.contactName, r.role, r.email, r.contactDetail, r.phone, r.note, r.adminNote].join('\n').toLowerCase();
       if (hay.indexOf(state.q.toLowerCase()) < 0) return false;
     }
     return true;
@@ -93,13 +93,16 @@
 
   /* ---------- 표의 열 ---------- */
   function intentTag(r) { return A.ui.tag(label('intent', r.intent) || '의향 없음', TONE[r.intent] || 'muted'); }
+  // 주 연락처: 연락 수단 이름과 그 ID·링크를 한 줄로
+  function reach(r) { return [r.methods.map(function (m) { return label('method', m); }).join(', '), r.contactDetail].filter(Boolean).join(' · '); }
   var COLUMNS = [
     { key: 'at', label: '접수', cls: 'adm-col-date', sort: function (x) { return x.r.at ? x.r.at.iso : ''; },
       node: function (x) { var s = el('span', 'adm-when', x.r.at ? x.r.at.date : ''); if (x.r.at) add(s, el('small', '', x.r.at.clock)); return s; } },
     { key: 'org', label: '단체', cls: 'adm-col-main', head: true, text: function (x) { return x.r.org; },
       node: function (x) { var s = el('span', 'adm-strong', x.r.org || '(이름 없음)'); return x.r.manual ? [s, ' ', el('small', 'adm-mark', '직접 입력')] : s; } },
     { key: 'country', label: '국가·지역', cls: 'adm-col-text', text: function (x) { return x.r.country; } },
-    { key: 'contact', label: '담당자', cls: 'adm-col-text', text: function (x) { return x.r.contactName; } },
+    { key: 'contact', label: '담당자', cls: 'adm-col-text', text: function (x) { return x.r.contactName; },
+      node: function (x) { return x.r.role ? [x.r.contactName, el('small', 'adm-sub', x.r.role)] : x.r.contactName; } },
     { key: 'intent', label: '참가 의향', sort: function (x) { return INTENTS.indexOf(x.r.intent); }, node: function (x) { return intentTag(x.r); } },
     { key: 'division', label: '디비전', sort: function (x) { return x.divs.length ? DIVISIONS.map(function (d) { return d[0]; }).indexOf(x.divs[0].code) : null; },
       cls: 'adm-col-wide',
@@ -111,7 +114,18 @@
     { key: 'players', label: '선수', num: true, text: function (x) { return x.players; } },
     { key: 'staff', label: '인솔자', num: true, text: function (x) { return x.staff; } },
     { key: 'status', label: '진행 상태', sort: function (x) { return STATUSES.indexOf(x.r.status); },
-      node: function (x) { return A.ui.tag(label('status', x.r.status), x.r.status === 'new' ? 'red' : ''); } }
+      node: function (x) { return A.ui.tag(label('status', x.r.status), x.r.status === 'new' ? 'red' : ''); } },
+    { key: 'memo', label: '비고', cls: 'adm-col-wide', text: function (x) { return x.r.adminNote; },
+      node: function (x) { if (!x.r.adminNote) return ''; var s = el('span', 'adm-clip', x.r.adminNote); s.title = x.r.adminNote; return s; } },
+    // 담당자 연락처. 표가 넓어 옆으로 밀어야 보일 수 있어, 참가 내용 뒤에 둡니다.
+    { key: 'email', label: '이메일', cls: 'adm-col-email', text: function (x) { return x.r.email; }, node: function (x) { return A.ui.email(x.r.email); } },
+    { key: 'reach', label: '주 연락처', cls: 'adm-col-text', text: function (x) { return reach(x.r); },
+      node: function (x) {
+        var names = x.r.methods.map(function (m) { return label('method', m); }).join(', ');
+        if (!names) return x.r.contactDetail;
+        return x.r.contactDetail ? [el('span', 'adm-nb', names), el('small', 'adm-sub', x.r.contactDetail)] : el('span', 'adm-nb', names);
+      } },
+    { key: 'phone', label: '전화번호', cls: 'adm-col-nowrap', text: function (x) { return x.r.phone; } }
   ];
 
   /* ---------- 그리기 ---------- */
@@ -130,7 +144,7 @@
     if (state.country && countries.indexOf(state.country) < 0) state.country = '';
     var bar = el('div', 'adm-filters'), set = function (key) { return function (v) { state[key] = v; state.page = 1; update(); }; };
     add(bar,
-      A.ui.search('단체, 담당자, 이메일, 메모', state.q, set('q')),
+      A.ui.search('단체, 담당자, 연락처, 비고', state.q, set('q')),
       A.ui.select('참가 의향', options('intent', INTENTS, '전체'), state.intent, set('intent')),
       A.ui.select('진행 상태', options('status', STATUSES, '전체'), state.status, set('status')),
       A.ui.select('국가·지역', [['', '전체']].concat(countries.map(function (c) { return [c, c]; })), state.country, set('country')),
@@ -179,7 +193,7 @@
         return [A.button('adm-rowbtn', '되돌리기', function () { restore(x.r); }), A.button('adm-rowbtn adm-rowbtn--danger', '완전히 삭제', function () { purge(x.r); })];
       },
       onOpen: state.trash ? null : function (x) { edit(x.r); },
-      foot: rows.length > 1 ? ['', '합계', '', '', '', '', t.teams, t.players, t.staff, ''] : null,
+      foot: rows.length > 1 ? COLUMNS.map(function (c) { return c.key === 'org' ? '합계' : (c.key === 'teams' || c.key === 'players' || c.key === 'staff' ? t[c.key] : ''); }) : null,
       empty: state.trash ? { title: '휴지통이 비어 있습니다', text: '' }
         : (filtersOn() ? { title: '조건에 맞는 회신이 없습니다', text: '필터를 줄이거나 지워 보세요.' }
           : { title: '아직 받은 회신이 없습니다', text: '참가 의향 회신서가 제출되면 여기에 최근 것부터 쌓입니다. 이메일로 받은 회신은 "회신 추가"로 직접 넣을 수 있습니다.' })
@@ -239,20 +253,20 @@
     if (!list.length) { A.ui.toast('내려받을 회신이 없습니다.', true); return; }
     var when = function (r) { return r.at ? r.at.ymd + ' ' + r.at.clock : ''; };
     if (state.view === 'division' && state.tab === 'list') {
-      var head = ['접수 시각(한국 시간)', '소속 단체', '국가·지역', '담당자', '직책', '이메일', '참가 의향', '진행 상태', '디비전', '팀 수', '선수 수', '인솔자 수', '문서 ID'];
+      var head = ['접수 시각(한국 시간)', '소속 단체', '국가·지역', '담당자', '직책', '이메일', '주 연락처', '전화번호', '참가 의향', '진행 상태', '디비전', '팀 수', '선수 수', '인솔자 수', '비고', '문서 ID'];
       A.ui.download('KYLA-제주2027-참가의향회신-디비전별', head, rowsOf(list).map(function (x) {
         var r = x.r;
-        return [when(r), r.org, r.country, r.contactName, r.role, r.email, label('intent', r.intent), label('status', r.status),
-          x.divs.map(function (d) { return d.name; }).join(', '), x.teams, x.players, x.staff, r.id];
+        return [when(r), r.org, r.country, r.contactName, r.role, r.email, reach(r), r.phone, label('intent', r.intent), label('status', r.status),
+          x.divs.map(function (d) { return d.name; }).join(', '), x.teams, x.players, x.staff, r.adminNote, r.id];
       }));
       return;
     }
-    var h = ['접수 시각(한국 시간)', '작성 언어', '입력 경로', '소속 단체', '국가·지역', '담당자', '직책', '이메일', '선호 연락 수단', '연락 ID·링크·전화', '참가 가능 디비전'];
+    var h = ['접수 시각(한국 시간)', '작성 언어', '입력 경로', '소속 단체', '국가·지역', '담당자', '직책', '이메일', '주 연락 수단', '주 연락처 ID·링크', '전화번호', '참가 가능 디비전'];
     DIVISIONS.forEach(function (d) { h.push(d[1] + ' 팀 수', d[1] + ' 선수 수', d[1] + ' 인솔자 수'); });
-    h.push('팀 수 합계', '선수 수 합계', '인솔자 수 합계', '희망 시기', '희망 날짜', '참가 의향', '예상 참가비', '기타 의견', '진행 상태', '관리자 메모', '문서 ID');
+    h.push('팀 수 합계', '선수 수 합계', '인솔자 수 합계', '희망 시기', '희망 날짜', '참가 의향', '예상 참가비', '기타 의견', '진행 상태', '비고', '문서 ID');
     A.ui.download('KYLA-제주2027-참가의향회신', h, list.map(function (r) {
       var by = {}, row = [when(r), label('lang', r.lang), r.manual ? '직접 입력' : '회신서', r.org, r.country, r.contactName, r.role, r.email,
-        r.methods.map(function (m) { return label('method', m); }).join(', '), r.contactDetail, r.divisions.map(function (d) { return d.name; }).join(', ')];
+        r.methods.map(function (m) { return label('method', m); }).join(', '), r.contactDetail, r.phone, r.divisions.map(function (d) { return d.name; }).join(', ')];
       r.divisions.forEach(function (d) { by[d.code] = d; });
       DIVISIONS.forEach(function (d) { NUMS.forEach(function (n) { row.push(by[d[0]] && by[d[0]][n[0]] !== null ? by[d[0]][n[0]] : ''); }); });
       row.push(sum(r.divisions, 'teams'), sum(r.divisions, 'players'), sum(r.divisions, 'staff'), label('period', r.period), r.dates,
@@ -316,9 +330,12 @@
       { key: 'country', label: '국가·지역', max: 120 },
       { key: 'contactName', label: '담당자 이름', max: 120 },
       { key: 'role', label: '직책', max: 120 },
+      { type: 'heading', label: '담당자 연락처' },
       { key: 'email', label: '이메일', type: 'email', max: 200 },
-      { key: 'contactMethods', label: '선호 연락 수단', type: 'checks', options: options('method'), wide: true },
-      { key: 'contactDetail', label: '연락 ID, 링크 또는 전화번호', max: 300, wide: true },
+      { key: 'phone', label: '전화번호', type: 'tel', max: 40, hint: '협회가 따로 받아 적는 칸입니다. 회신서에는 이 칸이 없습니다.' },
+      { key: 'contactMethods', label: '주 연락 수단', type: 'checks', options: options('method'), wide: true },
+      { key: 'contactDetail', label: '주 연락처 ID 또는 링크', max: 300, wide: true, hint: '회신서의 "연락 ID, 링크 또는 전화번호" 칸에 적힌 내용입니다.' },
+      { type: 'heading', label: '참가 계획' },
       { key: 'divisions', type: 'custom', wide: true, build: function () { return divisionField(dv); } },
       { key: 'period', label: '희망 시기', type: 'select', options: options('period', null, '고르지 않음') },
       { key: 'dates', label: '참가 가능한 주말이나 희망 날짜', max: 300 },
@@ -327,10 +344,10 @@
       { key: 'note', label: '기타 의견', type: 'textarea', max: 3000, wide: true },
       { type: 'heading', label: '협회 관리용' },
       { key: 'status', label: '진행 상태', type: 'select', options: options('status', STATUSES) },
-      { key: 'adminNote', label: '관리자 메모', type: 'textarea', max: 2000, wide: true, hint: '회신자에게는 보이지 않습니다. 통화 내용이나 다음에 할 일을 적어 두세요.' }
+      { key: 'adminNote', label: '비고', type: 'textarea', max: 2000, wide: true, hint: '회신자에게는 보이지 않습니다. 통화 내용이나 다음에 할 일을 적어 두세요. 목록의 비고 열에 보입니다.' }
     ];
     var values = isNew ? { intent: 'undecided', status: 'new', contactMethods: [] } : {
-      org: r.org, country: r.country, contactName: r.contactName, role: r.role, email: r.email, contactMethods: r.methods, contactDetail: r.contactDetail,
+      org: r.org, country: r.country, contactName: r.contactName, role: r.role, email: r.email, phone: r.phone, contactMethods: r.methods, contactDetail: r.contactDetail,
       period: r.period, dates: r.dates, intent: INTENTS.indexOf(r.intent) >= 0 ? r.intent : 'undecided', fee: r.fee, note: r.note, status: r.status, adminNote: r.adminNote
     };
     var form = A.ui.form(fields, values), body = el('div');

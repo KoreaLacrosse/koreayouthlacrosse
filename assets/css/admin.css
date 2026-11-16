@@ -75,9 +75,11 @@ body.adm{padding-bottom:0;background:#fff;--series:var(--blue);--pad:20px}
 .adm-tile .linkbtn{min-height:0;padding:3px 0;font-size:13.5px;color:var(--ink)}
 
 /* ---------- 표 ---------- */
+.adm-scrollhint{display:none;margin:0 0 6px;font-size:13.5px;line-height:1.5;color:var(--muted)}
+.adm-tablebox.is-wide > .adm-scrollhint{display:block}                          /* 표가 화면보다 넓을 때만 보이는 안내 */
 .adm-tablewrap{position:relative;overflow-x:auto;border-top:2px solid var(--ink);-webkit-overflow-scrolling:touch}   /* relative: 표 안의 숨긴 글자(.adm-sr)가 화면 밖으로 삐져나오지 않게 */
 .adm-table{width:100%;border-collapse:collapse;font-size:15px;line-height:1.5}
-.adm-table th,.adm-table td{padding:11px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;font-weight:500;word-break:keep-all;overflow-wrap:anywhere}
+.adm-table th,.adm-table td{padding:11px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;font-weight:500;word-break:keep-all;overflow-wrap:anywhere}
 .adm-table thead th{padding-block:9px;font-size:13.5px;font-weight:700;color:var(--muted);white-space:nowrap;vertical-align:bottom}
 .adm-table .is-rowhead{position:sticky;left:0;z-index:1;background:#fff;box-shadow:1px 0 0 var(--line)}   /* 좁은 화면: 옆으로 밀어도 줄의 이름은 남습니다 */
 .adm-table thead .is-rowhead{z-index:2}
@@ -98,6 +100,8 @@ body.adm{padding-bottom:0;background:#fff;--series:var(--blue);--pad:20px}
 .adm-col-wide{min-width:9.5em}
 .adm-col-email{min-width:8.5em}
 .adm-nb{white-space:nowrap}
+.adm-sub{display:block;font-size:13px;line-height:1.45;color:var(--muted);overflow-wrap:anywhere}                     /* 칸 안의 둘째 줄: 직책, 연락 ID */
+.adm-clip{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;max-width:20em}       /* 긴 비고는 두 줄까지만. 전체는 수정 창에서 봅니다 */
 .adm-col-bar{width:30%;min-width:120px;vertical-align:middle !important}
 .adm-th{display:inline-flex;align-items:center;gap:3px;min-height:28px;padding:0;border:0;background:none;font:inherit;color:inherit;white-space:nowrap}
 .adm-th:hover{color:var(--ink)}
@@ -191,6 +195,9 @@ body.adm{padding-bottom:0;background:#fff;--series:var(--blue);--pad:20px}
 .adm .field__err{font-size:14px;font-weight:700;line-height:1.5;color:var(--red)}
 .adm-form .input[aria-invalid="true"]{border-color:var(--red)}
 .adm-form .checks{display:flex;flex-wrap:wrap;gap:8px 20px}
+.adm-form .check.is-locked{color:var(--muted)}                                  /* 지금 로그인한 사람이 바꿀 수 없는 칸 */
+.adm-form__set .field__hint{margin-top:6px}
+.adm-form__set .field__err{margin-top:4px}
 .adm-divgrid{display:grid;grid-template-columns:minmax(0,1fr) repeat(3,minmax(54px,84px));align-items:center;gap:8px 8px}
 .adm-divgrid__h{font-size:13px;font-weight:700;color:var(--muted)}
 .adm-divgrid .check{font-weight:700;font-size:15px}
@@ -203,7 +210,7 @@ body.adm{padding-bottom:0;background:#fff;--series:var(--blue);--pad:20px}
 .adm-raw summary{display:inline-block;min-height:40px;padding:8px 0;font-weight:700;font-size:15px;text-decoration:underline;text-underline-offset:4px;cursor:pointer}
 .adm-raw pre{margin:4px 0 0;padding:14px 16px;background:var(--tint);font-family:inherit;font-size:14.5px;line-height:1.65;white-space:pre-wrap;overflow-wrap:anywhere}
 
-.adm-dlg--ask{width:min(440px,calc(100vw - 32px));max-width:none;height:auto;max-height:none;margin:auto;border-top:4px solid var(--ink)}
+.adm-dlg--ask{width:min(440px,calc(100vw - 32px));max-width:none;height:fit-content;max-height:calc(100dvh - 32px);margin:auto;border-top:4px solid var(--ink)}   /* height:auto 로 두면 화면 높이만큼 늘어납니다 */
 .adm-dlg--ask .adm-dlg__box{height:auto;padding:22px 22px 6px}
 .adm-ask__text{margin-top:8px;font-size:15.5px;line-height:1.65;overflow-wrap:anywhere}
 .adm-dlg--ask .adm-dlg__foot{justify-content:flex-end;margin-top:14px;padding:12px 6px 12px 0;border-top:0}
@@ -224,7 +231,7 @@ body.adm{padding-bottom:0;background:#fff;--series:var(--blue);--pad:20px}
   .adm-bar__who span{display:block}
 }
 @media (min-width:760px){
-  .adm-dlg:not(.adm-dlg--ask){width:min(760px,calc(100vw - 48px));max-width:none;height:auto;max-height:calc(100dvh - 48px);margin:auto}
+  .adm-dlg:not(.adm-dlg--ask){width:min(760px,calc(100vw - 48px));max-width:none;height:fit-content;max-height:calc(100dvh - 48px);margin:auto}   /* 내용이 짧으면 창도 짧게 */
   .adm-dlg:not(.adm-dlg--ask) .adm-dlg__box{height:auto;max-height:calc(100dvh - 48px)}
   .adm-cards{grid-template-columns:repeat(2,minmax(0,1fr))}
   .adm-card:has(> .adm-tablebox){grid-column:1 / -1}
@@ -238,9 +245,11 @@ body.adm{padding-bottom:0;background:#fff;--series:var(--blue);--pad:20px}
   .adm-nav__a[aria-current="page"]{background:var(--tint);box-shadow:inset 3px 0 0 var(--red)}
   .adm-main{padding-top:28px}
   .adm-head{grid-template-columns:minmax(0,1fr) auto;align-items:end}
-  .adm-filters{grid-template-columns:minmax(200px,1.6fr) repeat(5,minmax(0,1fr))}
-  .adm-filter--search{grid-column:auto}
+  .adm-filters{grid-template-columns:repeat(auto-fit,minmax(118px,1fr))}       /* 필터 개수가 화면마다 달라, 들어가는 만큼 한 줄에 놓습니다 */
+  .adm-filter--search{grid-column:span 2}
   .adm-table .is-rowhead{position:static;box-shadow:none}
+  .adm-tablebox.has-more .adm-table__act{box-shadow:-1px 0 0 var(--line),-12px 0 12px -8px rgba(16,24,40,.22)}   /* 오른쪽에 열이 더 있다는 표시 */
+  .adm-tablewrap.is-wide .is-rowhead{position:sticky;box-shadow:1px 0 0 var(--line)}   /* 열이 많아 옆으로 밀어야 하는 표는 넓은 화면에서도 이름 열을 붙여 둡니다 */
   .adm-table__act{position:sticky;right:0;z-index:1;background:#fff;box-shadow:-1px 0 0 var(--line)}   /* 넓은 화면: 표가 길어도 수정 단추는 늘 보입니다 */
   .adm-col-main{min-width:12em}
 }
