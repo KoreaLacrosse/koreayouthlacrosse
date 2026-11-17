@@ -9,6 +9,9 @@
      회원 본인의 문서는 members/{로그인 계정의 uid}, 자녀는 guardian 이 보호자 uid 인 문서입니다.
    - 회원이 읽을 수 있는 문서에는 고친 사람(updatedBy)을 이메일이 아니라 로그인 계정의 고유 번호(uid)로 남깁니다.
      가입일(joinedOn)은 비워 보내고, 가입 시각(createdAt, 서버 시각)을 가입일로 봅니다.
+   - 선수와 학부모는 함께 고를 수 없습니다. 선수는 출생 연월일을 적고(만 14세 이상인지 여기서 확인합니다),
+     학부모는 자녀와의 관계(부·모)와, 가입할 때 자녀 선수 한 명을 함께 적습니다. 연령 구분은 회원에게 묻지 않습니다.
+   - 탈퇴하면 회원 정보는 지우고, 탈퇴 기록(memberExits)에 이름·회원 종류·가입일·탈퇴 시각만 남깁니다.
    - DB 에서 온 글(회원이 적은 내용, 협회 답변, 시합 소식)은 textContent 로만 화면에 넣습니다. innerHTML 은 쓰지 않습니다.
    - 화면에 보이는 한국어는 app.js 와 같이 T 함수로 감쌉니다. 영어·일본어는 i18n/catalog.json 에 넣습니다.
    ========================================================================== */
@@ -31,6 +34,7 @@
   var TYPES = [['player', T('선수')], ['parent', T('학부모')], ['coach', T('지도자')], ['general', T('일반')]];
   var DIVISIONS = { u10: 'U10', u12: 'U12', u14: 'U14', u16: 'U16', adult: T('성인') };
   var GENDERS = { m: T('남'), f: T('여') };
+  var RELATIONS = { father: T('부'), mother: T('모') };          // 학부모가 적는 자녀와의 관계
   var CATS = {
     member: [T('회원·가입'), 'navy'], program: [T('교육 프로그램'), 'orange'], event: [T('대회·시합'), 'red'], cert: [T('지도자 자격 신청'), 'green'],
     docs: [T('증빙 서류 요청'), 'line'], intl: [T('국제교류'), 'blue'], sponsor: [T('후원·협력'), 'navy'], etc: [T('그 밖의 문의'), 'line']
@@ -84,6 +88,40 @@
   function today() { return ymd(new Date()); }
   function dayOf(iso) { var d = iso ? new Date(iso) : null; return d && !isNaN(d.getTime()) ? ymd(d) : ''; }
   function dots(day) { return day ? day.replace(/-/g, '.') : ''; }
+
+  /* ---------- 출생 연월일 고르기: 연도·월·일 세 칸(이름-y, 이름-m, 이름-d) ---------- */
+  function two(n) { return (n < 10 ? '0' : '') + n; }
+  // years: 올해부터 몇 해 전까지 고를 수 있게 할지
+  function fillDob(prefix, years) {
+    var y = $(prefix + '-y'), m = $(prefix + '-m'), d = $(prefix + '-d'), now = Number(today().slice(0, 4)), i;
+    if (y.options.length > 1) return;
+    for (i = now; i >= now - years; i--) y.appendChild(el('option', '', String(i)));
+    for (i = 1; i <= 12; i++) m.appendChild(el('option', '', String(i)));
+    for (i = 1; i <= 31; i++) d.appendChild(el('option', '', String(i)));
+  }
+  function setDob(prefix, value) {
+    var p = /^(\d{4})-(\d{2})-(\d{2})$/.exec(text(value)), y = $(prefix + '-y');
+    // 고를 수 있는 범위 밖의 해가 적혀 있으면 그 해를 보기에 더해 줍니다.
+    if (p && !Array.prototype.some.call(y.options, function (o) { return o.value === p[1]; })) y.appendChild(el('option', '', p[1]));
+    y.value = p ? p[1] : '';
+    $(prefix + '-m').value = p ? String(Number(p[2])) : '';
+    $(prefix + '-d').value = p ? String(Number(p[3])) : '';
+  }
+  // 고른 날짜. { value: 'YYYY-MM-DD'(아무것도 고르지 않았으면 ''), error: 고쳐야 할 까닭(없으면 '') }
+  function readDob(prefix) {
+    var y = $(prefix + '-y').value, m = $(prefix + '-m').value, d = $(prefix + '-d').value;
+    if (!y && !m && !d) return { value: '', error: '' };
+    if (!y || !m || !d) return { value: '', error: T('연도, 월, 일을 모두 골라 주세요.') };
+    var value = y + '-' + two(Number(m)) + '-' + two(Number(d)), date = new Date(Date.UTC(Number(y), Number(m) - 1, Number(d)));
+    if (date.getUTCMonth() !== Number(m) - 1 || date.getUTCDate() !== Number(d)) return { value: '', error: T('없는 날짜입니다. 다시 골라 주세요.') };
+    if (value > today()) return { value: '', error: T('오늘보다 뒤의 날짜는 고를 수 없습니다.') };
+    return { value: value, error: '' };
+  }
+  // 만 14세 이상인지(한국 시간의 오늘 기준). 만 14세 미만은 본인이 가입하지 않고 보호자가 자녀로 등록합니다.
+  function is14(birth) {
+    var t = today();
+    return birth <= (Number(t.slice(0, 4)) - 14) + t.slice(4);
+  }
 
   /* ---------- Firestore 와 주고받기 (로그인한 회원의 권한으로) ---------- */
   function enc(v) {
@@ -360,19 +398,40 @@
   /* ---------- 가입과 회원 정보 수정 (같은 양식 #mem-form 을 씁니다) ---------- */
   var formMode = 'join';
   function typeBoxes() { return Array.prototype.slice.call($('mem-form').querySelectorAll('[data-mtype]')); }
-  function isPlayerChecked() { return typeBoxes().some(function (b) { return b.checked && b.getAttribute('data-mtype') === 'player'; }); }
-  function syncPlayerFields() { $('mf-player').hidden = !isPlayerChecked(); }
+  function hasType(t) { return typeBoxes().some(function (b) { return b.checked && b.getAttribute('data-mtype') === t; }); }
+  // 종류에 따라 더 받는 칸을 보이거나 감춥니다.
+  // 선수: 출생 연월일·성별·보호자 이름, 지도자: 성별, 학부모: 자녀와의 관계(가입할 때는 자녀 선수 정보와 법정대리인 동의도)
+  function syncTypeFields() {
+    var player = hasType('player'), parent = hasType('parent'), coach = hasType('coach'), join = formMode === 'join';
+    $('mf-birth-field').hidden = !player;
+    $('mf-contact-field').hidden = !player;
+    $('mf-gender-field').hidden = !(player || coach);
+    $('mf-relation-field').hidden = !parent;
+    $('mf-more').hidden = !(player || coach || parent);
+    $('mf-child').hidden = !(join && parent);
+    $('mf-child-consent').hidden = !(join && parent);
+  }
+  // 선수와 학부모는 함께 고를 수 없습니다. 하나를 고르면 다른 하나는 풀립니다.
+  function onTypeChange(box) {
+    var t = box.getAttribute('data-mtype'), other = t === 'player' ? 'parent' : (t === 'parent' ? 'player' : '');
+    if (box.checked && other) typeBoxes().forEach(function (b) { if (b.getAttribute('data-mtype') === other) b.checked = false; });
+    syncTypeFields();
+  }
   function fillForm(v) {
     $('mf-name').value = v.name || '';
     typeBoxes().forEach(function (b) { b.checked = (v.types || []).indexOf(b.getAttribute('data-mtype')) >= 0; });
     $('mf-team').value = v.team || '';
     $('mf-phone').value = v.phone || '';
-    $('mf-division').value = v.division || '';
+    setDob('mf-birth', v.birth);
     $('mf-gender').value = v.gender || '';
     $('mf-contact').value = v.contactName || '';
+    $('mf-relation').value = v.relation || '';
+    $('mc-name').value = ''; $('mc-team').value = ''; $('mc-gender').value = '';
+    setDob('mc-birth', '');
+    $('mc-agree').checked = false;
     $('mf-age').checked = false;
     $('mf-agree').checked = false;
-    syncPlayerFields();
+    syncTypeFields();
   }
   function setFormMode(mode) {
     var form = $('mem-form');
@@ -401,22 +460,40 @@
     fillForm({ name: clean(user.displayName, 60) });
   }
   function readForm() {
-    var player = isPlayerChecked();
+    var player = hasType('player'), parent = hasType('parent'), coach = hasType('coach'), none = { value: '', error: '' };
     return {
       name: clean($('mf-name').value, 60),
       types: typeBoxes().filter(function (b) { return b.checked; }).map(function (b) { return b.getAttribute('data-mtype'); }),
       team: clean($('mf-team').value, 80), phone: clean($('mf-phone').value, 40),
-      division: player ? $('mf-division').value : '', gender: player ? $('mf-gender').value : '',
-      contactName: player ? clean($('mf-contact').value, 60) : '', player: player
+      birth: player ? readDob('mf-birth') : none, gender: player || coach ? $('mf-gender').value : '',
+      contactName: player ? clean($('mf-contact').value, 60) : '', relation: parent ? $('mf-relation').value : '',
+      player: player, parent: parent, coach: coach,
+      // 학부모로 가입할 때 함께 적는 자녀 선수
+      child: formMode === 'join' && parent
+        ? { name: clean($('mc-name').value, 60), team: clean($('mc-team').value, 80), birth: readDob('mc-birth'), gender: $('mc-gender').value } : null
+    };
+  }
+  // 보호자가 등록하는 자녀 선수의 문서. 자녀는 선수로만 등록하고, 연락처 칸에는 보호자(나)의 이름과 연락처가 들어갑니다. 집 주소는 받지 않습니다.
+  function kidDoc(v, u) {
+    return {
+      name: v.name, types: ['player'], status: 'active', matchAccess: false, team: v.team, division: '', gender: v.gender, birth: v.birth,
+      contactName: me.name || '', email: email(), phone: me.phone || '', joinedOn: '', note: '', source: 'guardian', guardian: u.uid, updatedBy: u.uid
     };
   }
   function submitForm(ev) {
     ev.preventDefault();
-    var form = $('mem-form'), first = checkRequired(form), v = readForm(), u = user;
-    if (!v.types.length) {
-      var box = typeBoxes()[0];
-      markError(box, T('회원 종류를 하나 이상 골라 주세요.'));
-      first = first || box;
+    var form = $('mem-form'), first = checkRequired(form), v = readForm(), u = user, join = formMode === 'join';
+    var mark = function (input, msg) { markError(input, msg); first = first || input; };
+    if (!v.types.length) mark(typeBoxes()[0], T('회원 종류를 하나 이상 골라 주세요.'));
+    else if (v.player && v.parent) mark(typeBoxes()[0], T('선수와 학부모는 함께 고를 수 없습니다. 하나만 골라 주세요.'));
+    if (v.player) {
+      var bad = v.birth.error || (!v.birth.value ? T('출생 연월일을 골라 주세요.')
+        : (is14(v.birth.value) ? '' : T('만 14세 미만은 본인이 가입할 수 없습니다. 보호자가 학부모로 가입해 자녀를 선수로 등록해 주세요.')));
+      if (bad) mark($('mf-birth-y'), bad);
+    }
+    if (v.child) {
+      var cbad = v.child.birth.error || (v.child.birth.value ? '' : T('자녀의 출생 연월일을 골라 주세요.'));
+      if (cbad) mark($('mc-birth-y'), cbad);
     }
     if (first) {
       result(form, 'err', T('빠진 항목이 있습니다'), T('표시된 항목을 채운 뒤 다시 눌러 주세요.'));
@@ -425,43 +502,67 @@
     }
     result(form, '', '');
     var write, saved;
-    if (formMode === 'join') {
+    if (join) {
       // 가입하면 바로 활동 회원입니다. 상태·시합 참가 권한·협회 메모는 회원이 정할 수 없고(보안 규칙), 관리자만 바꿉니다.
+      // 연령 구분(division)은 회원에게 묻지 않습니다. 협회가 출생 연월일을 보고 정합니다.
       saved = {
-        name: v.name, types: v.types, status: 'active', matchAccess: false, team: v.team, division: v.division, gender: v.gender,
+        name: v.name, types: v.types, status: 'active', matchAccess: false, team: v.team, division: '', gender: v.gender, birth: v.birth.value, relation: v.relation,
         contactName: v.contactName, email: email(), phone: v.phone, joinedOn: '', note: '', source: 'self', updatedBy: u.uid
       };
       write = wSet('members', u.uid, saved, { create: true, times: ['createdAt', 'updatedAt', 'agreedAt'] });
     } else {
-      saved = { name: v.name, types: v.types, team: v.team, phone: v.phone, updatedBy: u.uid };
-      // 선수가 아니면 연령 구분·성별·보호자 이름은 건드리지 않습니다(협회가 적어 둔 값이 있을 수 있습니다).
-      if (v.player) { saved.division = v.division; saved.gender = v.gender; saved.contactName = v.contactName; }
+      // 출생 연월일과 자녀와의 관계는 그 종류가 아니게 되면 비웁니다. 성별과 보호자 이름은 해당 종류일 때만 고칩니다(협회가 적어 둔 값이 있을 수 있습니다).
+      saved = { name: v.name, types: v.types, team: v.team, phone: v.phone, birth: v.birth.value, relation: v.relation, updatedBy: u.uid };
+      if (v.player || v.coach) saved.gender = v.gender;
+      if (v.player) saved.contactName = v.contactName;
       write = wSet('members', u.uid, saved, { mask: Object.keys(saved), exists: true, times: ['updatedAt'] });
     }
     busy(form, true, T('저장하는 중'));
     commit([write]).then(function (res) {
-      if (user !== u) return;
-      busy(form, false);
+      if (user !== u) return null;
       var t = (res && res.commitTime) || new Date().toISOString();
-      if (formMode === 'join') {
-        me = Object.create(null);
+      if (!join) {
+        busy(form, false);
         Object.keys(saved).forEach(function (k) { me[k] = saved[k]; });
-        me.id = u.uid; me.createdAt = t; me.agreedAt = t;
-        kids = []; inquiries = []; posts = null;
-        showHome();
-        flash(staff ? T('가입했습니다.') : T('가입했습니다. 이제 문의를 남길 수 있습니다.'));
-      } else {
-        Object.keys(saved).forEach(function (k) { me[k] = saved[k]; });
+        me.updatedAt = t;
         closeEdit();
         renderWho(); renderFacts();
         flash(T('회원 정보를 저장했습니다.'));
+        return null;
       }
-      me.updatedAt = t;
+      me = Object.create(null);
+      Object.keys(saved).forEach(function (k) { me[k] = saved[k]; });
+      me.id = u.uid; me.createdAt = t; me.agreedAt = t; me.updatedAt = t;
+      kids = []; inquiries = []; posts = null; matches = [];
+      if (!v.child) {
+        busy(form, false);
+        showHome();
+        flash(staff ? T('가입했습니다.') : T('가입했습니다. 이제 문의를 남길 수 있습니다.'));
+        return null;
+      }
+      // 학부모: 가입에 이어 자녀를 선수로 등록합니다. 여기서 실패해도 가입은 끝난 것이라, 내 정보에서 다시 등록하게 안내합니다.
+      var kid = kidDoc({ name: v.child.name, team: v.child.team, birth: v.child.birth.value, gender: v.child.gender }, u), id = newId();
+      return commit([wSet('members', id, kid, { create: true, times: ['createdAt', 'updatedAt', 'agreedAt'] })]).then(function (r2) {
+        if (user !== u) return;
+        busy(form, false);
+        var doc = Object.create(null);
+        Object.keys(kid).forEach(function (k) { doc[k] = kid[k]; });
+        doc.id = id; doc.createdAt = (r2 && r2.commitTime) || t;
+        kids = [doc];
+        showHome();
+        flash(T('가입했습니다. {name} 선수도 함께 등록했습니다.', { name: kid.name }));
+      }, function () {
+        if (user !== u) return;
+        busy(form, false);
+        showHome();
+        openKid(null, kid);
+        flash(T('가입은 끝났습니다. 자녀 선수 등록은 저장하지 못했습니다. 아래에서 다시 등록해 주세요.'), true);
+      });
     }, function (err) {
       if (user !== u) return;
       busy(form, false);
-      if (formMode === 'join' && (err.status === 409 || err.code === 'ALREADY_EXISTS')) { load(); return; }     // 다른 창에서 이미 가입함
-      result(form, 'err', formMode === 'join' ? T('가입하지 못했습니다') : T('저장하지 못했습니다'), errorText(err));
+      if (join && (err.status === 409 || err.code === 'ALREADY_EXISTS')) { load(); return; }     // 다른 창에서 이미 가입함
+      result(form, 'err', join ? T('가입하지 못했습니다') : T('저장하지 못했습니다'), errorText(err));
     });
   }
   function openEdit() {
@@ -491,17 +592,17 @@
     $('mem-email').textContent = user.email || '';
   }
   function renderFacts() {
-    var dl = $('mem-facts'), player = (me.types || []).indexOf('player') >= 0;
+    var dl = $('mem-facts'), types = me.types || [];
+    var player = types.indexOf('player') >= 0, parent = types.indexOf('parent') >= 0, coach = types.indexOf('coach') >= 0;
     var row = function (k, v) { add(dl, add(el('div'), el('dt', '', k), el('dd', '', v || T('적지 않음')))); };
     dl.textContent = '';
     row(T('이름'), me.name);
     row(T('회원 종류'), typeNames(me.types).concat(staff ? [T('직원')] : []).join(', '));
     row(T('소속'), me.team);
-    if (player) {
-      row(T('연령 구분'), DIVISIONS[me.division] || '');
-      row(T('성별'), GENDERS[me.gender] || '');
-      row(T('보호자 이름'), me.contactName);
-    }
+    if (player) row(T('출생 연월일'), dots(me.birth));
+    if (player || coach) row(T('성별'), GENDERS[me.gender] || '');
+    if (player) row(T('보호자 이름'), me.contactName);
+    if (parent) row(T('자녀와의 관계'), RELATIONS[me.relation] || '');
     row(T('휴대전화'), me.phone);
     row(T('가입일'), dots(me.joinedOn) || dots(dayOf(me.createdAt)));
     row(T('시합 참가 권한'), me.matchAccess === true ? T('있음') : T('없음'));
@@ -509,8 +610,9 @@
 
   /* ---------- 자녀 선수 ---------- */
   function shownKids() { return kids.filter(function (k) { return !k.deletedAt; }); }
+  // 출생 연월일을 적기 전에 등록한 자녀는 예전에 고른 연령 구분을 대신 보여 줍니다.
   function kidSummary(k) {
-    return [k.team, DIVISIONS[k.division] || '', GENDERS[k.gender] || ''].filter(Boolean).join(', ');
+    return [k.team, k.birth ? T('{date} 출생', { date: dots(k.birth) }) : (DIVISIONS[k.division] || ''), GENDERS[k.gender] || ''].filter(Boolean).join(', ');
   }
   function renderKids() {
     var box = $('mem-kids'), list = shownKids();
@@ -532,7 +634,8 @@
     });
     box.appendChild(ul);
   }
-  function openKid(k) {
+  // k: 고칠 자녀(새로 등록하면 null). preset: 새로 등록할 때 미리 채울 값
+  function openKid(k, preset) {
     var form = $('mem-kid-form');
     kidEditing = k || null;
     clearErrors(form);
@@ -544,10 +647,11 @@
     }
     $('mem-kid-legend').textContent = k ? T('자녀 선수 정보 수정') : T('자녀 선수 등록');
     $('mk-submit').textContent = k ? T('저장') : T('등록');
-    $('mk-name').value = k ? k.name || '' : '';
-    $('mk-team').value = k ? k.team || '' : (me.team || '');
-    $('mk-division').value = k ? k.division || '' : '';
-    $('mk-gender').value = k ? k.gender || '' : '';
+    var from = k || preset || {};
+    $('mk-name').value = from.name || '';
+    $('mk-team').value = k || preset ? from.team || '' : (me.team || '');
+    setDob('mk-birth', from.birth);
+    $('mk-gender').value = from.gender || '';
     $('mk-consent').hidden = !!k;            // 동의는 등록할 때 한 번 받습니다
     $('mk-agree').checked = false;
     form.hidden = false;
@@ -562,22 +666,20 @@
   function submitKid(ev) {
     ev.preventDefault();
     var form = $('mem-kid-form'), first = checkRequired(form), u = user, k = kidEditing;
+    var born = readDob('mk-birth'), bad = born.error || (born.value ? '' : T('출생 연월일을 골라 주세요.'));
+    if (bad) { markError($('mk-birth-y'), bad); first = first || $('mk-birth-y'); }
     if (first) {
       result(form, 'err', T('빠진 항목이 있습니다'), T('표시된 항목을 채운 뒤 다시 눌러 주세요.'));
       first.focus();
       return;
     }
-    var v = { name: clean($('mk-name').value, 60), team: clean($('mk-team').value, 80), division: $('mk-division').value, gender: $('mk-gender').value };
+    var v = { name: clean($('mk-name').value, 60), team: clean($('mk-team').value, 80), birth: born.value, gender: $('mk-gender').value };
     var id = k ? k.id : newId(), saved, write;
     if (k) {
-      saved = { name: v.name, team: v.team, division: v.division, gender: v.gender, updatedBy: u.uid };
+      saved = { name: v.name, team: v.team, birth: v.birth, gender: v.gender, updatedBy: u.uid };
       write = wSet('members', id, saved, { mask: Object.keys(saved), exists: true, times: ['updatedAt'] });
     } else {
-      // 자녀는 선수로만 등록합니다. 연락처 칸에는 보호자(나)의 이름과 연락처가 들어갑니다. 생년월일과 주소는 받지 않습니다.
-      saved = {
-        name: v.name, types: ['player'], status: 'active', matchAccess: false, team: v.team, division: v.division, gender: v.gender,
-        contactName: me.name || '', email: email(), phone: me.phone || '', joinedOn: '', note: '', source: 'guardian', guardian: u.uid, updatedBy: u.uid
-      };
+      saved = kidDoc(v, u);
       write = wSet('members', id, saved, { create: true, times: ['createdAt', 'updatedAt', 'agreedAt'] });
     }
     busy(form, true, T('저장하는 중'));
@@ -808,10 +910,12 @@
   }
 
   /* ---------- 탈퇴 ----------
-     본인 확인(구글 로그인 창) → 등록한 자녀와 남긴 문의 삭제 → 내 회원 문서 삭제 → 로그인 계정 삭제 순서입니다. */
+     본인 확인(구글 로그인 창) → 등록한 자녀와 남긴 문의 삭제 → 탈퇴 기록을 남기며 내 회원 문서 삭제 → 로그인 계정 삭제 순서입니다.
+     탈퇴 기록(memberExits)에는 이름, 회원 종류, 가입일, 등록했던 자녀 수, 탈퇴 시각만 남깁니다. 연락처와 출생 연월일은 남기지 않고,
+     관리자만 읽을 수 있습니다. 협회는 이 기록을 1년 뒤에 지웁니다(관리자 화면이 지웁니다). */
   function leaveMsg(t) { var m = $('mem-leave-msg'); m.textContent = t || ''; m.hidden = !t; }
   function leave() {
-    var u = user, btn = $('mem-leave-go');
+    var u = user, btn = $('mem-leave-go'), kidCount = 0;
     if (!u || staff || !active() || !$('mem-leave-ok').checked) return;
     leaveMsg('');
     btn.disabled = true;
@@ -820,12 +924,19 @@
       btn.textContent = T('지우는 중');
       return Promise.all([query('members', 'guardian', u.uid), query('inquiries', 'uid', u.uid)]);
     }).then(function (r) {
+      kidCount = r[0].length;
       var writes = r[0].map(function (k) { return wDel('members', k.id); }).concat(r[1].map(function (q) { return wDel('inquiries', q.id); }));
       // 한 번에 조금씩 지웁니다(보안 규칙이 한 번의 쓰기 묶음에서 확인할 수 있는 양에 한도가 있습니다).
       var step = function () { return writes.length ? commit(writes.splice(0, 8)).then(step) : null; };
       return step();
     }).then(function () {
-      return commit([wDel('members', u.uid)]);
+      var known = TYPES.map(function (t) { return t[0]; });
+      var exit = {
+        name: clean(me.name, 60) || '-', types: (me.types || []).filter(function (t) { return known.indexOf(t) >= 0; }),
+        kids: Math.min(kidCount, 50), joinedOn: /^\d{4}-\d{2}-\d{2}$/.test(text(me.joinedOn)) ? me.joinedOn : dayOf(me.createdAt)
+      };
+      // 탈퇴 기록을 남기는 것과 회원 문서를 지우는 것을 한 번의 저장에 담습니다(둘 다 되거나 둘 다 안 됩니다).
+      return commit([wSet('memberExits', u.uid, exit, { times: ['leftAt'] }), wDel('members', u.uid)]);
     }).then(function () {
       justLeft = true;
       // 로그인 계정도 지웁니다. 지우지 못하면 로그아웃만 합니다(회원 자료는 이미 지워졌습니다).
@@ -849,7 +960,7 @@
     $('mem-leave-ok').checked = false;
     $('mem-leave-go').disabled = true;
     leaveMsg('');
-    syncPlayerFields();
+    syncTypeFields();
   }
 
   /* ---------- 시작 ---------- */
@@ -857,7 +968,8 @@
     $('mem-google').addEventListener('click', signIn);
     $('mem-copy-url').addEventListener('click', copyUrl);
     $('mem-form').addEventListener('submit', submitForm);
-    $('mem-form').addEventListener('change', function (ev) { if (ev.target.hasAttribute && ev.target.hasAttribute('data-mtype')) syncPlayerFields(); });
+    $('mem-form').addEventListener('change', function (ev) { if (ev.target.hasAttribute && ev.target.hasAttribute('data-mtype')) onTypeChange(ev.target); });
+    fillDob('mf-birth', 90); fillDob('mc-birth', 25); fillDob('mk-birth', 25);
     $('mf-cancel').addEventListener('click', function () { closeEdit(); });
     $('mem-edit').addEventListener('click', openEdit);
     $('mem-kid-add').addEventListener('click', function () { flash(''); openKid(null); });

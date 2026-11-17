@@ -1099,7 +1099,7 @@
     <!-- 로그인 전 -->
     <div class="panel" id="mem-signin" hidden>
       <p class="note" id="mem-signin-why" hidden>Sign in as a member to send an inquiry.</p>
-      <p class="result result--ok" id="mem-left" role="status" hidden>Your membership has been cancelled. Your member details, the children you registered and your inquiries have all been deleted.</p>
+      <p class="result result--ok" id="mem-left" role="status" hidden>Your membership has been cancelled. Your member details, the children you registered and your inquiries have all been deleted. Only a cancellation record (name, member type, join date and cancellation date) is kept for one year and then deleted.</p>
       <div class="cta">
         <div><h2>Sign in with your Google account</h2><p>There is no new password to create: you sign in with the Google account you already use. If this is your first time, you can join straight after signing in, and membership is free.</p></div>
         <div class="btns"><button class="btn" type="button" id="mem-google">Sign in with Google</button></div>
@@ -1112,7 +1112,7 @@
       <dl class="deflist">
         <div><dt>Inquiry</dt><dd>Send an inquiry to the association and read the reply on the same page.</dd></div>
         <div><dt>Match updates</dt><dd>Once the association grants access to members taking part in matches, they can see match schedules and photos.</dd></div>
-        <div><dt>Register a child player</dt><dd>Players under 14 do not join themselves: a parent or guardian joins and then registers the child as a player.</dd></div>
+        <div><dt>Register a child player</dt><dd>Players under 14 do not join themselves: a parent or guardian joins as a parent and registers the child as a player at the same time.</dd></div>
       </dl>
       <p class="mem__small">The information collected when you join, and how long it is kept, is set out in the <a href="#privacy">privacy policy</a>.</p>
     </div>
@@ -1137,27 +1137,46 @@
                 <label class="check"><input type="checkbox" data-mtype="coach"><span>Coach</span></label>
                 <label class="check"><input type="checkbox" data-mtype="general"><span>General</span></label>
               </div>
-              <p class="field__hint">Choose all that apply. To apply for the coach certification, send an inquiry after you join.</p>
+              <p class="field__hint">Choose all that apply. Player and Parent cannot be chosen together. To apply for the coach certification, send an inquiry after you join.</p>
             </fieldset>
             <div class="form__grid form__grid--2">
               <div class="field"><label class="field__label" for="mf-team">Organization</label><input class="input" id="mf-team" maxlength="80" autocomplete="organization" placeholder="Team, club or school"></div>
               <div class="field"><label class="field__label" for="mf-phone">Mobile phone</label><input class="input" id="mf-phone" type="tel" maxlength="40" inputmode="tel" autocomplete="tel" placeholder="010-0000-0000" aria-describedby="mf-phone-hint"><p class="field__hint" id="mf-phone-hint">For players, enter a parent or guardian's number.</p></div>
             </div>
-            <div class="form__grid form__grid--2" id="mf-player" hidden>
-              <div class="field"><label class="field__label" for="mf-division">Age group</label><select class="input" id="mf-division"><option value="">Not applicable</option><option value="u10">U10</option><option value="u12">U12</option><option value="u14">U14</option><option value="u16">U16</option><option value="adult">Adult</option></select></div>
-              <div class="field"><label class="field__label" for="mf-gender">Gender</label><select class="input" id="mf-gender"><option value="">Not given</option><option value="m">Male</option><option value="f">Female</option></select></div>
-              <div class="field"><label class="field__label" for="mf-contact">Parent or guardian's name</label><input class="input" id="mf-contact" maxlength="60" autocomplete="off"></div>
+            <div class="form__grid form__grid--2" id="mf-more" hidden>
+              <fieldset class="field" id="mf-birth-field" hidden>
+                <legend class="field__label"><span>Date of birth</span><em>required</em></legend>
+                <div class="dob"><select class="input" id="mf-birth-y" aria-label="Year of birth"><option value="">YYYY</option></select><select class="input" id="mf-birth-m" aria-label="Month of birth"><option value="">MM</option></select><select class="input" id="mf-birth-d" aria-label="Day of birth"><option value="">DD</option></select></div>
+                <p class="field__hint">Used to decide the age group (such as U12) for matches.</p>
+              </fieldset>
+              <div class="field" id="mf-gender-field" hidden><label class="field__label" for="mf-gender">Gender</label><select class="input" id="mf-gender"><option value="">Not given</option><option value="m">Male</option><option value="f">Female</option></select></div>
+              <div class="field" id="mf-contact-field" hidden><label class="field__label" for="mf-contact">Parent or guardian's name</label><input class="input" id="mf-contact" maxlength="60" autocomplete="off"></div>
+              <div class="field" id="mf-relation-field" hidden><label class="field__label" for="mf-relation">Relationship to the child</label><select class="input" id="mf-relation"><option value="">Not given</option><option value="father">Father</option><option value="mother">Mother</option></select></div>
+            </div>
+          </fieldset>
+          <fieldset class="form__group" id="mf-child" hidden>
+            <legend class="form__legend">Your child (player)</legend>
+            <p class="secintro">Tell us which player you are the parent of. Your child is registered as a player when you join. If you have more than one child, you can register the others under 'My details' after joining.</p>
+            <div class="field"><label class="field__label" for="mc-name"><span>Child's name</span><em>required</em></label><input class="input" id="mc-name" maxlength="60" required autocomplete="off" data-msg="Enter your child's name."></div>
+            <div class="form__grid form__grid--2">
+              <fieldset class="field">
+                <legend class="field__label"><span>Child's date of birth</span><em>required</em></legend>
+                <div class="dob"><select class="input" id="mc-birth-y" aria-label="Child's year of birth"><option value="">YYYY</option></select><select class="input" id="mc-birth-m" aria-label="Child's month of birth"><option value="">MM</option></select><select class="input" id="mc-birth-d" aria-label="Child's day of birth"><option value="">DD</option></select></div>
+              </fieldset>
+              <div class="field"><label class="field__label" for="mc-team">Child's organization</label><input class="input" id="mc-team" maxlength="80" autocomplete="off" placeholder="Team, club or school"></div>
+              <div class="field"><label class="field__label" for="mc-gender">Child's gender</label><select class="input" id="mc-gender"><option value="">Not given</option><option value="m">Male</option><option value="f">Female</option></select></div>
             </div>
           </fieldset>
           <fieldset class="form__group" id="mf-consent">
             <legend class="form__legend">Personal information consent</legend>
             <dl class="consent">
-              <dt>Items collected</dt><dd>Google account email, name, member type, organization and mobile phone. For players we also ask for age group, gender and a parent or guardian's name.</dd>
+              <dt>Items collected</dt><dd>Google account email, name, member type, organization and mobile phone. For players we also ask for date of birth, gender and a parent or guardian's name; for coaches, gender; for parents, their relationship to the child (father or mother) and the child player's name, organization, date of birth and gender.</dd>
               <dt>Purpose of use</dt><dd>Confirming and managing membership, answering inquiries and sending match information</dd>
-              <dt>Retention period</dt><dd>Until you cancel your membership. Deleted without delay when you cancel.</dd>
+              <dt>Retention period</dt><dd>Until you cancel your membership. Deleted without delay when you cancel. However, so that the cancellation can be confirmed, your name, member type, join date and cancellation date are kept as a cancellation record for one year and then deleted.</dd>
               <dt>Storage and processing</dt><dd>We use Firebase, a Google cloud service. Member details are stored in a data center in Seoul, and sign-in information (Google account email and sign-in records) is processed by Google in data centers in the United States.</dd>
             </dl>
-            <div class="field"><label class="check"><input type="checkbox" id="mf-age" required aria-describedby="mf-age-hint" data-msg="Confirm that you are 14 or older."><span>I am 14 or older. (Required)</span></label><p class="field__hint" id="mf-age-hint">For children under 14, a parent or guardian joins and then registers the child as a player under 'My details'.</p></div>
+            <div class="field"><label class="check"><input type="checkbox" id="mf-age" required aria-describedby="mf-age-hint" data-msg="Confirm that you are 14 or older."><span>I am 14 or older. (Required)</span></label><p class="field__hint" id="mf-age-hint">Children under 14 do not join themselves. A parent or guardian joins as a parent and registers the child as a player at the same time.</p></div>
+            <div class="field" id="mf-child-consent" hidden><label class="check"><input type="checkbox" id="mc-agree" required data-msg="Confirm your consent as legal guardian."><span>As my child's legal guardian, I agree to the use of my child's name, organization, date of birth and gender for membership management and match information. (Required)</span></label></div>
             <div class="field"><label class="check"><input type="checkbox" id="mf-agree" required data-msg="Please agree to the collection and use of personal information."><span>I agree to the collection and use of personal information. (Required)</span></label></div>
           </fieldset>
           <div class="btns"><button class="btn" type="submit" id="mf-submit">Join</button><button class="linkbtn" type="button" id="mf-cancel" hidden>Cancel</button></div>
@@ -1191,7 +1210,7 @@
         </section>
         <section class="mem__block" aria-labelledby="mem-h-kids">
           <h2 class="t-3" id="mem-h-kids">Child players</h2>
-          <p class="secintro">Parents and guardians register children under 14 as players here. We do not ask for dates of birth or home addresses.</p>
+          <p class="secintro">Parents and guardians register children under 14 as players here. The date of birth is used to decide the age group for matches. We do not ask for home addresses.</p>
           <div id="mem-kids"></div>
           <div id="mem-kid-open"><button class="linkbtn" type="button" id="mem-kid-add"><svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg>Register a child player</button></div>
           <form class="form" id="mem-kid-form" hidden novalidate>
@@ -1200,10 +1219,13 @@
               <div class="field"><label class="field__label" for="mk-name"><span>Child's name</span><em>required</em></label><input class="input" id="mk-name" maxlength="60" required autocomplete="off" data-msg="Enter your child's name."></div>
               <div class="form__grid form__grid--2">
                 <div class="field"><label class="field__label" for="mk-team">Organization</label><input class="input" id="mk-team" maxlength="80" autocomplete="off" placeholder="Team, club or school"></div>
-                <div class="field"><label class="field__label" for="mk-division">Age group</label><select class="input" id="mk-division"><option value="">Not sure yet</option><option value="u10">U10</option><option value="u12">U12</option><option value="u14">U14</option><option value="u16">U16</option></select></div>
+                <fieldset class="field">
+                  <legend class="field__label"><span>Date of birth</span><em>required</em></legend>
+                  <div class="dob"><select class="input" id="mk-birth-y" aria-label="Year of birth"><option value="">YYYY</option></select><select class="input" id="mk-birth-m" aria-label="Month of birth"><option value="">MM</option></select><select class="input" id="mk-birth-d" aria-label="Day of birth"><option value="">DD</option></select></div>
+                </fieldset>
                 <div class="field"><label class="field__label" for="mk-gender">Gender</label><select class="input" id="mk-gender"><option value="">Not given</option><option value="m">Male</option><option value="f">Female</option></select></div>
               </div>
-              <div class="field" id="mk-consent"><label class="check"><input type="checkbox" id="mk-agree" required data-msg="Confirm your consent as legal guardian."><span>As my child's legal guardian, I agree to the use of my child's name, organization, age group and gender for membership management and match information. (Required)</span></label></div>
+              <div class="field" id="mk-consent"><label class="check"><input type="checkbox" id="mk-agree" required data-msg="Confirm your consent as legal guardian."><span>As my child's legal guardian, I agree to the use of my child's name, organization, date of birth and gender for membership management and match information. (Required)</span></label></div>
             </fieldset>
             <div class="btns"><button class="btn" type="submit" id="mk-submit">Register</button><button class="linkbtn" type="button" id="mk-cancel">Cancel</button></div>
             <div class="result" role="status" aria-live="polite" hidden></div>
@@ -1211,7 +1233,7 @@
         </section>
         <section class="mem__block" aria-labelledby="mem-h-leave">
           <h2 class="t-3" id="mem-h-leave">Cancel membership</h2>
-          <p class="secintro" id="mem-leave-text">Cancelling deletes your member details, the children you registered and your inquiries. This cannot be undone.</p>
+          <p class="secintro" id="mem-leave-text">Cancelling deletes your member details, the children you registered and your inquiries. This cannot be undone. So that the cancellation can be confirmed, only your name, member type, join date and cancellation date are kept as a cancellation record for one year.</p>
           <p class="note" id="mem-leave-staff" hidden>An account designated as staff (administrator) cannot cancel here. First ask the master administrator to remove the staff designation.</p>
           <p class="note" id="mem-leave-held" hidden>An account the association has set as inactive cannot cancel here. To have your member details deleted, message KYLA on Instagram.</p>
           <details class="mem__leave" id="mem-leave">
@@ -1324,8 +1346,8 @@
     <div class="prose">
       <h3 class="t-3">Information we collect and why</h3>
       <ul>
-        <li>Membership: Google account email, name, member type, organization and mobile phone. For players we also ask for age group, gender and a parent or guardian's name. Used to confirm and manage membership, answer inquiries and send match information.</li>
-        <li>Child player registration: the child's name, organization, age group and gender. Registered directly by the parent or guardian (legal guardian) and used for membership management and match information. We do not ask for dates of birth or home addresses.</li>
+        <li>Membership: Google account email, name, member type, organization and mobile phone. For players we also ask for date of birth, gender and a parent or guardian's name; for coaches, gender; for parents, their relationship to the child (father or mother). Used to confirm and manage membership, answer inquiries and send match information.</li>
+        <li>Child player registration: the child's name, organization, date of birth and gender. Registered directly by the parent or guardian (legal guardian) and used for membership management and match information. The date of birth is used to decide the age group for matches. We do not ask for home addresses.</li>
         <li>Inquiries: the category, subject and content, and the sending member's name and email. Used to check and answer the inquiry.</li>
         <li>Event entries: team name, school or club, head coach's name and contact details, and players' names, birth years and jersey numbers. Used to confirm entries, form divisions, run the event and manage safety.</li>
         <li>International exchange inquiries: school or team name, country and city, contact person's name and contact details, and the exchange you have in mind. Used to discuss the exchange.</li>
@@ -1336,7 +1358,7 @@
       <p>Member sign-in goes through Google's sign-in service (Firebase Authentication). This service processes sign-in information (Google account email, sign-in records and IP address) in Google data centers in the United States. The association never receives or stores members' Google passwords. When you cancel and your sign-in account is deleted, Google removes the remaining data within 180 days.</p>
       <h3 class="t-3">Retention period</h3>
       <p>Information is destroyed without delay once the purpose of collection has been fulfilled. Retention periods for each item will be listed here once the association has confirmed them.</p>
-      <p>Member details are kept until you cancel your membership. When you cancel on the member page, your member details, the children you registered and your inquiries are deleted immediately. Backup copies kept for recovery may retain them for up to 60 days.</p>
+      <p>Member details are kept until you cancel your membership. When you cancel on the member page, your member details, the children you registered and your inquiries are deleted immediately. However, so that the cancellation can be confirmed, your name, member type, join date and cancellation date are kept separately as a cancellation record for one year and then deleted. Contact details and dates of birth are not kept in the cancellation record. Backup copies kept for recovery may retain data for up to 60 days.</p>
       <h3 class="t-3">Children under 14</h3>
       <p>Personal information of children under 14 is collected with the consent of their legal guardian. Children under 14 do not join as members themselves: a parent or guardian joins and then registers the child as a player. Event entries are submitted by the team's head coach after confirming the consent of each player's guardian.</p>
       <h3 class="t-3">Photos and video</h3>

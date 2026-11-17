@@ -215,7 +215,7 @@
   };
 
   /* ---------- 읽어 온 자료 보관 (화면을 오갈 때 다시 읽지 않게) ---------- */
-  var ORDER = { eoiReplies: ['submittedAt', true], members: ['createdAt', true], inquiries: ['createdAt', true], matches: ['createdAt', true], matchPosts: ['createdAt', true], admins: null, memberNotes: null };
+  var ORDER = { eoiReplies: ['submittedAt', true], members: ['createdAt', true], inquiries: ['createdAt', true], matches: ['createdAt', true], matchPosts: ['createdAt', true], admins: null, memberNotes: null, memberExits: ['leftAt', true] };
   var cache = {};
   A.store.load = function (col, force) {
     var c = cache[col];

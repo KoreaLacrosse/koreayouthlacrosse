@@ -12,10 +12,13 @@ rules_version = '2';
 //                       · 본인이 가입한 회원(source = self): 문서 ID 는 로그인 계정의 고유 번호(uid). 본인은 자기 문서만 보고 고칩니다.
 //                       · 보호자가 등록한 자녀(source = guardian): guardian 이 보호자의 uid. 보호자만 보고 고칩니다.
 //                     상태(status), 시합 참가 권한(matchAccess), 협회 메모(note)는 관리자만 바꿉니다.
+//                     선수와 학부모는 함께 고를 수 없습니다. 선수는 출생 연월일(birth)을, 학부모는 자녀와의 관계(relation: 부·모)를 적습니다.
 //                     본인 탈퇴(삭제)는 활동 상태일 때만 됩니다. 계정을 막으려면 지우지 말고 상태를 휴면으로 바꿉니다.
 //                     회원이 만든 문서는 그 회원이 읽을 수 있습니다. 그래서 그런 문서에는 협회 메모를 적지 않고(memberNotes 에 둡니다),
 //                     고친 사람도 이메일이 아니라 로그인 계정의 고유 번호(uid)로 남깁니다(직원 이메일이 회원에게 보이지 않게).
 //   memberNotes/{id}  협회만 보는 회원 메모. 문서 ID 는 회원 문서의 ID. 관리자만 읽고 씁니다.
+//   memberExits/{uid} 탈퇴 기록. 회원이 스스로 탈퇴할 때 이름, 회원 종류, 가입일, 탈퇴 시각, 등록했던 자녀 수만 남깁니다.
+//                     연락처와 출생 연월일은 남기지 않습니다. 관리자만 읽고 지웁니다.
 //   inquiries/{id}    회원이 남긴 문의. 활동 회원만 남기고(직원은 남길 수 없음), 본인과 관리자만 봅니다. 답변과 처리 상태는 관리자가 적습니다.
 //   matches/{id}      시합. 관리자가 넣고 고칩니다. 시합 참가 권한을 받은 활동 회원이 '공개'인 시합만 봅니다.
 //   matchPosts/{id}   시합 소식. 관리자가 쓰고, 시합 참가 권한을 받은 활동 회원이 '공개' 글만 봅니다.
@@ -236,7 +239,7 @@ service cloud.firestore {
 
     // 회원 문서의 모양. 관리자가 넣은 회원, 본인이 가입한 회원, 보호자가 등록한 자녀 모두 같습니다.
     function validMember(d) {
-      return d.keys().hasOnly(memberKeys().concat(['deletedAt', 'deletedBy', 'source', 'guardian', 'agreedAt']))
+      return d.keys().hasOnly(memberKeys().concat(['deletedAt', 'deletedBy', 'source', 'guardian', 'agreedAt', 'birth', 'relation']))
         && d.keys().hasAll(memberKeys())
         && shortText(d, 'name', 60) && d.name.size() > 0
         // 종류는 여러 개를 함께 가질 수 있습니다(같은 값을 두 번 적을 수는 없습니다). 직원은 admins 로 정하므로 여기에 없습니다.
@@ -244,12 +247,17 @@ service cloud.firestore {
         && d.types.size() <= 4
         && d.types.hasOnly(['player', 'parent', 'coach', 'general'])
         && d.types.toSet().size() == d.types.size()
+        // 선수와 학부모는 함께 고를 수 없습니다(유소년 협회라 학부모이면서 선수인 회원은 없습니다).
+        && !d.types.hasAll(['player', 'parent'])
         // 가입하면 바로 활동 회원입니다(승인 단계 없음). 시합 참가 권한은 협회가 따로 켭니다.
         && d.status in ['active', 'paused', 'left']
         && d.matchAccess is bool
         && shortText(d, 'team', 80)
         && d.division in ['', 'u10', 'u12', 'u14', 'u16', 'adult']
         && d.gender in ['', 'm', 'f']
+        // 출생 연월일(선수)과 자녀와의 관계(학부모: 부·모). 이 두 항목이 없는 문서도 있습니다.
+        && (!('birth' in d) || (d.birth is string && (d.birth == '' || d.birth.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$'))))
+        && (!('relation' in d) || d.relation in ['', 'father', 'mother'])
         && shortText(d, 'contactName', 60)
         && shortText(d, 'email', 200)
         && shortText(d, 'phone', 40)
@@ -318,7 +326,7 @@ service cloud.firestore {
         && validMember(request.resource.data)
         && request.resource.data.types.size() >= 1
         && request.resource.data.diff(resource.data).affectedKeys()
-             .hasOnly(['name', 'types', 'team', 'division', 'gender', 'contactName', 'phone', 'updatedAt', 'updatedBy']);
+             .hasOnly(['name', 'types', 'team', 'division', 'gender', 'birth', 'relation', 'contactName', 'phone', 'updatedAt', 'updatedBy']);
       // 탈퇴(삭제)는 활동 상태일 때만 스스로 할 수 있습니다. 협회가 휴면·탈퇴로 바꿔 두었거나 휴지통에 넣은 계정이
       // 문서를 지우고 다시 가입해 상태를 되돌리지 못하게 하려는 것입니다. 그런 계정의 삭제는 협회가 합니다.
       allow delete: if signedInEmail()
@@ -338,8 +346,37 @@ service cloud.firestore {
         && resource.data.get('guardian', '') == request.auth.uid
         && validMember(request.resource.data)
         && request.resource.data.diff(resource.data).affectedKeys()
-             .hasOnly(['name', 'team', 'division', 'gender', 'contactName', 'phone', 'updatedAt', 'updatedBy']);
+             .hasOnly(['name', 'team', 'division', 'gender', 'birth', 'contactName', 'phone', 'updatedAt', 'updatedBy']);
       allow delete: if signedInEmail() && resource.data.get('guardian', '') == request.auth.uid;
+    }
+
+    // ---------- 탈퇴 기록 ----------
+
+    // 회원이 스스로 탈퇴할 때 남기는 기록: 이름, 회원 종류, 가입일, 등록했던 자녀 수, 탈퇴 시각(서버 시각).
+    // 연락처와 출생 연월일은 남기지 않습니다.
+    function validExit(d) {
+      return d.keys().hasOnly(['name', 'types', 'kids', 'joinedOn', 'leftAt'])
+        && d.keys().hasAll(['name', 'types', 'kids', 'joinedOn', 'leftAt'])
+        && shortText(d, 'name', 60) && d.name.size() > 0
+        && d.types is list
+        && d.types.size() <= 4
+        && d.types.hasOnly(['player', 'parent', 'coach', 'general'])
+        && d.kids is int && d.kids >= 0 && d.kids <= 50
+        && d.joinedOn is string
+        && (d.joinedOn == '' || d.joinedOn.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$'))
+        && d.leftAt == request.time;
+    }
+
+    match /memberExits/{id} {
+      // 관리자만 읽고 지웁니다.
+      allow get, list: if isAdmin();
+      allow delete: if isAdmin();
+      // 회원 본인이 자기 계정의 기록만 남깁니다(문서 ID = 로그인 계정의 uid). 읽을 수는 없습니다.
+      // 회원 화면은 이 기록을 회원 문서를 지우는 것과 같은 저장에 담아 보냅니다.
+      allow create, update: if signedInEmail()
+        && id == request.auth.uid
+        && exists(/databases/$(database)/documents/members/$(request.auth.uid))
+        && validExit(request.resource.data);
     }
 
     // ---------- 협회만 보는 회원 메모 ----------

@@ -3,12 +3,15 @@
    Firestore 의 members 컬렉션(회원 명부)을 표로 보고, 거르고, 집계하고, 추가·수정·삭제합니다.
 
    회원 종류는 선수·학부모·지도자·직원·일반 다섯 가지이고, 한 사람이 여러 종류일 수 있습니다.
+   다만 선수와 학부모는 함께 고를 수 없습니다(2026-11-17 담당자 요청. 보안 규칙도 막습니다).
    문서의 types 에는 선수·학부모·지도자·일반만 적습니다. 직원은 곧 관리자라서 따로 적지 않고,
    관리자 명단(admins)에 그 회원의 이메일이 있으면 직원으로 봅니다. 그래서 직원 표시를 켜고 끄는 일은
    관리자 명단을 고치는 일이고, 마스터만 할 수 있습니다(보안 규칙도 그렇게 막습니다).
 
    가입하면 바로 활동 회원입니다(승인 단계가 없습니다). 시합에 참가하는 회원에게는 협회가 '시합 참가 권한'을
-   따로 켜 줍니다. 선수는 대부분 미성년이라 생년월일과 집 주소는 받지 않고, 연락처는 보호자 것을 적습니다.
+   따로 켜 줍니다. 선수는 대부분 미성년이라 집 주소는 받지 않고, 연락처는 보호자 것을 적습니다.
+   선수의 연령 구분은 해마다 바뀌므로 회원에게는 출생 연월일(birth)을 받습니다(2026-11-17 담당자 요청).
+   연령 구분(division)은 협회가 필요할 때 이 화면에서 적는 칸으로 남겨 두었습니다. 학부모는 자녀와의 관계(relation: 부·모)를 적습니다.
    아래 종류·상태 값은 tools/firestore.rules 의 허용 값과 같아야 합니다.
 
    회원 문서가 생기는 길은 세 가지입니다(문서의 source).
@@ -22,11 +25,16 @@
      · 협회 메모를 적지 않고, 관리자만 읽는 memberNotes/{회원 문서 ID} 에 따로 둡니다.
      · 고친 사람을 이메일 대신 로그인 계정의 고유 번호(uid)로 남깁니다(직원 이메일이 회원에게 보이지 않게).
    보안 규칙도 그렇게만 받아 줍니다. 관리자가 넣은 회원 문서는 지금까지처럼 문서 안에 메모와 이메일을 남깁니다.
+
+   회원이 스스로 탈퇴하면 회원 문서는 지워지고, 탈퇴 기록(memberExits/{그 계정의 uid})에 이름·회원 종류·가입일·탈퇴 시각·
+   등록했던 자녀 수만 남습니다. 연락처와 출생 연월일은 남지 않습니다. '탈퇴 기록' 보기에서 확인하고,
+   탈퇴한 날부터 1년이 지난 기록은 이 화면을 열 때 지웁니다(개인정보처리방침에 적은 보관 기간).
    ========================================================================== */
 (function () {
   'use strict';
   var A = window.KYLA_ADMIN, el = A.el, add = A.add, num = A.num, text = A.text;
-  var COL = 'members', ADMINS = 'admins', NOTES = 'memberNotes';
+  var COL = 'members', ADMINS = 'admins', NOTES = 'memberNotes', EXITS = 'memberExits';
+  var EXIT_KEEP_DAYS = 365;            // 탈퇴 기록을 보관하는 기간. 처리방침(index.html 의 #privacy)과 가입 동의 문구에 같은 기간이 적혀 있습니다.
 
   var TYPES = [['player', '선수'], ['parent', '학부모'], ['coach', '지도자'], ['staff', '직원'], ['general', '일반']];
   var OWN = ['player', 'parent', 'coach', 'general'];                 // 문서에 적는 종류(직원은 관리자 명단으로 정해집니다)
@@ -34,12 +42,15 @@
   var ACCESS = [['yes', '있음'], ['no', '없음']];
   var DIVISIONS = [['u10', 'U10'], ['u12', 'U12'], ['u14', 'U14'], ['u16', 'U16'], ['adult', '성인']];
   var GENDERS = [['m', '남'], ['f', '여']];
+  var RELATIONS = [['father', '부'], ['mother', '모']];              // 학부모가 적는 자녀와의 관계
   var SOURCES = [['self', '직접 가입'], ['guardian', '보호자 등록'], ['admin', '협회 입력']];
   function name(list, code) { var hit = list.filter(function (p) { return p[0] === code; })[0]; return hit ? hit[1] : ''; }
   function withAll(list, first) { return [['', first]].concat(list); }
-  function typeNames(m) { return m.types.map(function (t) { return name(TYPES, t); }); }
+  // 종류 이름들. 학부모는 자녀와의 관계를 적었으면 '학부모(부)'처럼 붙여 줍니다.
+  function typeNames(m) { return m.types.map(function (t) { return name(TYPES, t) + (t === 'parent' && name(RELATIONS, m.relation) ? '(' + name(RELATIONS, m.relation) + ')' : ''); }); }
+  function dots(day) { return day ? day.replace(/-/g, '.') : ''; }
 
-  var state = { tab: 'list', q: '', type: '', status: '', access: '', division: '', gender: '', team: '', source: '', trash: false, sort: { key: 'joined', dir: 'desc' }, page: 1 };
+  var state = { tab: 'list', q: '', type: '', status: '', access: '', division: '', gender: '', team: '', source: '', born: '', trash: false, exits: false, sort: { key: 'joined', dir: 'desc' }, page: 1 };
 
   // 관리자 명단: { 소문자 이메일: 명단 문서 }
   function adminMap() { var map = {}; A.store.all(ADMINS).forEach(function (a) { map[a.id] = a; }); return map; }
@@ -54,7 +65,7 @@
     return {
       id: d.id, doc: d, name: text(d.name), status: text(d.status), access: d.matchAccess === true, staff: staff, source: source, guardian: text(d.guardian),
       types: TYPES.map(function (t) { return t[0]; }).filter(function (t) { return t === 'staff' ? staff : own.indexOf(t) >= 0; }),   // 화면에 보이는 순서대로
-      team: text(d.team), division: text(d.division), gender: text(d.gender),
+      team: text(d.team), division: text(d.division), gender: text(d.gender), birth: text(d.birth), relation: text(d.relation),
       contactName: text(d.contactName), email: email, phone: text(d.phone), joinedOn: text(d.joinedOn), note: note,
       created: A.time(text(d.createdAt) || d._createTime), deleted: !!d.deletedAt
     };
@@ -72,6 +83,7 @@
     if (state.access && m.access !== (state.access === 'yes')) return false;
     if (state.division && m.division !== state.division) return false;
     if (state.gender && m.gender !== state.gender) return false;
+    if (state.born && m.birth.slice(0, 4) !== state.born) return false;
     if (state.team && m.team !== state.team) return false;
     if (state.source && m.source !== state.source) return false;
     if (state.q) {
@@ -80,7 +92,8 @@
     }
     return true;
   }
-  function filtersOn() { return !!(state.q || state.type || state.status || state.access || state.division || state.gender || state.team || state.source); }
+  function filtersOn() { return !!(state.q || state.type || state.status || state.access || state.division || state.gender || state.team || state.source || state.born); }
+  function clearFilters() { state.q = ''; state.type = ''; state.status = ''; state.access = ''; state.division = ''; state.gender = ''; state.team = ''; state.source = ''; state.born = ''; state.page = 1; }
 
   var COLUMNS = [
     { key: 'name', label: '이름', cls: 'adm-col-name', head: true, text: function (m) { return m.name; },
@@ -92,6 +105,7 @@
         return typeNames(m).map(function (n, i) { return [i ? ', ' : '', el('span', 'adm-nb', n)]; });
       } },
     { key: 'team', label: '소속', cls: 'adm-col-wide', text: function (m) { return m.team; } },
+    { key: 'birth', label: '출생', cls: 'adm-col-date', sort: function (m) { return m.birth || null; }, text: function (m) { return dots(m.birth); } },
     { key: 'division', label: '연령 구분', cls: 'adm-col-nowrap', sort: function (m) { var i = DIVISIONS.map(function (t) { return t[0]; }).indexOf(m.division); return i < 0 ? null : i; }, text: function (m) { return name(DIVISIONS, m.division); } },
     { key: 'gender', label: '성별', cls: 'adm-col-nowrap', text: function (m) { return name(GENDERS, m.gender); } },
     { key: 'contact', label: '보호자·연락 담당', cls: 'adm-col-text', text: function (m) { return m.contactName; } },
@@ -125,9 +139,75 @@
     step();
   }
 
+  // 탈퇴 기록은 탈퇴한 날부터 1년 동안만 둡니다. 지난 것은 이 화면을 열 때 지웁니다.
+  var sweptExits = null;
+  function sweepExits() {
+    var list = A.store.all(EXITS);
+    if (sweptExits === list || A.store.capped(EXITS)) return;
+    sweptExits = list;
+    var limit = Date.now() - EXIT_KEEP_DAYS * 24 * 3600 * 1000;
+    var old = list.filter(function (x) { var t = Date.parse(text(x.leftAt) || ''); return !!t && t < limit; });
+    var step = function () {
+      var part = old.splice(0, 10);
+      if (!part.length) return;
+      A.api.commit(part.map(function (x) { return A.write.del(EXITS, x.id); })).then(function () {
+        part.forEach(function (x) { A.store.put(EXITS, x.id, null); });
+        if (old.length) step(); else if (state.exits) A.render();
+      }, function () { /* 다음에 이 화면을 열 때 다시 해 봅니다 */ });
+    };
+    step();
+  }
+  function exitModel(d) {
+    var own = (Array.isArray(d.types) ? d.types : []).map(text);
+    return { id: d.id, doc: d, name: text(d.name), types: OWN.filter(function (t) { return own.indexOf(t) >= 0; }), kids: Number(d.kids) || 0,
+      joinedOn: text(d.joinedOn), left: A.time(text(d.leftAt) || d._createTime) };
+  }
+  var EXIT_COLUMNS = [
+    { key: 'left', label: '탈퇴한 날', cls: 'adm-col-date', sort: function (x) { return x.left ? x.left.iso : ''; }, text: function (x) { return x.left ? x.left.date : ''; } },
+    { key: 'name', label: '이름', cls: 'adm-col-name', head: true, text: function (x) { return x.name; }, node: function (x) { return el('span', 'adm-strong', x.name || '(이름 없음)'); } },
+    { key: 'types', label: '종류', cls: 'adm-col-text', text: function (x) { return x.types.map(function (t) { return name(TYPES, t); }).join(', '); } },
+    { key: 'joined', label: '가입일', cls: 'adm-col-date', sort: function (x) { return x.joinedOn; }, text: function (x) { return dots(x.joinedOn); } },
+    { key: 'kids', label: '등록했던 자녀', cls: 'adm-col-nowrap', sort: function (x) { return x.kids; }, text: function (x) { return x.kids ? num(x.kids) + '명' : ''; } },
+    { key: 'until', label: '지워지는 날', cls: 'adm-col-date', sort: function (x) { return x.left ? x.left.iso : ''; },
+      text: function (x) { var t = x.left ? A.time(new Date(Date.parse(x.left.iso) + EXIT_KEEP_DAYS * 24 * 3600 * 1000).toISOString()) : null; return t ? t.date : ''; } }
+  ];
+  var exitSort = { key: 'left', dir: 'desc' }, exitPage = 1;
+  function renderExits(root) {
+    var list = A.store.all(EXITS).map(exitModel);
+    var head = el('div', 'adm-head'), tools = el('div', 'adm-tools');
+    add(tools, A.button('linkbtn', '새로 고침', function () { A.reload(); }, 'tool:reload'));
+    add(head, add(el('div'), el('h1', 't-2', '회원: 탈퇴 기록'), el('p', 'adm-head__sub', '회원 화면에서 스스로 탈퇴한 회원의 기록')), tools);
+    add(root, head);
+    var line = el('div', 'adm-viewline');
+    add(line, A.button('linkbtn adm-viewline__end', '목록으로 돌아가기', function () { state.exits = false; A.render(); }, 'tool:exits'));
+    add(root, line);
+    var box = el('div', 'adm-results');
+    add(root, box);
+    add(box, A.ui.tiles([{ label: '탈퇴 기록', value: list.length, unit: '건' }]));
+    add(box, A.ui.table({
+      caption: '탈퇴 기록', columns: EXIT_COLUMNS, rows: A.ui.sortRows(list, EXIT_COLUMNS, exitSort.key, exitSort.dir), sort: exitSort, page: exitPage,
+      rowKey: function (x) { return x.id; },
+      onSort: function (key) { exitSort = { key: key, dir: exitSort.key === key && exitSort.dir === 'asc' ? 'desc' : 'asc' }; A.keepFocus(function () { A.render(); }); },
+      onPage: function (pg) { exitPage = pg; A.keepFocus(function () { A.render(); }); },
+      actions: function (x) { var b = A.button('adm-rowbtn adm-rowbtn--danger', '기록 삭제', function () { purgeExit(x); }); b.setAttribute('aria-label', x.name + ' 탈퇴 기록 삭제'); return [b]; },
+      empty: { title: '탈퇴 기록이 없습니다', text: '회원이 회원 화면에서 탈퇴하면 여기에 남습니다.' }
+    }));
+    if (A.store.capped(EXITS)) add(root, el('p', 'adm-foot', '기록이 너무 많아 가장 최근 것부터 일부만 불러왔습니다.'));
+    add(root, el('p', 'adm-foot', '회원이 스스로 탈퇴하면 회원 정보, 등록한 자녀 정보, 남긴 문의는 바로 지워지고, 탈퇴한 사실을 확인할 수 있도록 이름·회원 종류·가입일·탈퇴한 날·등록했던 자녀 수만 여기에 남습니다. 연락처와 출생 연월일은 남지 않습니다. 기록은 탈퇴한 날부터 1년 동안 보관하고, 지난 것은 이 화면을 열 때 자동으로 지웁니다. 협회가 휴지통에서 완전히 삭제한 회원은 기록이 남지 않습니다.'));
+  }
+  function purgeExit(x) {
+    A.ui.ask({ title: '탈퇴 기록을 삭제할까요?', text: x.name + ' 회원의 탈퇴 기록을 DB에서 지웁니다. 되돌릴 수 없습니다.', yes: '기록 삭제', danger: true }).then(function (yes) {
+      if (!yes) return;
+      A.api.commit([A.write.del(EXITS, x.id, x.doc._updateTime)]).then(function () { A.store.put(EXITS, x.id, null); A.ui.toast('탈퇴 기록을 삭제했습니다.'); A.render(); },
+        function (err) { A.ui.toast('삭제하지 못했습니다. ' + A.errorText(err), true); });
+    });
+  }
+
   var results = null;
   function render(root) {
     sweep();
+    sweepExits();
+    if (state.exits) { results = null; renderExits(root); return; }
     var list = all(), here = list.filter(function (m) { return m.deleted === state.trash; }), trashCount = list.filter(function (m) { return m.deleted; }).length;
     var head = el('div', 'adm-head'), tools = el('div', 'adm-tools');
     add(tools,
@@ -139,6 +219,8 @@
 
     var teams = Object.keys(A.countBy(here, function (m) { return m.team; })).sort(function (a, b) { return a.localeCompare(b, 'ko'); });
     if (state.team && teams.indexOf(state.team) < 0) state.team = '';
+    var years = Object.keys(A.countBy(here, function (m) { return m.birth.slice(0, 4); })).filter(Boolean).sort().reverse();
+    if (state.born && years.indexOf(state.born) < 0) state.born = '';
     var bar = el('div', 'adm-filters'), set = function (key) { return function (v) { state[key] = v; state.page = 1; update(); }; };
     add(bar,
       A.ui.search('이름, 소속, 연락처, 메모', state.q, set('q')),
@@ -147,6 +229,7 @@
       A.ui.select('시합 권한', withAll(ACCESS, '전체'), state.access, set('access')),
       A.ui.select('연령 구분', withAll(DIVISIONS, '전체'), state.division, set('division')),
       A.ui.select('성별', withAll(GENDERS, '전체'), state.gender, set('gender')),
+      A.ui.select('출생 연도', [['', '전체']].concat(years.map(function (y) { return [y, y + '년']; })), state.born, set('born')),
       A.ui.select('소속', [['', '전체']].concat(teams.map(function (t) { return [t, t]; })), state.team, set('team')),
       A.ui.select('가입 경로', withAll(SOURCES, '전체'), state.source, set('source')));
     add(root, bar);
@@ -154,13 +237,14 @@
     var line = el('div', 'adm-viewline');
     add(line,
       A.ui.tabs('보기', [['list', '목록'], ['stats', '통계']], state.tab, function (v) { state.tab = v; A.render(); }),
+      state.trash ? null : A.button('linkbtn adm-viewline__pre', '탈퇴 기록 (' + num(A.store.all(EXITS).length) + ')', function () { state.exits = true; exitPage = 1; A.render(); }, 'tool:exits'),
       A.button('linkbtn adm-viewline__end', state.trash ? '목록으로 돌아가기' : '휴지통 (' + num(trashCount) + ')', function () { state.trash = !state.trash; state.page = 1; A.render(); }, 'tool:trash'));
     add(root, line);
 
     results = el('div', 'adm-results');
     add(root, results);
     if (A.store.capped(COL)) add(root, el('p', 'adm-foot', '회원이 너무 많아 가장 최근에 올린 것부터 일부만 불러왔습니다.'));
-    add(root, el('p', 'adm-foot', '선수는 대부분 미성년입니다. 생년월일과 집 주소는 적지 않고, 연락처는 보호자 것을 적습니다. 내려받은 파일은 필요한 사람과만 나눠 주세요.'));
+    add(root, el('p', 'adm-foot', '선수는 대부분 미성년입니다. 집 주소는 적지 않고, 연락처는 보호자 것을 적습니다. 출생 연월일은 시합의 연령 구분을 정하는 데만 씁니다. 내려받은 파일은 필요한 사람과만 나눠 주세요.'));
     update();
   }
 
@@ -169,9 +253,7 @@
     var list = all().filter(matches);
     results.textContent = '';
     var n = function (code) { return list.filter(function (m) { return m.status === code; }).length; };
-    var clear = filtersOn() ? A.button('linkbtn', '필터 지우기', function () {
-      state.q = ''; state.type = ''; state.status = ''; state.access = ''; state.division = ''; state.gender = ''; state.team = ''; state.source = ''; state.page = 1; A.render();
-    }) : null;
+    var clear = filtersOn() ? A.button('linkbtn', '필터 지우기', function () { clearFilters(); A.render(); }) : null;
     add(results, A.ui.tiles([
       { label: state.trash ? '휴지통의 회원' : (filtersOn() ? '걸러 낸 회원' : '전체 회원'), value: list.length, unit: '명' },
       { label: '활동', value: n('active'), unit: '명' },
@@ -208,7 +290,10 @@
     };
     add(box, A.ui.card('종류별 회원', A.ui.bars(byType(list), { unit: '명' }), MULTI));
     add(box, A.ui.card('상태별 회원', A.ui.bars(by('status', STATUSES), { unit: '명' })));
-    add(box, A.ui.card('연령 구분별 회원', A.ui.bars(by('division', DIVISIONS), { unit: '명' }), '연령 구분을 적은 회원만 셉니다.'));
+    var born = A.countBy(list.filter(function (x) { return x.birth; }), function (x) { return x.birth.slice(0, 4); });
+    add(box, A.ui.card('출생 연도별 회원', A.ui.bars(Object.keys(born).sort().reverse().map(function (y) { return { label: y + '년', value: born[y] }; }), { unit: '명', none: '출생 연월일을 적은 회원이 없습니다.' }),
+      '출생 연월일을 적은 회원만 셉니다. 선수와 보호자가 등록한 자녀가 적습니다.'));
+    add(box, A.ui.card('연령 구분별 회원', A.ui.bars(by('division', DIVISIONS), { unit: '명' }), '협회가 연령 구분을 적어 둔 회원만 셉니다.'));
     var tm = A.countBy(list, function (x) { return x.team || '(소속 없음)'; });
     var teams = Object.keys(tm).map(function (k) { return { label: k, value: tm[k] }; }).sort(function (a, b) { return b.value - a.value || a.label.localeCompare(b.label, 'ko'); });
     if (teams.length > 8) teams = teams.slice(0, 7).concat([{ label: '그 밖', value: teams.slice(7).reduce(function (t, c) { return t + c.value; }, 0) }]);
@@ -229,9 +314,9 @@
   function download() {
     var list = A.ui.sortRows(all().filter(matches), COLUMNS, state.sort.key, state.sort.dir);
     if (!list.length) { A.ui.toast('내려받을 회원이 없습니다.', true); return; }
-    A.ui.download('KYLA-회원명부', ['이름', '종류', '상태', '시합 권한', '소속', '연령 구분', '성별', '보호자·연락 담당', '전화', '이메일', '가입일', '메모', '가입 경로', '명부에 올린 날', '문서 ID'],
+    A.ui.download('KYLA-회원명부', ['이름', '종류', '상태', '시합 권한', '소속', '출생 연월일', '연령 구분', '성별', '보호자·연락 담당', '전화', '이메일', '가입일', '메모', '가입 경로', '명부에 올린 날', '문서 ID'],
       list.map(function (m) {
-        return [m.name, typeNames(m).join(', '), name(STATUSES, m.status), m.access ? '있음' : '없음', m.team, name(DIVISIONS, m.division), name(GENDERS, m.gender), m.contactName, m.phone, m.email,
+        return [m.name, typeNames(m).join(', '), name(STATUSES, m.status), m.access ? '있음' : '없음', m.team, m.birth, name(DIVISIONS, m.division), name(GENDERS, m.gender), m.contactName, m.phone, m.email,
           joinedDay(m), m.note, name(SOURCES, m.source), m.created ? m.created.ymd : '', m.id];
       }));
   }
@@ -261,12 +346,15 @@
       { key: 'status', label: '상태', type: 'select', options: STATUSES },
       { key: 'types', label: '회원 종류', type: 'checks', options: TYPES, min: 1, minText: '회원 종류를 하나 이상 골라 주세요.', locked: locked, wide: true,
         hint: child ? '보호자가 등록한 자녀 선수의 종류는 선수로 정해져 있어 바꿀 수 없습니다.'
-          : (master ? '여러 개를 함께 고를 수 있습니다. 직원은 관리자와 같습니다. 직원으로 지정하면 아래 이메일의 구글 계정으로 이 관리자 화면에 들어올 수 있게 됩니다.'
-            : '여러 개를 함께 고를 수 있습니다. 직원은 관리자와 같아서, 직원 지정은 마스터만 바꿀 수 있습니다.') },
+          : (master ? '여러 개를 함께 고를 수 있습니다. 다만 선수와 학부모는 함께 고를 수 없습니다. 직원은 관리자와 같습니다. 직원으로 지정하면 아래 이메일의 구글 계정으로 이 관리자 화면에 들어올 수 있게 됩니다.'
+            : '여러 개를 함께 고를 수 있습니다. 다만 선수와 학부모는 함께 고를 수 없습니다. 직원은 관리자와 같아서, 직원 지정은 마스터만 바꿀 수 있습니다.') },
       { key: 'matchAccess', label: '시합 참가 권한', type: 'toggle', text: '시합 일정과 사진을 볼 수 있게 합니다', wide: true, hint: accessHint },
       { key: 'team', label: '소속', max: 80, placeholder: '팀, 클럽 또는 학교' },
-      { key: 'division', label: '연령 구분', type: 'select', options: withAll(DIVISIONS, '해당 없음') },
+      { key: 'birth', label: '출생 연월일', type: 'date', hint: '선수가 적습니다. 시합의 연령 구분을 정하는 데 씁니다.',
+        check: function (v) { return v && v > A.today() ? '오늘보다 뒤의 날짜는 적을 수 없습니다.' : ''; } },
+      { key: 'division', label: '연령 구분', type: 'select', options: withAll(DIVISIONS, '해당 없음'), hint: '협회가 정해 적는 칸입니다. 회원에게는 묻지 않습니다.' },
       { key: 'gender', label: '성별', type: 'select', options: withAll(GENDERS, '적지 않음') },
+      { key: 'relation', label: '자녀와의 관계', type: 'select', options: withAll(RELATIONS, '적지 않음'), hint: '학부모만 적습니다.' },
       { key: 'contactName', label: '보호자·연락 담당 이름', max: 60, hint: '선수는 보호자 이름을 적습니다.' },
       { key: 'phone', label: '전화번호', type: 'tel', max: 40 },
       // 회원이 만든 문서의 이메일은 로그인한 구글 계정의 것이라 여기서 바꾸지 않습니다.
@@ -277,11 +365,11 @@
     ];
     var values = isNew ? { types: [], status: 'active', matchAccess: false, joinedOn: A.today() } : {
       name: m.name, types: m.types, status: name(STATUSES, m.status) ? m.status : 'active', matchAccess: m.access, team: m.team, division: m.division, gender: m.gender,
-      contactName: m.contactName, phone: m.phone, email: m.email, emailShown: m.email, joinedOn: m.joinedOn, note: m.note
+      birth: m.birth, relation: m.relation, contactName: m.contactName, phone: m.phone, email: m.email, emailShown: m.email, joinedOn: m.joinedOn, note: m.note
     };
     var form = A.ui.form(fields, values), body = el('div');
-    var lead = '생년월일과 집 주소는 적지 않습니다. 선수의 연락처 칸에는 보호자 연락처를 적어 주세요.';
-    if (child) lead = '보호자가 회원 화면에서 등록한 자녀 선수입니다. 이름·소속·연령 구분·성별은 보호자도 고칠 수 있습니다. ' + lead;
+    var lead = '집 주소는 적지 않습니다. 선수의 연락처 칸에는 보호자 연락처를 적어 주세요.';
+    if (child) lead = '보호자가 회원 화면에서 등록한 자녀 선수입니다. 이름·소속·출생 연월일·성별은 보호자도 고칠 수 있습니다. ' + lead;
     else if (byMember) lead = '회원이 회원 화면에서 직접 가입했습니다. 이름·종류·소속·연락처는 회원도 고칠 수 있고, 상태·시합 참가 권한·메모는 협회만 바꿉니다. ' + lead;
     add(body, el('p', 'adm-dlg__lead', lead), form.node);
     if (!isNew) {
@@ -315,11 +403,12 @@
       var got = form.read();
       if (!got.ok) { A.ui.dialogError('표시된 칸을 고친 뒤 다시 저장해 주세요.'); return; }
       var g = got.data, wantStaff = g.types.indexOf('staff') >= 0, admins = adminMap();
+      if (g.types.indexOf('player') >= 0 && g.types.indexOf('parent') >= 0) { A.ui.dialogError('선수와 학부모는 함께 고를 수 없습니다. 하나만 골라 주세요.'); return; }
       if (byMember) g.email = m.email;
       var email = g.email.toLowerCase();
       // 회원이 만든 문서는 그 회원이 읽습니다: 메모는 문서에 적지 않고(아래에서 따로 저장), 고친 사람은 uid 로 남깁니다.
       var data = (byMember ? A.stampUid : A.stamp)({ name: g.name, types: g.types.filter(function (t) { return OWN.indexOf(t) >= 0; }), status: g.status, matchAccess: g.matchAccess,
-        team: g.team, division: g.division, gender: g.gender, contactName: g.contactName, phone: g.phone, email: g.email, joinedOn: g.joinedOn, note: byMember ? '' : g.note });
+        team: g.team, division: g.division, gender: g.gender, birth: g.birth, relation: g.relation, contactName: g.contactName, phone: g.phone, email: g.email, joinedOn: g.joinedOn, note: byMember ? '' : g.note });
       var saved = isNew ? '회원을 추가했습니다.' : '고친 내용을 저장했습니다.';
       // 저장 결과에서 i 번째 쓰기의 시각을 화면 자료에 옮깁니다.
       var at = function (doc, res, i) {
@@ -434,7 +523,7 @@
 
   // 다른 화면(대시보드)에서 쓰는 것
   A.members = { all: all, TYPES: TYPES, STATUSES: STATUSES, months: months, byType: byType, MULTI: MULTI, joinedMonth: joinedMonth,
-    open: function (o) { state.q = ''; state.type = ''; state.access = ''; state.division = ''; state.gender = ''; state.team = ''; state.source = ''; state.trash = false; state.tab = 'list'; state.page = 1; state.status = (o && o.status) || ''; A.go('members'); } };
+    open: function (o) { clearFilters(); state.trash = false; state.exits = false; state.tab = 'list'; state.status = (o && o.status) || ''; A.go('members'); } };
 
-  A.section({ id: 'members', title: '회원', needs: [COL, ADMINS, NOTES], render: render });
+  A.section({ id: 'members', title: '회원', needs: [COL, ADMINS, NOTES, EXITS], render: render });
 })();

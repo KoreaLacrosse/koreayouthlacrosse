@@ -468,6 +468,9 @@ select.input{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
 .input:focus-visible{outline:3px solid var(--blue-bright);outline-offset:1px;border-color:var(--ink)}
 .input[aria-invalid="true"]{border-color:var(--red);box-shadow:inset 0 0 0 1px var(--red)}
 .input:disabled{background:var(--tint);color:var(--muted)}
+/* 출생 연월일: 연도, 월, 일을 나란히 고릅니다 */
+.dob{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) minmax(0,1fr);gap:8px}
+.dob .input{padding-left:12px;padding-right:32px;background-position:right 9px center}
 .check{display:grid;grid-template-columns:26px minmax(0,1fr);gap:10px;align-items:start;font-size:15.5px;line-height:1.55}
 .check input{width:22px;height:22px;margin:2px 0 0;accent-color:var(--ink)}
 .checks{display:flex;flex-wrap:wrap;gap:10px 22px}

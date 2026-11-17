@@ -1099,7 +1099,7 @@
     <!-- 로그인 전 -->
     <div class="panel" id="mem-signin" hidden>
       <p class="note" id="mem-signin-why" hidden>お問い合わせは、会員としてログインすると送れます。</p>
-      <p class="result result--ok" id="mem-left" role="status" hidden>退会しました。会員情報、登録したお子さまの情報、送信したお問い合わせをすべて削除しました。</p>
+      <p class="result result--ok" id="mem-left" role="status" hidden>退会しました。会員情報、登録したお子さまの情報、送信したお問い合わせをすべて削除しました。退会の記録（氏名、会員の種類、登録日、退会日）のみ1年間保管し、その後削除します。</p>
       <div class="cta">
         <div><h2>Googleアカウントでログインします</h2><p>新しいパスワードは作らず、お使いのGoogleアカウントでログインします。初めての方はログイン後すぐに登録でき、入会金はありません。</p></div>
         <div class="btns"><button class="btn" type="button" id="mem-google">Googleアカウントでログイン</button></div>
@@ -1112,7 +1112,7 @@
       <dl class="deflist">
         <div><dt>お問い合わせ</dt><dd>協会にお問い合わせを送り、同じ画面で回答を確認できます。</dd></div>
         <div><dt>試合情報</dt><dd>試合に参加する会員には協会が権限を付与し、試合の日程と写真を見られるようになります。</dd></div>
-        <div><dt>お子さまを選手として登録</dt><dd>満14歳未満の選手は本人が登録せず、保護者が登録したうえでお子さまを選手として登録します。</dd></div>
+        <div><dt>お子さまを選手として登録</dt><dd>満14歳未満の選手は本人が登録しません。保護者が「保護者」として登録する際に、お子さまを選手として登録します。</dd></div>
       </dl>
       <p class="mem__small">登録時にいただく情報と保管期間は、<a href="#privacy">プライバシーポリシー</a>に記載しています。</p>
     </div>
@@ -1137,27 +1137,46 @@
                 <label class="check"><input type="checkbox" data-mtype="coach"><span>指導者</span></label>
                 <label class="check"><input type="checkbox" data-mtype="general"><span>一般</span></label>
               </div>
-              <p class="field__hint">当てはまるものをすべて選んでください。指導者資格の申請は、登録後にお問い合わせから送れます。</p>
+              <p class="field__hint">当てはまるものをすべて選んでください。「選手」と「保護者」は同時に選べません。指導者資格の申請は、登録後にお問い合わせから送れます。</p>
             </fieldset>
             <div class="form__grid form__grid--2">
               <div class="field"><label class="field__label" for="mf-team">所属</label><input class="input" id="mf-team" maxlength="80" autocomplete="organization" placeholder="チーム、クラブまたは学校"></div>
               <div class="field"><label class="field__label" for="mf-phone">携帯電話</label><input class="input" id="mf-phone" type="tel" maxlength="40" inputmode="tel" autocomplete="tel" placeholder="010-0000-0000" aria-describedby="mf-phone-hint"><p class="field__hint" id="mf-phone-hint">選手の場合は、保護者の連絡先を入力してください。</p></div>
             </div>
-            <div class="form__grid form__grid--2" id="mf-player" hidden>
-              <div class="field"><label class="field__label" for="mf-division">年齢区分</label><select class="input" id="mf-division"><option value="">該当なし</option><option value="u10">U10</option><option value="u12">U12</option><option value="u14">U14</option><option value="u16">U16</option><option value="adult">成人</option></select></div>
-              <div class="field"><label class="field__label" for="mf-gender">性別</label><select class="input" id="mf-gender"><option value="">未記入</option><option value="m">男</option><option value="f">女</option></select></div>
-              <div class="field"><label class="field__label" for="mf-contact">保護者の氏名</label><input class="input" id="mf-contact" maxlength="60" autocomplete="off"></div>
+            <div class="form__grid form__grid--2" id="mf-more" hidden>
+              <fieldset class="field" id="mf-birth-field" hidden>
+                <legend class="field__label"><span>生年月日</span><em>必須</em></legend>
+                <div class="dob"><select class="input" id="mf-birth-y" aria-label="生まれた年"><option value="">年</option></select><select class="input" id="mf-birth-m" aria-label="生まれた月"><option value="">月</option></select><select class="input" id="mf-birth-d" aria-label="生まれた日"><option value="">日</option></select></div>
+                <p class="field__hint">試合の年齢区分（U12など）を決めるために使用します。</p>
+              </fieldset>
+              <div class="field" id="mf-gender-field" hidden><label class="field__label" for="mf-gender">性別</label><select class="input" id="mf-gender"><option value="">未記入</option><option value="m">男</option><option value="f">女</option></select></div>
+              <div class="field" id="mf-contact-field" hidden><label class="field__label" for="mf-contact">保護者の氏名</label><input class="input" id="mf-contact" maxlength="60" autocomplete="off"></div>
+              <div class="field" id="mf-relation-field" hidden><label class="field__label" for="mf-relation">お子さまとの続柄</label><select class="input" id="mf-relation"><option value="">未記入</option><option value="father">父</option><option value="mother">母</option></select></div>
+            </div>
+          </fieldset>
+          <fieldset class="form__group" id="mf-child" hidden>
+            <legend class="form__legend">お子さま（選手）の情報</legend>
+            <p class="secintro">どの選手の保護者かをご記入ください。登録と同時に、お子さまが選手として登録されます。お子さまが複数いる場合は、登録後に「登録情報」から追加できます。</p>
+            <div class="field"><label class="field__label" for="mc-name"><span>お子さまのお名前</span><em>必須</em></label><input class="input" id="mc-name" maxlength="60" required autocomplete="off" data-msg="お子さまのお名前を入力してください。"></div>
+            <div class="form__grid form__grid--2">
+              <fieldset class="field">
+                <legend class="field__label"><span>お子さまの生年月日</span><em>必須</em></legend>
+                <div class="dob"><select class="input" id="mc-birth-y" aria-label="お子さまの生まれた年"><option value="">年</option></select><select class="input" id="mc-birth-m" aria-label="お子さまの生まれた月"><option value="">月</option></select><select class="input" id="mc-birth-d" aria-label="お子さまの生まれた日"><option value="">日</option></select></div>
+              </fieldset>
+              <div class="field"><label class="field__label" for="mc-team">お子さまの所属</label><input class="input" id="mc-team" maxlength="80" autocomplete="off" placeholder="チーム、クラブまたは学校"></div>
+              <div class="field"><label class="field__label" for="mc-gender">お子さまの性別</label><select class="input" id="mc-gender"><option value="">未記入</option><option value="m">男</option><option value="f">女</option></select></div>
             </div>
           </fieldset>
           <fieldset class="form__group" id="mf-consent">
             <legend class="form__legend">個人情報への同意</legend>
             <dl class="consent">
-              <dt>収集項目</dt><dd>Googleアカウントのメールアドレス、氏名、会員の種類、所属、携帯電話。選手の場合は、年齢区分、性別、保護者の氏名もいただきます。</dd>
+              <dt>収集項目</dt><dd>Googleアカウントのメールアドレス、氏名、会員の種類、所属、携帯電話。選手の場合は生年月日、性別、保護者の氏名、指導者の場合は性別、保護者の場合はお子さまとの続柄（父・母）と、選手であるお子さまの氏名・所属・生年月日・性別もいただきます。</dd>
               <dt>利用目的</dt><dd>会員の確認と管理、お問い合わせへの回答、試合のご案内</dd>
-              <dt>保有期間</dt><dd>退会まで。退会時に遅滞なく削除します。</dd>
+              <dt>保有期間</dt><dd>退会まで。退会時に遅滞なく削除します。ただし、退会の事実を確認できるよう、氏名、会員の種類、登録日、退会日は退会の記録として1年間保管した後、削除します。</dd>
               <dt>保管と処理</dt><dd>Googleのクラウドサービス Firebase を利用します。会員情報はソウルのデータセンターに保存し、ログイン情報（Googleアカウントのメールアドレス、ログイン記録）はGoogleが米国のデータセンターで処理します。</dd>
             </dl>
-            <div class="field"><label class="check"><input type="checkbox" id="mf-age" required aria-describedby="mf-age-hint" data-msg="満14歳以上であることをご確認ください。"><span>満14歳以上です。（必須）</span></label><p class="field__hint" id="mf-age-hint">満14歳未満の場合は、保護者が登録したうえで「登録情報」からお子さまを選手として登録します。</p></div>
+            <div class="field"><label class="check"><input type="checkbox" id="mf-age" required aria-describedby="mf-age-hint" data-msg="満14歳以上であることをご確認ください。"><span>満14歳以上です。（必須）</span></label><p class="field__hint" id="mf-age-hint">満14歳未満の方は本人が登録しません。保護者が「保護者」として登録する際に、お子さまを選手として登録します。</p></div>
+            <div class="field" id="mf-child-consent" hidden><label class="check"><input type="checkbox" id="mc-agree" required data-msg="法定代理人としての同意をご確認ください。"><span>お子さまの法定代理人として、お子さまの氏名・所属・生年月日・性別を会員管理と試合のご案内に使用することに同意します。（必須）</span></label></div>
             <div class="field"><label class="check"><input type="checkbox" id="mf-agree" required data-msg="個人情報の収集・利用に同意してください。"><span>個人情報の収集・利用に同意します。（必須）</span></label></div>
           </fieldset>
           <div class="btns"><button class="btn" type="submit" id="mf-submit">会員登録</button><button class="linkbtn" type="button" id="mf-cancel" hidden>キャンセル</button></div>
@@ -1191,7 +1210,7 @@
         </section>
         <section class="mem__block" aria-labelledby="mem-h-kids">
           <h2 class="t-3" id="mem-h-kids">お子さま（選手）</h2>
-          <p class="secintro">満14歳未満のお子さまは、保護者がここで選手として登録します。生年月日と自宅住所はいただきません。</p>
+          <p class="secintro">満14歳未満のお子さまは、保護者がここで選手として登録します。生年月日は試合の年齢区分を決めるために使用し、自宅住所はいただきません。</p>
           <div id="mem-kids"></div>
           <div id="mem-kid-open"><button class="linkbtn" type="button" id="mem-kid-add"><svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg>お子さまを選手として登録</button></div>
           <form class="form" id="mem-kid-form" hidden novalidate>
@@ -1200,10 +1219,13 @@
               <div class="field"><label class="field__label" for="mk-name"><span>お子さまのお名前</span><em>必須</em></label><input class="input" id="mk-name" maxlength="60" required autocomplete="off" data-msg="お子さまのお名前を入力してください。"></div>
               <div class="form__grid form__grid--2">
                 <div class="field"><label class="field__label" for="mk-team">所属</label><input class="input" id="mk-team" maxlength="80" autocomplete="off" placeholder="チーム、クラブまたは学校"></div>
-                <div class="field"><label class="field__label" for="mk-division">年齢区分</label><select class="input" id="mk-division"><option value="">まだわからない</option><option value="u10">U10</option><option value="u12">U12</option><option value="u14">U14</option><option value="u16">U16</option></select></div>
+                <fieldset class="field">
+                  <legend class="field__label"><span>生年月日</span><em>必須</em></legend>
+                  <div class="dob"><select class="input" id="mk-birth-y" aria-label="生まれた年"><option value="">年</option></select><select class="input" id="mk-birth-m" aria-label="生まれた月"><option value="">月</option></select><select class="input" id="mk-birth-d" aria-label="生まれた日"><option value="">日</option></select></div>
+                </fieldset>
                 <div class="field"><label class="field__label" for="mk-gender">性別</label><select class="input" id="mk-gender"><option value="">未記入</option><option value="m">男</option><option value="f">女</option></select></div>
               </div>
-              <div class="field" id="mk-consent"><label class="check"><input type="checkbox" id="mk-agree" required data-msg="法定代理人としての同意をご確認ください。"><span>お子さまの法定代理人として、お子さまの氏名・所属・年齢区分・性別を会員管理と試合のご案内に使用することに同意します。（必須）</span></label></div>
+              <div class="field" id="mk-consent"><label class="check"><input type="checkbox" id="mk-agree" required data-msg="法定代理人としての同意をご確認ください。"><span>お子さまの法定代理人として、お子さまの氏名・所属・生年月日・性別を会員管理と試合のご案内に使用することに同意します。（必須）</span></label></div>
             </fieldset>
             <div class="btns"><button class="btn" type="submit" id="mk-submit">登録</button><button class="linkbtn" type="button" id="mk-cancel">キャンセル</button></div>
             <div class="result" role="status" aria-live="polite" hidden></div>
@@ -1211,7 +1233,7 @@
         </section>
         <section class="mem__block" aria-labelledby="mem-h-leave">
           <h2 class="t-3" id="mem-h-leave">退会</h2>
-          <p class="secintro" id="mem-leave-text">退会すると、会員情報、登録したお子さまの情報、送信したお問い合わせがすべて削除され、元に戻せません。</p>
+          <p class="secintro" id="mem-leave-text">退会すると、会員情報、登録したお子さまの情報、送信したお問い合わせがすべて削除され、元に戻せません。退会の事実を確認できるよう、氏名、会員の種類、登録日、退会日のみを退会の記録として1年間残します。</p>
           <p class="note" id="mem-leave-staff" hidden>スタッフ（管理者）に指定されたアカウントは、ここでは退会できません。先にマスター管理者にスタッフ指定の解除を依頼してください。</p>
           <p class="note" id="mem-leave-held" hidden>協会が活動中でない状態にしているアカウントは、ここでは退会できません。会員情報の削除をご希望の場合は、KYLAのInstagramまでお知らせください。</p>
           <details class="mem__leave" id="mem-leave">
@@ -1324,8 +1346,8 @@
     <div class="prose">
       <h3 class="t-3">収集する情報と目的</h3>
       <ul>
-        <li>会員登録：Googleアカウントのメールアドレス、氏名、会員の種類、所属、携帯電話。選手の場合は、年齢区分、性別、保護者の氏名もいただきます。会員の確認と管理、お問い合わせへの回答、試合のご案内に使用します。</li>
-        <li>お子さまの選手登録：お子さまの氏名、所属、年齢区分、性別。保護者（法定代理人）が直接登録し、会員管理と試合のご案内に使用します。生年月日と自宅住所はいただきません。</li>
+        <li>会員登録：Googleアカウントのメールアドレス、氏名、会員の種類、所属、携帯電話。選手の場合は生年月日、性別、保護者の氏名、指導者の場合は性別、保護者の場合はお子さまとの続柄（父・母）もいただきます。会員の確認と管理、お問い合わせへの回答、試合のご案内に使用します。</li>
+        <li>お子さまの選手登録：お子さまの氏名、所属、生年月日、性別。保護者（法定代理人）が直接登録し、会員管理と試合のご案内に使用します。生年月日は試合の年齢区分を決めるために使用し、自宅住所はいただきません。</li>
         <li>お問い合わせ：分類、件名、内容と、送信した会員の氏名、メールアドレス。お問い合わせの確認と回答に使用します。</li>
         <li>大会参加申込：チーム名、所属学校・クラブ、担当指導者の氏名と連絡先、選手の氏名・生まれ年・背番号。受付の確認、ディビジョン編成、大会運営と安全管理に使用します。</li>
         <li>国際交流のお問い合わせ：学校・チーム名、国と都市、担当者の氏名と連絡先、ご希望の交流内容。交流の協議に使用します。</li>
@@ -1336,7 +1358,7 @@
       <p>会員ログインは、Googleのログインサービス（Firebase Authentication）を利用します。このサービスは、ログイン情報（Googleアカウントのメールアドレス、ログイン記録、接続IPアドレス）を米国にあるGoogleのデータセンターで処理します。協会が会員のGoogleパスワードを受け取ったり保管したりすることはありません。退会してログインアカウントが削除されると、Googleは180日以内に残りのデータを削除します。</p>
       <h3 class="t-3">保有期間</h3>
       <p>収集目的を達成した後、遅滞なく破棄します。項目ごとの保有期間は、協会で確定した後こちらに記載します。</p>
-      <p>会員情報は退会まで保管します。会員ページで退会すると、会員情報、登録したお子さまの情報、送信したお問い合わせを直ちに削除します。データ復旧用のバックアップには、最長60日間残ることがあります。</p>
+      <p>会員情報は退会まで保管します。会員ページで退会すると、会員情報、登録したお子さまの情報、送信したお問い合わせを直ちに削除します。ただし、退会の事実を確認できるよう、氏名、会員の種類、登録日、退会日は退会の記録として別に1年間保管した後、削除します。連絡先と生年月日は退会の記録に残しません。データ復旧用のバックアップには、最長60日間残ることがあります。</p>
       <h3 class="t-3">満14歳未満の児童</h3>
       <p>満14歳未満の児童の個人情報は、法定代理人の同意を得て収集します。満14歳未満の方は本人が会員登録せず、保護者が登録したうえでお子さまを選手として登録します。大会参加申込は、チームの担当指導者が選手の保護者の同意を確認したうえで提出します。</p>
       <h3 class="t-3">写真と映像</h3>

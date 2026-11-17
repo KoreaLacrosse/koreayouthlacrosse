@@ -2547,9 +2547,9 @@
   "en": "Sign in as a member to send an inquiry.",
   "ja": "お問い合わせは、会員としてログインすると送れます。"
  },
- "탈퇴했습니다. 회원 정보와 등록한 자녀 정보, 남긴 문의를 모두 지웠습니다.": {
-  "en": "Your membership has been cancelled. Your member details, the children you registered and your inquiries have all been deleted.",
-  "ja": "退会しました。会員情報、登録したお子さまの情報、送信したお問い合わせをすべて削除しました。"
+ "탈퇴했습니다. 회원 정보와 등록한 자녀 정보, 남긴 문의를 모두 지웠습니다. 탈퇴 기록(이름, 회원 종류, 가입일, 탈퇴일)만 1년 동안 보관한 뒤 지웁니다.": {
+  "en": "Your membership has been cancelled. Your member details, the children you registered and your inquiries have all been deleted. Only a cancellation record (name, member type, join date and cancellation date) is kept for one year and then deleted.",
+  "ja": "退会しました。会員情報、登録したお子さまの情報、送信したお問い合わせをすべて削除しました。退会の記録（氏名、会員の種類、登録日、退会日）のみ1年間保管し、その後削除します。"
  },
  "구글 계정으로 로그인합니다": {
   "en": "Sign in with your Google account",
@@ -2591,9 +2591,9 @@
   "en": "Register a child player",
   "ja": "お子さまを選手として登録"
  },
- "만 14세 미만 선수는 직접 가입하지 않고, 보호자가 가입한 뒤 자녀를 선수로 등록합니다.": {
-  "en": "Players under 14 do not join themselves: a parent or guardian joins and then registers the child as a player.",
-  "ja": "満14歳未満の選手は本人が登録せず、保護者が登録したうえでお子さまを選手として登録します。"
+ "만 14세 미만 선수는 직접 가입하지 않습니다. 보호자가 학부모로 가입하면서 자녀를 선수로 등록합니다.": {
+  "en": "Players under 14 do not join themselves: a parent or guardian joins as a parent and registers the child as a player at the same time.",
+  "ja": "満14歳未満の選手は本人が登録しません。保護者が「保護者」として登録する際に、お子さまを選手として登録します。"
  },
  "가입할 때 받는 정보와 보관 기간은 <1>개인정보처리방침</1>에 있습니다.": {
   "en": "The information collected when you join, and how long it is kept, is set out in the <1>privacy policy</1>.",
@@ -2631,21 +2631,13 @@
   "en": "General",
   "ja": "一般"
  },
- "해당하는 것을 모두 고릅니다. 지도자 자격 신청은 가입한 뒤 문의하기에서 남길 수 있습니다.": {
-  "en": "Choose all that apply. To apply for the coach certification, send an inquiry after you join.",
-  "ja": "当てはまるものをすべて選んでください。指導者資格の申請は、登録後にお問い合わせから送れます。"
+ "해당하는 것을 모두 고릅니다. 선수와 학부모는 함께 고를 수 없습니다. 지도자 자격 신청은 가입한 뒤 문의하기에서 남길 수 있습니다.": {
+  "en": "Choose all that apply. Player and Parent cannot be chosen together. To apply for the coach certification, send an inquiry after you join.",
+  "ja": "当てはまるものをすべて選んでください。「選手」と「保護者」は同時に選べません。指導者資格の申請は、登録後にお問い合わせから送れます。"
  },
  "선수는 보호자 연락처를 적어 주세요.": {
   "en": "For players, enter a parent or guardian's number.",
   "ja": "選手の場合は、保護者の連絡先を入力してください。"
- },
- "연령 구분": {
-  "en": "Age group",
-  "ja": "年齢区分"
- },
- "해당 없음": {
-  "en": "Not applicable",
-  "ja": "該当なし"
  },
  "성인": {
   "en": "Adult",
@@ -2671,17 +2663,93 @@
   "en": "Parent or guardian's name",
   "ja": "保護者の氏名"
  },
- "구글 계정 이메일, 이름, 회원 종류, 소속, 휴대전화. 선수는 연령 구분, 성별, 보호자 이름을 더 받습니다.": {
-  "en": "Google account email, name, member type, organization and mobile phone. For players we also ask for age group, gender and a parent or guardian's name.",
-  "ja": "Googleアカウントのメールアドレス、氏名、会員の種類、所属、携帯電話。選手の場合は、年齢区分、性別、保護者の氏名もいただきます。"
+ "출생 연월일": {
+  "en": "Date of birth",
+  "ja": "生年月日"
+ },
+ "출생 연도": {
+  "en": "Year of birth",
+  "ja": "生まれた年"
+ },
+ "출생 월": {
+  "en": "Month of birth",
+  "ja": "生まれた月"
+ },
+ "출생 일": {
+  "en": "Day of birth",
+  "ja": "生まれた日"
+ },
+ "연도": {
+  "en": "YYYY",
+  "ja": "年"
+ },
+ "월": {
+  "en": "MM",
+  "ja": "月"
+ },
+ "일": {
+  "en": "DD",
+  "ja": "日"
+ },
+ "시합의 연령 구분(U12 등)을 정하는 데 씁니다.": {
+  "en": "Used to decide the age group (such as U12) for matches.",
+  "ja": "試合の年齢区分（U12など）を決めるために使用します。"
+ },
+ "자녀와의 관계": {
+  "en": "Relationship to the child",
+  "ja": "お子さまとの続柄"
+ },
+ "부": {
+  "en": "Father",
+  "ja": "父"
+ },
+ "모": {
+  "en": "Mother",
+  "ja": "母"
+ },
+ "자녀 선수 정보": {
+  "en": "Your child (player)",
+  "ja": "お子さま（選手）の情報"
+ },
+ "어느 선수의 학부모인지 적어 주세요. 가입과 함께 자녀가 선수로 등록됩니다. 자녀가 여럿이면 가입한 뒤 '내 정보'에서 더 등록할 수 있습니다.": {
+  "en": "Tell us which player you are the parent of. Your child is registered as a player when you join. If you have more than one child, you can register the others under 'My details' after joining.",
+  "ja": "どの選手の保護者かをご記入ください。登録と同時に、お子さまが選手として登録されます。お子さまが複数いる場合は、登録後に「登録情報」から追加できます。"
+ },
+ "자녀의 출생 연월일": {
+  "en": "Child's date of birth",
+  "ja": "お子さまの生年月日"
+ },
+ "자녀의 출생 연도": {
+  "en": "Child's year of birth",
+  "ja": "お子さまの生まれた年"
+ },
+ "자녀의 출생 월": {
+  "en": "Child's month of birth",
+  "ja": "お子さまの生まれた月"
+ },
+ "자녀의 출생 일": {
+  "en": "Child's day of birth",
+  "ja": "お子さまの生まれた日"
+ },
+ "자녀의 소속": {
+  "en": "Child's organization",
+  "ja": "お子さまの所属"
+ },
+ "자녀의 성별": {
+  "en": "Child's gender",
+  "ja": "お子さまの性別"
+ },
+ "구글 계정 이메일, 이름, 회원 종류, 소속, 휴대전화. 선수는 출생 연월일, 성별, 보호자 이름을, 지도자는 성별을, 학부모는 자녀와의 관계(부·모)와 자녀 선수의 이름·소속·출생 연월일·성별을 더 받습니다.": {
+  "en": "Google account email, name, member type, organization and mobile phone. For players we also ask for date of birth, gender and a parent or guardian's name; for coaches, gender; for parents, their relationship to the child (father or mother) and the child player's name, organization, date of birth and gender.",
+  "ja": "Googleアカウントのメールアドレス、氏名、会員の種類、所属、携帯電話。選手の場合は生年月日、性別、保護者の氏名、指導者の場合は性別、保護者の場合はお子さまとの続柄（父・母）と、選手であるお子さまの氏名・所属・生年月日・性別もいただきます。"
  },
  "회원 확인과 관리, 문의 답변, 시합 안내": {
   "en": "Confirming and managing membership, answering inquiries and sending match information",
   "ja": "会員の確認と管理、お問い合わせへの回答、試合のご案内"
  },
- "회원 탈퇴 때까지. 탈퇴하면 지체 없이 지웁니다.": {
-  "en": "Until you cancel your membership. Deleted without delay when you cancel.",
-  "ja": "退会まで。退会時に遅滞なく削除します。"
+ "회원 탈퇴 때까지. 탈퇴하면 지체 없이 지웁니다. 다만 탈퇴한 사실을 확인할 수 있도록 이름, 회원 종류, 가입일, 탈퇴일은 탈퇴 기록으로 1년 동안 보관한 뒤 지웁니다.": {
+  "en": "Until you cancel your membership. Deleted without delay when you cancel. However, so that the cancellation can be confirmed, your name, member type, join date and cancellation date are kept as a cancellation record for one year and then deleted.",
+  "ja": "退会まで。退会時に遅滞なく削除します。ただし、退会の事実を確認できるよう、氏名、会員の種類、登録日、退会日は退会の記録として1年間保管した後、削除します。"
  },
  "보관과 처리": {
   "en": "Storage and processing",
@@ -2695,9 +2763,9 @@
   "en": "I am 14 or older. (Required)",
   "ja": "満14歳以上です。（必須）"
  },
- "만 14세 미만은 보호자가 가입한 뒤 '내 정보'에서 자녀를 선수로 등록합니다.": {
-  "en": "For children under 14, a parent or guardian joins and then registers the child as a player under 'My details'.",
-  "ja": "満14歳未満の場合は、保護者が登録したうえで「登録情報」からお子さまを選手として登録します。"
+ "만 14세 미만은 본인이 가입하지 않습니다. 보호자가 학부모로 가입하면서 자녀를 선수로 등록합니다.": {
+  "en": "Children under 14 do not join themselves. A parent or guardian joins as a parent and registers the child as a player at the same time.",
+  "ja": "満14歳未満の方は本人が登録しません。保護者が「保護者」として登録する際に、お子さまを選手として登録します。"
  },
  "회원 가입": {
   "en": "Join",
@@ -2731,9 +2799,9 @@
   "en": "Child players",
   "ja": "お子さま（選手）"
  },
- "만 14세 미만 자녀는 보호자가 여기에서 선수로 등록합니다. 생년월일과 집 주소는 받지 않습니다.": {
-  "en": "Parents and guardians register children under 14 as players here. We do not ask for dates of birth or home addresses.",
-  "ja": "満14歳未満のお子さまは、保護者がここで選手として登録します。生年月日と自宅住所はいただきません。"
+ "만 14세 미만 자녀는 보호자가 여기에서 선수로 등록합니다. 출생 연월일은 시합의 연령 구분을 정하는 데 쓰고, 집 주소는 받지 않습니다.": {
+  "en": "Parents and guardians register children under 14 as players here. The date of birth is used to decide the age group for matches. We do not ask for home addresses.",
+  "ja": "満14歳未満のお子さまは、保護者がここで選手として登録します。生年月日は試合の年齢区分を決めるために使用し、自宅住所はいただきません。"
  },
  "<1/>자녀 선수 등록": {
   "en": "<1/>Register a child player",
@@ -2743,13 +2811,9 @@
   "en": "Child's name",
   "ja": "お子さまのお名前"
  },
- "아직 모름": {
-  "en": "Not sure yet",
-  "ja": "まだわからない"
- },
- "자녀의 법정대리인으로서, 자녀의 이름·소속·연령 구분·성별을 회원 관리와 시합 안내에 쓰는 데 동의합니다. (필수)": {
-  "en": "As my child's legal guardian, I agree to the use of my child's name, organization, age group and gender for membership management and match information. (Required)",
-  "ja": "お子さまの法定代理人として、お子さまの氏名・所属・年齢区分・性別を会員管理と試合のご案内に使用することに同意します。（必須）"
+ "자녀의 법정대리인으로서, 자녀의 이름·소속·출생 연월일·성별을 회원 관리와 시합 안내에 쓰는 데 동의합니다. (필수)": {
+  "en": "As my child's legal guardian, I agree to the use of my child's name, organization, date of birth and gender for membership management and match information. (Required)",
+  "ja": "お子さまの法定代理人として、お子さまの氏名・所属・生年月日・性別を会員管理と試合のご案内に使用することに同意します。（必須）"
  },
  "등록": {
   "en": "Register",
@@ -2759,9 +2823,9 @@
   "en": "Cancel membership",
   "ja": "退会"
  },
- "탈퇴하면 회원 정보와 등록한 자녀 정보, 남긴 문의가 모두 지워지고 되돌릴 수 없습니다.": {
-  "en": "Cancelling deletes your member details, the children you registered and your inquiries. This cannot be undone.",
-  "ja": "退会すると、会員情報、登録したお子さまの情報、送信したお問い合わせがすべて削除され、元に戻せません。"
+ "탈퇴하면 회원 정보와 등록한 자녀 정보, 남긴 문의가 모두 지워지고 되돌릴 수 없습니다. 탈퇴한 사실을 확인할 수 있도록 이름, 회원 종류, 가입일, 탈퇴일만 탈퇴 기록으로 1년 동안 남깁니다.": {
+  "en": "Cancelling deletes your member details, the children you registered and your inquiries. This cannot be undone. So that the cancellation can be confirmed, only your name, member type, join date and cancellation date are kept as a cancellation record for one year.",
+  "ja": "退会すると、会員情報、登録したお子さまの情報、送信したお問い合わせがすべて削除され、元に戻せません。退会の事実を確認できるよう、氏名、会員の種類、登録日、退会日のみを退会の記録として1年間残します。"
  },
  "직원(관리자)으로 지정된 계정은 여기서 탈퇴할 수 없습니다. 먼저 마스터 관리자에게 직원 지정을 풀어 달라고 해 주세요.": {
   "en": "An account designated as staff (administrator) cannot cancel here. First ask the master administrator to remove the staff designation.",
@@ -2831,13 +2895,13 @@
   "en": "My inquiries",
   "ja": "送信したお問い合わせ"
  },
- "회원 가입: 구글 계정 이메일, 이름, 회원 종류, 소속, 휴대전화. 선수는 연령 구분, 성별, 보호자 이름을 더 받습니다. 회원 확인과 관리, 문의 답변, 시합 안내에 씁니다.": {
-  "en": "Membership: Google account email, name, member type, organization and mobile phone. For players we also ask for age group, gender and a parent or guardian's name. Used to confirm and manage membership, answer inquiries and send match information.",
-  "ja": "会員登録：Googleアカウントのメールアドレス、氏名、会員の種類、所属、携帯電話。選手の場合は、年齢区分、性別、保護者の氏名もいただきます。会員の確認と管理、お問い合わせへの回答、試合のご案内に使用します。"
+ "회원 가입: 구글 계정 이메일, 이름, 회원 종류, 소속, 휴대전화. 선수는 출생 연월일, 성별, 보호자 이름을, 지도자는 성별을, 학부모는 자녀와의 관계(부·모)를 더 받습니다. 회원 확인과 관리, 문의 답변, 시합 안내에 씁니다.": {
+  "en": "Membership: Google account email, name, member type, organization and mobile phone. For players we also ask for date of birth, gender and a parent or guardian's name; for coaches, gender; for parents, their relationship to the child (father or mother). Used to confirm and manage membership, answer inquiries and send match information.",
+  "ja": "会員登録：Googleアカウントのメールアドレス、氏名、会員の種類、所属、携帯電話。選手の場合は生年月日、性別、保護者の氏名、指導者の場合は性別、保護者の場合はお子さまとの続柄（父・母）もいただきます。会員の確認と管理、お問い合わせへの回答、試合のご案内に使用します。"
  },
- "자녀 선수 등록: 자녀 이름, 소속, 연령 구분, 성별. 보호자(법정대리인)가 직접 등록하며, 회원 관리와 시합 안내에 씁니다. 생년월일과 집 주소는 받지 않습니다.": {
-  "en": "Child player registration: the child's name, organization, age group and gender. Registered directly by the parent or guardian (legal guardian) and used for membership management and match information. We do not ask for dates of birth or home addresses.",
-  "ja": "お子さまの選手登録：お子さまの氏名、所属、年齢区分、性別。保護者（法定代理人）が直接登録し、会員管理と試合のご案内に使用します。生年月日と自宅住所はいただきません。"
+ "자녀 선수 등록: 자녀 이름, 소속, 출생 연월일, 성별. 보호자(법정대리인)가 직접 등록하며, 회원 관리와 시합 안내에 씁니다. 출생 연월일은 시합의 연령 구분을 정하는 데 쓰고, 집 주소는 받지 않습니다.": {
+  "en": "Child player registration: the child's name, organization, date of birth and gender. Registered directly by the parent or guardian (legal guardian) and used for membership management and match information. The date of birth is used to decide the age group for matches. We do not ask for home addresses.",
+  "ja": "お子さまの選手登録：お子さまの氏名、所属、生年月日、性別。保護者（法定代理人）が直接登録し、会員管理と試合のご案内に使用します。生年月日は試合の年齢区分を決めるために使用し、自宅住所はいただきません。"
  },
  "문의: 문의 분류, 제목, 내용과 보낸 회원의 이름, 이메일. 문의 확인과 답변에 씁니다.": {
   "en": "Inquiries: the category, subject and content, and the sending member's name and email. Used to check and answer the inquiry.",
@@ -2851,9 +2915,9 @@
   "en": "Member sign-in goes through Google's sign-in service (Firebase Authentication). This service processes sign-in information (Google account email, sign-in records and IP address) in Google data centers in the United States. The association never receives or stores members' Google passwords. When you cancel and your sign-in account is deleted, Google removes the remaining data within 180 days.",
   "ja": "会員ログインは、Googleのログインサービス（Firebase Authentication）を利用します。このサービスは、ログイン情報（Googleアカウントのメールアドレス、ログイン記録、接続IPアドレス）を米国にあるGoogleのデータセンターで処理します。協会が会員のGoogleパスワードを受け取ったり保管したりすることはありません。退会してログインアカウントが削除されると、Googleは180日以内に残りのデータを削除します。"
  },
- "회원 정보는 회원 탈퇴 때까지 보관합니다. 회원 화면에서 탈퇴하면 회원 정보와 등록한 자녀 정보, 남긴 문의를 바로 지웁니다. 자료 복구를 위한 백업 사본에는 최대 60일 동안 남을 수 있습니다.": {
-  "en": "Member details are kept until you cancel your membership. When you cancel on the member page, your member details, the children you registered and your inquiries are deleted immediately. Backup copies kept for recovery may retain them for up to 60 days.",
-  "ja": "会員情報は退会まで保管します。会員ページで退会すると、会員情報、登録したお子さまの情報、送信したお問い合わせを直ちに削除します。データ復旧用のバックアップには、最長60日間残ることがあります。"
+ "회원 정보는 회원 탈퇴 때까지 보관합니다. 회원 화면에서 탈퇴하면 회원 정보와 등록한 자녀 정보, 남긴 문의를 바로 지웁니다. 다만 탈퇴한 사실을 확인할 수 있도록 이름, 회원 종류, 가입일, 탈퇴일은 탈퇴 기록으로 따로 1년 동안 보관한 뒤 지웁니다. 연락처와 출생 연월일은 탈퇴 기록에 남기지 않습니다. 자료 복구를 위한 백업 사본에는 최대 60일 동안 남을 수 있습니다.": {
+  "en": "Member details are kept until you cancel your membership. When you cancel on the member page, your member details, the children you registered and your inquiries are deleted immediately. However, so that the cancellation can be confirmed, your name, member type, join date and cancellation date are kept separately as a cancellation record for one year and then deleted. Contact details and dates of birth are not kept in the cancellation record. Backup copies kept for recovery may retain data for up to 60 days.",
+  "ja": "会員情報は退会まで保管します。会員ページで退会すると、会員情報、登録したお子さまの情報、送信したお問い合わせを直ちに削除します。ただし、退会の事実を確認できるよう、氏名、会員の種類、登録日、退会日は退会の記録として別に1年間保管した後、削除します。連絡先と生年月日は退会の記録に残しません。データ復旧用のバックアップには、最長60日間残ることがあります。"
  },
  "만 14세 미만 아동의 개인정보는 법정대리인의 동의를 받아 수집합니다. 만 14세 미만은 회원으로 직접 가입하지 않고, 보호자가 가입한 뒤 자녀를 선수로 등록합니다. 대회 참가 신청은 팀 담당 지도자가 선수 보호자의 동의를 확인한 뒤 제출합니다.": {
   "en": "Personal information of children under 14 is collected with the consent of their legal guardian. Children under 14 do not join as members themselves: a parent or guardian joins and then registers the child as a player. Event entries are submitted by the team's head coach after confirming the consent of each player's guardian.",
@@ -2947,6 +3011,34 @@
   "en": "Choose at least one member type.",
   "ja": "会員の種類を1つ以上選んでください。"
  },
+ "선수와 학부모는 함께 고를 수 없습니다. 하나만 골라 주세요.": {
+  "en": "Player and Parent cannot be chosen together. Choose one.",
+  "ja": "「選手」と「保護者」は同時に選べません。どちらか一方を選んでください。"
+ },
+ "출생 연월일을 골라 주세요.": {
+  "en": "Choose the date of birth.",
+  "ja": "生年月日を選んでください。"
+ },
+ "연도, 월, 일을 모두 골라 주세요.": {
+  "en": "Choose the year, month and day.",
+  "ja": "年、月、日をすべて選んでください。"
+ },
+ "없는 날짜입니다. 다시 골라 주세요.": {
+  "en": "That date does not exist. Please choose again.",
+  "ja": "存在しない日付です。選び直してください。"
+ },
+ "오늘보다 뒤의 날짜는 고를 수 없습니다.": {
+  "en": "A date after today cannot be chosen.",
+  "ja": "今日より後の日付は選べません。"
+ },
+ "만 14세 미만은 본인이 가입할 수 없습니다. 보호자가 학부모로 가입해 자녀를 선수로 등록해 주세요.": {
+  "en": "Children under 14 cannot join themselves. A parent or guardian should join as a parent and register the child as a player.",
+  "ja": "満14歳未満の方は本人が登録できません。保護者が「保護者」として登録し、お子さまを選手として登録してください。"
+ },
+ "자녀의 출생 연월일을 골라 주세요.": {
+  "en": "Choose your child's date of birth.",
+  "ja": "お子さまの生年月日を選んでください。"
+ },
  "표시된 항목을 채운 뒤 다시 눌러 주세요.": {
   "en": "Fill in the marked fields and press the button again.",
   "ja": "表示された項目を入力して、もう一度押してください。"
@@ -2962,6 +3054,14 @@
  "가입했습니다. 이제 문의를 남길 수 있습니다.": {
   "en": "You have joined. You can now send inquiries.",
   "ja": "会員登録が完了しました。お問い合わせを送れるようになりました。"
+ },
+ "가입했습니다. {name} 선수도 함께 등록했습니다.": {
+  "en": "You have joined. {name} has also been registered as a player.",
+  "ja": "会員登録が完了しました。{name}さんも選手として登録しました。"
+ },
+ "가입은 끝났습니다. 자녀 선수 등록은 저장하지 못했습니다. 아래에서 다시 등록해 주세요.": {
+  "en": "You have joined, but your child could not be registered. Please register your child again in the form below.",
+  "ja": "会員登録は完了しましたが、お子さまの選手登録を保存できませんでした。下のフォームからもう一度登録してください。"
  },
  "회원 정보를 저장했습니다.": {
   "en": "Member details saved.",
@@ -3030,6 +3130,10 @@
  "{name} 선수를 등록했습니다.": {
   "en": "{name} has been registered as a player.",
   "ja": "{name}さんを選手として登録しました。"
+ },
+ "{date} 출생": {
+  "en": "Born {date}",
+  "ja": "{date}生まれ"
  },
  "{name} 선수의 등록을 지웠습니다.": {
   "en": "{name}'s registration has been deleted.",
