@@ -1683,9 +1683,9 @@
   "en": "Ask about sponsorship",
   "ja": "協賛・協力について問い合わせる"
  },
- "<1>초안입니다.</1> 협회가 보유 기간과 개인정보 보호책임자, 연락처를 확정한 뒤 시행일을 적어 게시합니다.": {
-  "en": "<1>This is a draft.</1> It will be published with an effective date once the association has confirmed retention periods, the privacy officer and contact details.",
-  "ja": "<1>草案です。</1> 協会が保有期間、個人情報保護責任者、連絡先を確定した後、施行日を記載して掲載します。"
+ "<1>초안입니다.</1> 협회가 개인정보 보호책임자와 연락처를 확정한 뒤 시행일을 적어 게시합니다.": {
+  "en": "<1>This is a draft.</1> It will be published with an effective date once the association has confirmed the privacy officer and contact details.",
+  "ja": "<1>草案です。</1> 協会が個人情報保護責任者と連絡先を確定した後、施行日を記載して掲載します。"
  },
  "수집하는 정보와 목적": {
   "en": "Information we collect and why",
@@ -1699,9 +1699,13 @@
   "en": "International exchange inquiries: school or team name, country and city, contact person's name and contact details, and the exchange you have in mind. Used to discuss the exchange.",
   "ja": "国際交流のお問い合わせ：学校・チーム名、国と都市、担当者の氏名と連絡先、ご希望の交流内容。交流の協議に使用します。"
  },
- "수집 목적을 달성하면 지체 없이 파기합니다. 항목별 보유 기간은 협회 확정 후 이곳에 적습니다.": {
-  "en": "Information is destroyed without delay once the purpose of collection has been fulfilled. Retention periods for each item will be listed here once the association has confirmed them.",
-  "ja": "収集目的を達成した後、遅滞なく破棄します。項目ごとの保有期間は、協会で確定した後こちらに記載します。"
+ "보유 기간이 지나거나 수집 목적을 달성하면 지체 없이 파기합니다.": {
+  "en": "Information is destroyed without delay once its retention period has passed or the purpose of collection has been fulfilled.",
+  "ja": "保有期間が過ぎるか、収集目的を達成した後、遅滞なく破棄します。"
+ },
+ "참가 의향 회신, 국제교류 문의, 대회 참가 신청으로 받은 정보는 받은 날부터 3년 동안 보관한 뒤 파기합니다. 그 전이라도 삭제를 요청하시면 지웁니다.": {
+  "en": "Information received through expressions of interest, international exchange inquiries and event entries is kept for three years from the date we receive it and then destroyed. We will delete it earlier if you ask us to.",
+  "ja": "参加意向の回答、国際交流のお問い合わせ、大会参加申込でいただいた情報は、受け取った日から3年間保管した後、破棄します。それ以前でも、削除のご依頼があれば削除します。"
  },
  "만 14세 미만 아동": {
   "en": "Children under 14",
@@ -2295,6 +2299,10 @@
   "en": "Expression of interest form",
   "ja": "参加意向回答書"
  },
+ "<1>회신 기한</1>2026년 11월 30일(월)": {
+  "en": "<1>Reply by</1>Monday, November 30, 2026",
+  "ja": "<1>回答期限</1>2026年11月30日（月）"
+ },
  "국내외 협회·학교·클럽 모두 회신하실 수 있습니다. 참가 의향 제출은 정식 참가 신청이나 참가비 납부 확약을 의미하지 않습니다.": {
   "en": "Associations, schools and clubs in Korea and abroad are all welcome to reply. Sending an expression of interest is not a formal entry or a commitment to pay the entry fee.",
   "ja": "国内外の協会・学校・クラブのいずれからもご回答いただけます。参加意向の提出は、正式な参加申込や参加費の納付を約束するものではありません。"
@@ -2358,6 +2366,10 @@
  "KYLA가 이 행사에 대한 협의와 안내를 위해 위 정보를 이용하는 데 동의합니다. (필수)": {
   "en": "I agree that KYLA may use the details above to discuss and send information about this event. (Required)",
   "ja": "KYLAが本大会に関する協議とご案内のため、上記の情報を利用することに同意します。（必須）"
+ },
+ "보내신 정보는 3년 동안 보관한 뒤 파기합니다. 자세한 내용은 <1>개인정보처리방침</1>에 있습니다.": {
+  "en": "We keep the information you send for three years and then destroy it. Details are in the <1>privacy policy</1>.",
+  "ja": "お送りいただいた情報は3年間保管した後、破棄します。詳しくは<1>プライバシーポリシー</1>をご覧ください。"
  },
  "참가 의향 보내기": {
   "en": "Send expression of interest",
