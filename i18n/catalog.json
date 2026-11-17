@@ -3059,9 +3059,13 @@
   "en": "Upcoming matches",
   "ja": "今後の試合"
  },
- "지난 소식과 알림": {
-  "en": "Past updates and notices",
-  "ja": "過去のお知らせ"
+ "지난 시합": {
+  "en": "Past matches",
+  "ja": "過去の試合"
+ },
+ "그 밖의 소식": {
+  "en": "Other updates",
+  "ja": "そのほかのお知らせ"
  },
  "소식과 알림": {
   "en": "Updates and notices",

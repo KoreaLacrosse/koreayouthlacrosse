@@ -17,7 +17,10 @@ rules_version = '2';
 //                     고친 사람도 이메일이 아니라 로그인 계정의 고유 번호(uid)로 남깁니다(직원 이메일이 회원에게 보이지 않게).
 //   memberNotes/{id}  협회만 보는 회원 메모. 문서 ID 는 회원 문서의 ID. 관리자만 읽고 씁니다.
 //   inquiries/{id}    회원이 남긴 문의. 활동 회원만 남기고(직원은 남길 수 없음), 본인과 관리자만 봅니다. 답변과 처리 상태는 관리자가 적습니다.
+//   matches/{id}      시합. 관리자가 넣고 고칩니다. 시합 참가 권한을 받은 활동 회원이 '공개'인 시합만 봅니다.
 //   matchPosts/{id}   시합 소식. 관리자가 쓰고, 시합 참가 권한을 받은 활동 회원이 '공개' 글만 봅니다.
+//                     matchId 로 어느 시합의 소식인지 적습니다(시합을 정하지 않은 글은 matchId 가 없습니다).
+//                     글이 숨김인 시합의 것인지는 규칙이 따지지 않습니다. 관리자 화면이 시합을 숨길 때 그 시합의 공개된 글도 함께 숨깁니다.
 service cloud.firestore {
   match /databases/{database}/documents {
 
@@ -402,12 +405,48 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
+    // ---------- 시합 ----------
+
+    // 시합 하나: 이름, 날짜(정해지지 않았으면 빈칸), 장소, 공개 여부.
+    // published(공개)인 시합만 회원에게 보입니다. 휴지통에 있는 시합은 draft(숨김)여야 합니다.
+    // 회원이 읽는 문서라 고친 사람은 uid 로 남깁니다.
+    function validMatch(d) {
+      return d.keys().hasOnly(['title', 'eventOn', 'place', 'state',
+                               'createdAt', 'updatedAt', 'updatedBy', 'deletedAt', 'deletedBy'])
+        && d.keys().hasAll(['title', 'eventOn', 'place', 'state', 'createdAt', 'updatedAt', 'updatedBy'])
+        && shortText(d, 'title', 120) && d.title.size() > 0
+        && d.eventOn is string
+        && (d.eventOn == '' || d.eventOn.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$'))
+        && shortText(d, 'place', 120)
+        && d.state in ['published', 'draft']
+        && (!('deletedAt' in d) || d.state == 'draft')
+        && d.createdAt is timestamp
+        && validTrashUid(d)
+        && stampedUid(d);
+    }
+
+    match /matches/{id} {
+      // 시합 참가 권한을 받은 활동 회원은 공개된 시합만 봅니다. 관리자는 모두 봅니다.
+      allow get, list: if hasMatchAccess() && resource.data.state == 'published';
+      allow get, list: if isAdmin();
+      allow create: if isAdmin()
+        && id.matches('^[A-Za-z0-9]{20}$')
+        && validMatch(request.resource.data)
+        && request.resource.data.createdAt == request.time;
+      allow update: if isAdmin()
+        && validMatch(request.resource.data)
+        && request.resource.data.createdAt == resource.data.createdAt;
+      allow delete: if isAdmin();
+    }
+
     // ---------- 시합 소식 ----------
 
     function validPost(d) {
-      return d.keys().hasOnly(['title', 'body', 'eventOn', 'place', 'albumUrl', 'state',
+      return d.keys().hasOnly(['title', 'body', 'eventOn', 'place', 'albumUrl', 'state', 'matchId',
                                'createdAt', 'updatedAt', 'updatedBy', 'deletedAt', 'deletedBy'])
         && d.keys().hasAll(['title', 'body', 'eventOn', 'place', 'albumUrl', 'state', 'createdAt', 'updatedAt', 'updatedBy'])
+        // 어느 시합의 소식인지: 시합 문서의 ID. 시합을 정하지 않은 글에는 이 항목이 없습니다.
+        && (!('matchId' in d) || (d.matchId is string && d.matchId.matches('^[A-Za-z0-9]{20}$')))
         && shortText(d, 'title', 120) && d.title.size() > 0
         && shortText(d, 'body', 5000)
         && d.eventOn is string

@@ -182,6 +182,7 @@
   var kids = [];            // 내가 등록한 자녀 선수
   var inquiries = [];       // 내가 남긴 문의
   var posts = null;         // 시합 소식. 볼 수 없으면 null
+  var matches = [];         // 협회가 공개한 시합. 시합 소식을 시합별로 묶어 보여 주는 데 씁니다
   var state = '';           // loading | failed | signin | join | home
   var want = { tab: '', inquiry: '' };
   var tab = 'profile', started = false, justLeft = false, kidEditing = null;
@@ -328,16 +329,20 @@
       status(err && err.status === 403 ? T('회원 화면을 아직 쓸 수 없습니다. 협회가 준비를 마치는 대로 열립니다.') : T('회원 정보를 불러오지 못했습니다.') + ' ' + errorText(err), true);
     });
   }
-  // 자녀, 내가 남긴 문의, (볼 수 있으면) 시합 소식
+  // 자녀, 내가 남긴 문의, (볼 수 있으면) 시합과 시합 소식
   function loadMore() {
     var u = user, jobs = [
       query('members', 'guardian', u.uid).then(function (list) { kids = list; }),
       query('inquiries', 'uid', u.uid).then(function (list) { inquiries = list; })
     ];
-    posts = null;
+    posts = null; matches = [];
     if (canSeePosts()) {
       jobs.push(query('matchPosts', 'state', 'published').then(function (list) { posts = list; }, function (err) {
         if (err.status === 403) { posts = null; return; }      // 그 사이 권한이 꺼졌으면 잠긴 안내를 보여 줍니다
+        throw err;
+      }));
+      jobs.push(query('matches', 'state', 'published').then(function (list) { matches = list; }, function (err) {
+        if (err.status === 403) { matches = []; return; }      // 시합을 읽지 못하면 시합을 정하지 않은 소식만 보여 줍니다
         throw err;
       }));
     }
@@ -345,7 +350,7 @@
   }
   function onUser(u) {
     user = u || null;
-    me = null; staff = false; kids = []; inquiries = []; posts = null; kidEditing = null;
+    me = null; staff = false; kids = []; inquiries = []; posts = null; matches = []; kidEditing = null;
     resetForms();
     flash('');
     if (!user) { showSignin(); return; }
@@ -607,17 +612,27 @@
     });
   }
 
-  /* ---------- 시합 소식 ---------- */
-  function postRow(p) {
-    var li = el('li', 'row mpost'), main = el('span', 'row__main'), date;
-    if (p.eventOn) {
-      date = el('span', 'row__date num', APP.fmtMD ? APP.fmtMD(p.eventOn) : p.eventOn.slice(5).replace('-', '.'));
-      if (APP.weekday) date.appendChild(el('small', '', APP.weekday(p.eventOn)));
-    } else {
-      date = el('span', 'row__date row__date--none', T('알림'));
-    }
-    add(main, el('span', 'row__title', p.title));
-    var where = [p.eventOn && APP.fmtLong ? APP.fmtLong(p.eventOn) : '', p.place].filter(Boolean).join(', ');
+  /* ---------- 시합 소식 ----------
+     협회가 넣은 시합(matches)마다 그 시합의 소식(matchPosts 가운데 matchId 가 그 시합인 글)을 묶어 보여 줍니다.
+     시합을 정하지 않은 소식은 맨 아래에 따로 모읍니다. 협회가 숨기거나 지운 시합의 소식은 보여 주지 않습니다. */
+  function stampOf(iso) { var n = Date.parse(text(iso)); return isNaN(n) ? 0 : n; }
+  function newest(a, b) { return stampOf(b.createdAt) - stampOf(a.createdAt); }
+  function dateCell(day, none) {
+    if (!day) return el('span', 'row__date row__date--none', none);
+    var date = el('span', 'row__date num', APP.fmtMD ? APP.fmtMD(day) : day.slice(5).replace('-', '.'));
+    if (APP.weekday) date.appendChild(el('small', '', APP.weekday(day)));
+    return date;
+  }
+  function whereText(day, place) { return [day && APP.fmtLong ? APP.fmtLong(day) : '', place].filter(Boolean).join(', '); }
+  // m: 그 글이 속한 시합(시합을 정하지 않은 글이면 null). 시합 아래의 글은 날짜 칸 없이 시합 이름 아래에 맞춰 적고,
+  // 시합과 같은 날짜와 장소는 되풀이하지 않습니다.
+  function postRow(p, m) {
+    var li = el('li', m ? 'mpost mpost--in' : 'row mpost'), main = el('div', 'row__main');
+    var day = text(p.eventOn), place = text(p.place);
+    if (m && day === text(m.eventOn)) day = '';
+    if (m && place === text(m.place)) place = '';
+    add(main, el(m ? 'h4' : 'span', 'row__title', p.title));
+    var where = whereText(day, place);
     if (where) main.appendChild(el('span', 'row__sub', where));
     if (p.body) main.appendChild(el('p', 'mpost__body', p.body));
     // 사진은 앨범 주소로만 받습니다. https 주소만, 따옴표나 꺾쇠가 없을 때만 링크로 만듭니다.
@@ -627,7 +642,23 @@
       a.appendChild(icon('ext'));
       main.appendChild(a);
     }
-    add(li, date, main);
+    if (m) add(li, main); else add(li, dateCell(day, T('알림')), main);
+    return li;
+  }
+  function matchBlock(m, items) {
+    var li = el('li', 'mmatch'), head = el('div', 'row mmatch__head'), main = el('div', 'row__main');
+    add(main, el('h3', 'mmatch__title', m.title));
+    var where = whereText(text(m.eventOn), text(m.place));
+    if (where) main.appendChild(el('span', 'row__sub', where));
+    add(head, dateCell(text(m.eventOn), T('날짜 미정')), main);
+    li.appendChild(head);
+    if (items.length) {
+      var ul = el('ul', 'mmatch__posts');
+      items.forEach(function (p) { ul.appendChild(postRow(p, m)); });
+      li.appendChild(ul);
+    } else {
+      li.appendChild(el('p', 'mmatch__none', T('아직 올라온 시합 소식이 없습니다')));
+    }
     return li;
   }
   function renderPosts() {
@@ -635,24 +666,43 @@
     $('mem-posts-locked').hidden = !locked;
     box.textContent = '';
     if (locked) return;
-    var list = posts.filter(function (p) { return !p.deletedAt && p.state === 'published'; }), now = today();
-    if (!list.length) {
+    var now = today(), of = {}, loose = [];
+    var shown = matches.filter(function (m) { return !m.deletedAt && m.state === 'published'; });
+    shown.forEach(function (m) { of[m.id] = []; });
+    posts.forEach(function (p) {
+      if (p.deletedAt || p.state !== 'published') return;
+      var id = text(p.matchId);
+      if (!id) loose.push(p);
+      else if (of[id]) of[id].push(p);
+    });
+    if (!shown.length && !loose.length) {
       add(box, add(el('div', 'empty'), el('p', 'empty__title', T('아직 올라온 시합 소식이 없습니다')), el('p', 'empty__text', T('시합 일정이 정해지면 이곳에 올립니다.'))));
       return;
     }
-    var coming = list.filter(function (p) { return p.eventOn && p.eventOn >= now; }).sort(function (a, b) { return a.eventOn < b.eventOn ? -1 : 1; });
-    var rest = list.filter(function (p) { return !(p.eventOn && p.eventOn >= now); }).sort(function (a, b) {
-      var x = a.eventOn || dayOf(a.createdAt), y = b.eventOn || dayOf(b.createdAt);
-      return x < y ? 1 : -1;
+    // 다가오는 시합: 가까운 날부터. 날짜를 아직 정하지 않은 시합은 그 뒤에 둡니다. 지난 시합: 최근 것부터.
+    var coming = shown.filter(function (m) { return !m.eventOn || m.eventOn >= now; }).sort(function (a, b) {
+      if (!a.eventOn !== !b.eventOn) return a.eventOn ? -1 : 1;
+      return a.eventOn === b.eventOn ? newest(a, b) : (a.eventOn < b.eventOn ? -1 : 1);
     });
-    var group = function (title, items) {
-      if (!items.length) return;
-      var ul = el('ul', 'rows');
-      items.forEach(function (p) { ul.appendChild(postRow(p)); });
+    var past = shown.filter(function (m) { return m.eventOn && m.eventOn < now; }).sort(function (a, b) {
+      return a.eventOn === b.eventOn ? newest(a, b) : (a.eventOn < b.eventOn ? 1 : -1);
+    });
+    var group = function (title, list) {
+      if (!list.length) return;
+      var ul = el('ul', 'mmatches');
+      list.forEach(function (m) { ul.appendChild(matchBlock(m, of[m.id].sort(newest))); });
       add(box, el('h2', 'mposts__h', title), ul);
     };
     group(T('다가오는 시합'), coming);
-    group(coming.length ? T('지난 소식과 알림') : T('소식과 알림'), rest);
+    group(T('지난 시합'), past);
+    if (loose.length) {
+      var ul = el('ul', 'rows');
+      loose.sort(function (a, b) {
+        var x = a.eventOn || dayOf(a.createdAt), y = b.eventOn || dayOf(b.createdAt);
+        return x === y ? newest(a, b) : (x < y ? 1 : -1);
+      }).forEach(function (p) { ul.appendChild(postRow(p, null)); });
+      add(box, el('h2', 'mposts__h', shown.length ? T('그 밖의 소식') : T('소식과 알림')), ul);
+    }
   }
 
   /* ---------- 문의하기 ---------- */

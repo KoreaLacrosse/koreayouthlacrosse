@@ -2,7 +2,7 @@
    KYLA 관리자 화면 (/admin/) : 공통 부분
    로그인, Firestore 와 주고받기, 화면 전환, 그리고 각 화면이 함께 쓰는 부품(표, 수정 창, 막대 그림, 내려받기).
 
-   - 화면 하나는 파일 하나입니다: home.js(대시보드), members.js(회원), inquiries.js(문의), posts.js(시합 소식),
+   - 화면 하나는 파일 하나입니다: home.js(대시보드), members.js(회원), inquiries.js(문의), matches.js(시합 관리),
      eoi.js(참가 의향 회신), admins.js(관리자).
      각 파일이 KYLA_ADMIN.section({...}) 으로 자기를 등록하고, start.js 가 마지막에 시작시킵니다.
    - 누가 무엇을 할 수 있는지는 Firebase 보안 규칙(tools/firestore.rules)이 정합니다. 이 화면의 확인은 안내용입니다.
@@ -215,7 +215,7 @@
   };
 
   /* ---------- 읽어 온 자료 보관 (화면을 오갈 때 다시 읽지 않게) ---------- */
-  var ORDER = { eoiReplies: ['submittedAt', true], members: ['createdAt', true], inquiries: ['createdAt', true], matchPosts: ['createdAt', true], admins: null, memberNotes: null };
+  var ORDER = { eoiReplies: ['submittedAt', true], members: ['createdAt', true], inquiries: ['createdAt', true], matches: ['createdAt', true], matchPosts: ['createdAt', true], admins: null, memberNotes: null };
   var cache = {};
   A.store.load = function (col, force) {
     var c = cache[col];
@@ -748,8 +748,11 @@
   };
 
   /* ---------- 화면 등록과 전환 ----------
-     section({ id, title, masterOnly, needs: [컬렉션], badge(): 숫자, render(root) }) */
+     section({ id, title, masterOnly, needs: [컬렉션], badge(): 숫자, render(root) })
+     주소는 #화면 이고, 화면 안의 한 곳을 가리킬 때는 #화면-이름 을 씁니다(예: #matches-시합ID). 화면 id 에는 하이픈을 쓰지 않습니다.
+     하이픈 뒤의 이름은 A.sub 에 들어 있고, 그 화면의 render 가 읽어 씁니다. */
   A.section = function (def) { A.sections.push(def); };
+  A.sub = '';
   var current = null;
   function visibleSections() { return A.sections.filter(function (s) { return !s.masterOnly || A.role === 'master'; }); }
   function buildNav() {
@@ -826,8 +829,9 @@
     A.render();
   };
   function route(focusHeading) {
-    var id = (location.hash || '').replace(/^#/, ''), list = visibleSections();
-    current = list.filter(function (s) { return s.id === id; })[0] || list[0];
+    var id = (location.hash || '').replace(/^#/, ''), base = id.split('-')[0], list = visibleSections();
+    current = list.filter(function (s) { return s.id === base; })[0] || list[0];
+    A.sub = current && current.id === base ? id.slice(base.length + 1) : '';
     window.scrollTo(0, 0);
     A.render(focusHeading);
   }

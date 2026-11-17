@@ -42,6 +42,10 @@ body.adm{padding-bottom:0;background:#fff;--series:var(--blue);--pad:20px}
 .adm-head{display:grid;gap:16px}
 .adm-head__sub{margin-top:2px;color:var(--muted);font-size:15px}
 .adm-tools{display:flex;flex-wrap:wrap;align-items:center;gap:10px 20px;padding-inline:6px}
+/* 시합 관리: 시합 하나의 소식 화면. 위에 시합 목록으로 돌아가는 줄, 제목 아래에 날짜·장소·공개 여부 */
+.adm-back{margin-bottom:-10px}
+.adm-back .linkbtn{min-height:36px;font-size:14.5px;color:var(--ink)}
+.adm-match{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}
 
 /* ---------- 걸러 보기 ---------- */
 .adm-filters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 12px;padding:14px;background:var(--tint)}

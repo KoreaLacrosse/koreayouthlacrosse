@@ -559,6 +559,15 @@ select.input{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
 .mpost{grid-template-columns:62px minmax(0,1fr)}
 .mpost .row__title{font-weight:900;font-size:18px;overflow-wrap:anywhere}
 .mpost__body{margin-top:2px;white-space:pre-line;overflow-wrap:anywhere;line-height:1.7}
+/* 시합마다 한 묶음: 머리(날짜, 시합 이름, 장소) 아래에 그 시합의 소식을 시합 이름에 맞춰 들여 적습니다 */
+.mmatches{display:grid;gap:30px}
+.mmatch{--mdate:62px;border-top:2px solid var(--ink)}
+.mmatch__head{grid-template-columns:var(--mdate) minmax(0,1fr);padding-bottom:14px;border-bottom:0}
+.mmatch__title{font-weight:900;font-size:20px;line-height:1.35;letter-spacing:-0.03em;overflow-wrap:anywhere}
+.mmatch__posts,.mmatch__none{margin-left:calc(var(--mdate) + 14px);border-top:1px solid var(--line)}
+.mpost--in{padding:14px 0 16px;border-bottom:1px solid var(--line)}
+.mpost--in .row__title{font-weight:700;font-size:17px}
+.mmatch__none{padding:12px 0 16px;border-bottom:1px solid var(--line);color:var(--muted);font-size:14.5px}
 .mem__leave > summary{display:inline-flex;align-items:center;min-height:44px;font-weight:900;font-size:15px;color:var(--muted);text-decoration:underline;text-underline-offset:4px;cursor:pointer}
 .mem__leavebox{display:grid;gap:12px;margin-top:8px;padding:16px 18px;background:var(--tint)}
 html[lang="en"] .mem__facts > div{grid-template-columns:128px minmax(0,1fr)}
@@ -614,6 +623,10 @@ html[lang="en"] .mem__facts > div{grid-template-columns:128px minmax(0,1fr)}
   .row{grid-template-columns:78px minmax(0,1fr) auto;padding:18px 0}
   .row__date{font-size:26px}
   .row__title{font-size:18.5px}
+  .mmatch{--mdate:78px}
+  .mmatch__head{grid-template-columns:var(--mdate) minmax(0,1fr);padding-bottom:16px}
+  .mmatch__title{font-size:22px}
+  .mpost--in .row__title{font-size:18px}
   .bulletin{grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:72px}
   .record{grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:28px 72px;align-items:start}
   .record__wide{grid-column:1 / -1}
