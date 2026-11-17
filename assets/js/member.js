@@ -625,11 +625,11 @@
   // 자녀 선수 등록은 회원 종류에 학부모가 있는 회원만 합니다(2026-11-17 담당자 요청. 보안 규칙도 같습니다).
   function isParent() { return !!me && (me.types || []).indexOf('parent') >= 0; }
   function canAddKid() { return active() && isParent(); }
-  // 학부모가 아닌 회원에게는 등록 단추 대신 안내를 보여 줍니다. 선수 회원은 학부모를 함께 고를 수 없으니 이 칸을 아예 감춥니다.
-  // 예전에 등록해 둔 자녀가 있으면 학부모가 아니어도 목록은 보여 줍니다(고치거나 지울 수 있게).
+  // 학부모가 아닌 회원에게는 자녀 선수 칸을 아예 보여 주지 않습니다(2026-11-18 담당자 요청: 등록 단추도, 안내도 없이).
+  // 예전에 등록해 둔 자녀가 있는 회원만 예외로, 고치거나 지울 수 있게 목록을 보여 주고 새로 등록할 수 없는 까닭을 한 줄로 알립니다.
   function syncKids() {
-    var parent = isParent(), has = shownKids().length > 0, player = !!me && (me.types || []).indexOf('player') >= 0;
-    $('mem-kids-block').hidden = !parent && !has && player;
+    var parent = isParent(), has = shownKids().length > 0;
+    $('mem-kids-block').hidden = !parent && !has;
     $('mem-kids-intro').hidden = !parent;
     $('mem-kids').hidden = !parent && !has;
     $('mem-kid-only').hidden = parent;
