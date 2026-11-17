@@ -2,7 +2,8 @@
    KYLA 관리자 화면 (/admin/) : 공통 부분
    로그인, Firestore 와 주고받기, 화면 전환, 그리고 각 화면이 함께 쓰는 부품(표, 수정 창, 막대 그림, 내려받기).
 
-   - 화면 하나는 파일 하나입니다: home.js(대시보드), members.js(회원), eoi.js(참가 의향 회신), admins.js(관리자).
+   - 화면 하나는 파일 하나입니다: home.js(대시보드), members.js(회원), inquiries.js(문의), posts.js(시합 소식),
+     eoi.js(참가 의향 회신), admins.js(관리자).
      각 파일이 KYLA_ADMIN.section({...}) 으로 자기를 등록하고, start.js 가 마지막에 시작시킵니다.
    - 누가 무엇을 할 수 있는지는 Firebase 보안 규칙(tools/firestore.rules)이 정합니다. 이 화면의 확인은 안내용입니다.
    - 관리자 이메일은 Firestore 의 admins 컬렉션에만 있습니다. 저장소의 어떤 파일에도 적지 않습니다.
@@ -214,7 +215,7 @@
   };
 
   /* ---------- 읽어 온 자료 보관 (화면을 오갈 때 다시 읽지 않게) ---------- */
-  var ORDER = { eoiReplies: ['submittedAt', true], members: ['createdAt', true], admins: null };
+  var ORDER = { eoiReplies: ['submittedAt', true], members: ['createdAt', true], inquiries: ['createdAt', true], matchPosts: ['createdAt', true], admins: null, memberNotes: null };
   var cache = {};
   A.store.load = function (col, force) {
     var c = cache[col];
@@ -247,6 +248,18 @@
 
   // 관리자가 고친 문서에 남기는 표시: 고친 사람(서버 시각은 쓰기에서 따로 채웁니다)
   A.stamp = function (data) { data.updatedBy = A.email; return data; };
+  // 회원이 읽을 수 있는 문서(회원이 만든 회원 문서, 문의, 시합 소식)에는 이메일 대신 로그인 계정의 고유 번호(uid)를 남깁니다.
+  // 그 문서를 읽는 회원에게 직원의 이메일이 보이지 않게 하려는 것이고, 보안 규칙도 그렇게만 받아 줍니다.
+  A.stampUid = function (data) { data.updatedBy = A.user.uid; return data; };
+  // 그런 문서의 '고친 사람'을 화면에 적을 말. doc 은 그 문서(회원 본인이나 보호자가 고친 것인지 가리는 데 씁니다)
+  A.byText = function (by, doc) {
+    by = A.text(by);
+    if (!by || by.indexOf('@') >= 0) return by;             // 관리자가 넣은 문서에는 이메일이 남아 있습니다
+    if (A.user && by === A.user.uid) return A.email;
+    if (doc && by === doc.id) return '회원 본인';
+    if (doc && by === A.text(doc.guardian)) return '보호자';
+    return '직원';
+  };
   // 저장 결과의 시각을 화면 자료에 반영
   A.committed = function (doc, result, times) {
     var t = (result && result.commitTime) || new Date().toISOString();
@@ -257,17 +270,18 @@
   };
 
   /* ---------- 휴지통: 옮기기, 되돌리기, 완전히 삭제 (회원과 회신이 함께 씁니다) ----------
-     옮기면 문서에 deletedAt(서버 시각), deletedBy 가 붙고, 되돌리면 그 두 항목을 지웁니다. */
+     옮기면 문서에 deletedAt(서버 시각), deletedBy 가 붙고, 되돌리면 그 두 항목을 지웁니다.
+     byUid: 회원이 읽을 수 있는 문서이면 true (옮긴 사람을 이메일 대신 uid 로 남깁니다). */
   A.trash = {
-    move: function (col, doc) {
-      var data = A.stamp({ deletedBy: A.email }), times = ['deletedAt', 'updatedAt'];
+    move: function (col, doc, byUid) {
+      var who = byUid ? A.user.uid : A.email, data = { deletedBy: who, updatedBy: who }, times = ['deletedAt', 'updatedAt'];
       return A.api.commit([A.write.set(col, doc.id, data, { mask: ['deletedBy', 'updatedBy'], times: times, base: doc._updateTime })]).then(function (res) {
         doc.deletedBy = data.deletedBy; doc.updatedBy = data.updatedBy;
         A.store.put(col, doc.id, A.committed(doc, res, times));
       });
     },
-    restore: function (col, doc) {
-      var data = A.stamp({});
+    restore: function (col, doc, byUid) {
+      var data = { updatedBy: byUid ? A.user.uid : A.email };
       return A.api.commit([A.write.set(col, doc.id, data, { mask: ['deletedAt', 'deletedBy', 'updatedBy'], times: ['updatedAt'], base: doc._updateTime })]).then(function (res) {
         delete doc.deletedAt; delete doc.deletedBy; doc.updatedBy = data.updatedBy;
         A.store.put(col, doc.id, A.committed(doc, res, ['updatedAt']));
@@ -716,7 +730,7 @@
   // 엑셀이 수식으로 읽을 수 있는 글자로 시작하면 앞에 작은따옴표를 붙여 글자로만 읽히게 합니다.
   function cell(v) {
     var s = v === null || v === undefined ? '' : String(v);
-    if (typeof v === 'string' && /^[=+\-@\t\r]/.test(s)) s = "'" + s;
+    if (typeof v === 'string' && /^[=+\-@\t\r＝＋－＠]/.test(s)) s = "'" + s;      // 전각 글자도 엑셀이 수식의 시작으로 읽을 수 있습니다
     return '"' + s.replace(/"/g, '""') + '"';
   }
   A.ui.download = function (name, head, rows) {
@@ -930,11 +944,17 @@
     $('adm-ask-no').addEventListener('click', function () { if (askDone) askDone(false); });
     $('adm-ask').addEventListener('cancel', function (ev) { ev.preventDefault(); if (askDone) askDone(false); });
 
-    var broken = function () {
+    var broken = function (why) {
       gate('signin');
       $('adm-google').disabled = true;
-      signinMsg('관리자 화면을 준비하지 못했습니다. 화면을 새로 고쳐 주세요.');
+      signinMsg(why || '관리자 화면을 준비하지 못했습니다. 화면을 새로 고쳐 주세요.');
     };
+    // 다른 사이트가 이 화면을 자기 화면 안(iframe)에 넣어 단추를 누르게 만드는 것을 막습니다.
+    // 미리보기와 점검용 사본(예시 자료로 도는 것)만 다른 화면 안에서도 열립니다.
+    if (window.top !== window.self && !window.KYLA_MOCK) {
+      broken('이 화면은 다른 화면 안에서는 열리지 않습니다. 주소창에 관리자 화면 주소를 직접 넣어 열어 주세요.');
+      return;
+    }
     if (!FB || !window.firebase || !window.firebase.auth || !window.HTMLDialogElement) { broken(); return; }
     try {
       window.firebase.initializeApp({ apiKey: FB.apiKey, authDomain: FB.authDomain, projectId: FB.projectId, appId: FB.appId });

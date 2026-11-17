@@ -7,7 +7,7 @@
     python3 tools/build_i18n.py --check    번역이 빠진 문구만 알려 주고 끝낸다 (파일을 쓰지 않는다)
     python3 tools/build_i18n.py --dump F   원본에서 찾은 문구 목록을 F(JSON)로 내보낸다
 
-원본:  index.html (화면 문구), assets/js/app.js (T('...') 로 감싼 문구)
+원본:  index.html (화면 문구), assets/js/app.js 와 assets/js/member.js (T('...') 로 감싼 문구)
 번역:  i18n/catalog.json  — 열쇠는 한국어 문구 그대로, 값은 {"en": "...", "ja": "..."}
 
 index.html 에서는 글자를 직접 가진 가장 바깥 요소 하나가 번역 단위가 된다.
@@ -28,6 +28,7 @@ from html.parser import HTMLParser
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SITE = 'https://koreayouthlacrosse.com/'
 LANGS = ['en', 'ja']
+JS_FILES = ['assets/js/app.js', 'assets/js/member.js']      # T('...') 문구를 모을 파일. member.js 는 회원 화면(#member)의 동작입니다.
 
 FONTS = {
     'en': 'https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,400;0,500;0,600;0,700;1,600;1,800'
@@ -283,7 +284,7 @@ def rebuild(tr, slots, key):
 
 
 def js_strings(src):
-    """app.js 에서 T('...') 로 감싼 문구를 모은다."""
+    """app.js, member.js 에서 T('...') 로 감싼 문구를 모은다."""
     keys = []
     for m in re.finditer(r'''\bT\(\s*(['"])((?:\\.|(?!\1).)*)\1''', src, re.S):
         s = re.sub(r'\\(.)', lambda x: {'n': '\n', 't': '\t'}.get(x.group(1), x.group(1)), m.group(2))
@@ -405,7 +406,7 @@ def write(path, text):
 
 def main(argv):
     html = read('index.html')
-    js = read('assets/js/app.js')
+    js = '\n'.join(read(f) for f in JS_FILES)
     keys = collect(Builder(html).root, js)
 
     if '--dump' in argv:

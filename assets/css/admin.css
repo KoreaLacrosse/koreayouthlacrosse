@@ -207,6 +207,12 @@ body.adm{padding-bottom:0;background:#fff;--series:var(--blue);--pad:20px}
 .adm-meta > div{display:grid;grid-template-columns:7em minmax(0,1fr);gap:10px}
 .adm-meta dt{font-weight:700}
 .adm-meta dd{overflow-wrap:anywhere}
+/* 문의 보기: 회원이 적은 내용(고칠 수 없는 부분) */
+.adm-read{display:grid;gap:8px;padding:16px 18px;background:var(--tint);box-shadow:inset 4px 0 0 var(--ink)}
+.adm-read__top{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;font-size:13.5px;color:var(--muted)}
+.adm-read__title{font-size:18px;font-weight:900;line-height:1.4;letter-spacing:-0.03em;overflow-wrap:anywhere}
+.adm-read__text{font-size:15.5px;line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere}
+.adm-read + .adm-meta{border-top:0;padding-top:0}
 .adm-raw summary{display:inline-block;min-height:40px;padding:8px 0;font-weight:700;font-size:15px;text-decoration:underline;text-underline-offset:4px;cursor:pointer}
 .adm-raw pre{margin:4px 0 0;padding:14px 16px;background:var(--tint);font-family:inherit;font-size:14.5px;line-height:1.65;white-space:pre-wrap;overflow-wrap:anywhere}
 

@@ -46,7 +46,10 @@
 <a class="skip" href="#main" data-skip>Skip to main content</a>
 
 <div class="langbar">
-  <nav class="wrap lang" aria-label="Language" translate="no"><a href="../" lang="ko" hreflang="ko" data-lang-link="ko">한국어</a><a href="./" lang="en" hreflang="en" data-lang-link="en" aria-current="true">English</a><a href="../ja/" lang="ja" hreflang="ja" data-lang-link="ja">日本語</a></nav>
+  <div class="wrap langbar__in">
+    <a class="langbar__member" href="#member">Member sign-in</a>
+    <nav class="lang" aria-label="Language" translate="no"><a href="../" lang="ko" hreflang="ko" data-lang-link="ko">한국어</a><a href="./" lang="en" hreflang="en" data-lang-link="en" aria-current="true">English</a><a href="../ja/" lang="ja" hreflang="ja" data-lang-link="ja">日本語</a></nav>
+  </div>
 </div>
 
 <header class="hdr">
@@ -80,6 +83,7 @@
           <a href="#notice">Notices</a>
           <a href="#apply-inquiry">Inquiries</a>
           <a href="#gallery">Photo gallery</a>
+          <a href="#member">Members</a>
         </div>
       </div>
     </nav>
@@ -117,6 +121,7 @@
       <a href="#notice">Notices</a>
       <a href="#apply-inquiry">Inquiries</a>
       <a href="#gallery">Photo gallery</a>
+      <a href="#member">Members</a>
     </div>
   </div>
   <a class="mnav__link" href="#apply">Apply & contact</a>
@@ -384,7 +389,7 @@
             <div><dt>Area of activity</dt><dd>Based in Seoul; active in Seoul, Jeju and exchange locations in Korea and abroad</dd></div>
             <div><dt>Qualification managed</dt><dd>Youth Lacrosse Coach <span lang="ko">(유소년라크로스지도자)</span><small>Registered private qualification no. 2026-007637, under the Ministry of Culture, Sports and Tourism</small></dd></div>
           </dl>
-          <div class="btns"><a class="btn btn--ghost" href="#apply-inquiry" data-inquiry="etc">Contact the association</a></div>
+          <div class="btns"><a class="btn btn--ghost" href="#member-inquiry" data-inquiry="etc">Contact the association</a></div>
         </div>
       </div>
     </section>
@@ -512,7 +517,7 @@
           </div>
           <div class="cta">
             <div><h2>Want to start at your school or club?</h2><p>We take inquiries about PE classes, after-school programs, school clubs and taster lessons. We plan together around what suits your school or club.</p></div>
-            <div class="btns"><a class="btn" href="#apply-inquiry" data-inquiry="school">Ask about programs</a></div>
+            <div class="btns"><a class="btn" href="#member-inquiry" data-inquiry="program">Ask about programs</a></div>
           </div>
         </div>
       </div>
@@ -659,7 +664,7 @@
           <div id="coach-events"></div>
           <div class="cta">
             <div><h2>Want to hear about courses first?</h2><p>Leave an inquiry and we will let you know when the schedule is confirmed.</p></div>
-            <div class="btns"><a class="btn" href="#apply-inquiry" data-inquiry="cert">Ask about coach education</a></div>
+            <div class="btns"><a class="btn" href="#member-inquiry" data-inquiry="cert">Ask about coach education</a></div>
           </div>
         </div>
       </div>
@@ -976,7 +981,7 @@
     </div>
     <div class="wrap panel panel--flush">
       <div class="albums" id="album-list"></div>
-      <p class="note">If you would like a posted photo taken down, let us know through the <a href="#apply-inquiry" data-inquiry="etc">inquiry form</a>. We will act as soon as we have checked.</p>
+      <p class="note">If you would like a posted photo taken down, let us know through the <a href="#member-inquiry" data-inquiry="etc">inquiry form</a>. We will act as soon as we have checked.</p>
     </div>
   </div>
   <div class="wrap detail" id="album-detail" hidden></div>
@@ -986,7 +991,7 @@
 <section class="view" data-view="apply">
   <div class="wrap plainhead">
     <h1 class="t-page" tabindex="-1"><span class="oblique">Apply & contact</span></h1>
-    <p class="plainhead__lead">Enter an event, apply for coach education, or ask about programs and partnerships.</p>
+    <p class="plainhead__lead">Enter an event or apply for coach education. Inquiries are made from the member page.</p>
   </div>
   <div class="wrap"><div class="narrow">
     <p class="note">For the 2027 Jeju International Youth Lacrosse Exchange, please reply using the <a href="#jeju2027">expression of interest form</a>.</p>
@@ -1060,52 +1065,211 @@
       <div id="coach-status"></div>
       <div class="cta">
         <div><h2>We will let you know when dates are set</h2><p>Leave an inquiry and we will let you know when the General grade course schedule is confirmed.</p></div>
-        <div class="btns"><a class="btn" href="#apply-inquiry" data-inquiry="cert">Ask about coach education</a></div>
+        <div class="btns"><a class="btn" href="#member-inquiry" data-inquiry="cert">Ask about coach education</a></div>
       </div>
     </div>
 
-    <!-- 문의하기 -->
+    <!-- 문의하기: 회원 화면(#member)에서 받습니다 -->
     <div class="panel" role="tabpanel" id="panel-inquiry" aria-labelledby="tab-inquiry" tabindex="0" hidden>
-      <p class="note note--warn" data-preview-note hidden></p>
-      <p class="note" data-instagram-wrap data-when-connected hidden>KYLA on Instagram <a class="extlink" data-instagram rel="noopener"></a></p>
-      <form class="form" id="form-inquiry" data-form="inquiry" novalidate>
-        <fieldset class="form__group">
-          <legend class="form__legend">Your inquiry</legend>
-          <div class="field">
-            <label class="field__label" for="inq-cat"><span>Inquiry type</span><em>required</em></label>
-            <select class="input" id="inq-cat" name="Inquiry type" required data-msg="Select an inquiry type.">
-              <option value="">Select</option>
-              <option value="school">School programs</option>
-              <option value="event">Events and clubs</option>
-              <option value="cert">Coach education</option>
-              <option value="intl">International exchange</option>
-              <option value="sponsor">Sponsorship</option>
-              <option value="etc">Other</option>
-            </select>
-          </div>
-          <div class="field"><label class="field__label" for="inq-body"><span>Details</span><em>required</em></label><textarea class="input" id="inq-body" name="Details" required data-msg="Enter your inquiry."></textarea></div>
-        </fieldset>
-        <fieldset class="form__group">
-          <legend class="form__legend">Who to reply to</legend>
-          <div class="form__grid form__grid--2">
-            <div class="field"><label class="field__label" for="inq-name"><span>Name</span><em>required</em></label><input class="input" id="inq-name" name="Name" required autocomplete="name" data-msg="Enter your name."></div>
-            <div class="field"><label class="field__label" for="inq-org">Organization</label><input class="input" id="inq-org" name="Organization" autocomplete="organization"></div>
-          </div>
-          <div class="field"><label class="field__label" for="inq-contact"><span>Email or phone number</span><em>required</em></label><input class="input" id="inq-contact" name="Contact" required data-msg="Enter an email address or phone number we can reply to."></div>
-        </fieldset>
-        <fieldset class="form__group">
-          <legend class="form__legend">Personal information consent</legend>
-          <dl class="consent">
-            <dt>Items collected</dt><dd>Name, organization, contact details, inquiry content</dd>
-            <dt>Purpose of use</dt><dd>Checking and answering the inquiry</dd>
-            <dt>Retention period</dt><dd>Destroyed without delay once the purpose of collection has been fulfilled.</dd>
-          </dl>
-          <div class="field"><label class="check"><input type="checkbox" name="Consent to collection and use of personal information" value="Agreed" required data-msg="Please agree to the collection and use of personal information."><span>I agree to the collection and use of personal information. (Required)</span></label></div>
-        </fieldset>
-        <div class="btns"><button class="btn" type="submit">Send inquiry</button></div>
-        <div class="result" role="status" aria-live="polite" hidden></div>
-      </form>
+      <div class="cta">
+        <div><h2>Inquiries are made from the member page</h2><p>Sign in with a Google account and join as a member to send an inquiry and read the reply in the same place. Membership is free.</p></div>
+        <div class="btns"><a class="btn" href="#member-inquiry">Sign in and send an inquiry</a></div>
+      </div>
+      <p class="note" data-instagram-wrap hidden>To ask without joining, send a message to KYLA on Instagram <a class="extlink" data-instagram rel="noopener"></a>.</p>
     </div>
+  </div></div>
+</section>
+
+<!-- ============================================================ 회원 -->
+<!-- 이 화면의 동작은 assets/js/member.js 가 맡습니다. 그 파일과 구글 로그인에 쓰는 파일은 이 화면을 열 때만 불러옵니다. -->
+<section class="view" data-view="member">
+  <div class="wrap plainhead">
+    <h1 class="t-page" tabindex="-1"><span class="oblique">Members</span></h1>
+    <p class="plainhead__lead">Join as a KYLA member to send inquiries and read the replies. Members taking part in matches also see match schedules and photos here.</p>
+  </div>
+  <div class="wrap"><div class="narrow mem" id="mem">
+
+    <!-- 확인하는 중, 불러오지 못함 -->
+    <div class="panel" id="mem-loading">
+      <p class="mem__status" id="mem-loading-text" role="status">Checking whether you are signed in.</p>
+      <div class="btns" id="mem-retry-wrap" hidden><button class="btn btn--ghost" type="button" id="mem-retry">Try again</button></div>
+    </div>
+
+    <!-- 로그인 전 -->
+    <div class="panel" id="mem-signin" hidden>
+      <p class="note" id="mem-signin-why" hidden>Sign in as a member to send an inquiry.</p>
+      <p class="result result--ok" id="mem-left" role="status" hidden>Your membership has been cancelled. Your member details, the children you registered and your inquiries have all been deleted.</p>
+      <div class="cta">
+        <div><h2>Sign in with your Google account</h2><p>There is no new password to create: you sign in with the Google account you already use. If this is your first time, you can join straight after signing in, and membership is free.</p></div>
+        <div class="btns"><button class="btn" type="button" id="mem-google">Sign in with Google</button></div>
+      </div>
+      <p class="result result--err" id="mem-signin-msg" role="alert" hidden></p>
+      <div class="note note--warn" id="mem-inapp" hidden>
+        <p><strong>Google sign-in is blocked on this screen.</strong> This page was opened inside an app such as KakaoTalk or Instagram. Please open this address in Chrome or Safari.</p>
+        <p class="mem__acts"><a class="linkbtn" id="mem-open-ext" hidden>Open in another browser</a><button class="linkbtn" type="button" id="mem-copy-url">Copy this page address</button></p>
+      </div>
+      <dl class="deflist">
+        <div><dt>Inquiry</dt><dd>Send an inquiry to the association and read the reply on the same page.</dd></div>
+        <div><dt>Match updates</dt><dd>Once the association grants access to members taking part in matches, they can see match schedules and photos.</dd></div>
+        <div><dt>Register a child player</dt><dd>Players under 14 do not join themselves: a parent or guardian joins and then registers the child as a player.</dd></div>
+      </dl>
+      <p class="mem__small">The information collected when you join, and how long it is kept, is set out in the <a href="#privacy">privacy policy</a>.</p>
+    </div>
+
+    <!-- 가입: 로그인했지만 아직 회원이 아닐 때. 아래 양식(#mem-form)은 '회원 정보 수정'에서도 같이 씁니다. -->
+    <div class="panel" id="mem-join" hidden>
+      <p class="note" id="mem-join-staff" hidden>This is a staff (administrator) account. Members and inquiries are managed on the <a data-admin-link>admin page</a>. To try the member page yourself, you can join below.</p>
+      <div class="note mem__acct">
+        <p><span>Google account you are signed in with</span> <strong id="mem-join-email" translate="no"></strong></p>
+        <p>You are not a member yet. Fill in the details below to join with this account right away. To join with a different account, <button class="linkbtn" type="button" data-mem-signout>sign out</button> and sign in again.</p>
+      </div>
+      <div id="mem-join-slot">
+        <form class="form" id="mem-form" novalidate>
+          <fieldset class="form__group">
+            <legend class="form__legend">Member details</legend>
+            <div class="field"><label class="field__label" for="mf-name"><span>Name</span><em>required</em></label><input class="input" id="mf-name" maxlength="60" required autocomplete="name" data-msg="Enter your name."></div>
+            <fieldset class="field" id="mf-types">
+              <legend class="field__label"><span>Member type</span><em>required</em></legend>
+              <div class="checks">
+                <label class="check"><input type="checkbox" data-mtype="player"><span>Player</span></label>
+                <label class="check"><input type="checkbox" data-mtype="parent"><span>Parent</span></label>
+                <label class="check"><input type="checkbox" data-mtype="coach"><span>Coach</span></label>
+                <label class="check"><input type="checkbox" data-mtype="general"><span>General</span></label>
+              </div>
+              <p class="field__hint">Choose all that apply. To apply for the coach certification, send an inquiry after you join.</p>
+            </fieldset>
+            <div class="form__grid form__grid--2">
+              <div class="field"><label class="field__label" for="mf-team">Organization</label><input class="input" id="mf-team" maxlength="80" autocomplete="organization" placeholder="Team, club or school"></div>
+              <div class="field"><label class="field__label" for="mf-phone">Mobile phone</label><input class="input" id="mf-phone" type="tel" maxlength="40" inputmode="tel" autocomplete="tel" placeholder="010-0000-0000" aria-describedby="mf-phone-hint"><p class="field__hint" id="mf-phone-hint">For players, enter a parent or guardian's number.</p></div>
+            </div>
+            <div class="form__grid form__grid--2" id="mf-player" hidden>
+              <div class="field"><label class="field__label" for="mf-division">Age group</label><select class="input" id="mf-division"><option value="">Not applicable</option><option value="u10">U10</option><option value="u12">U12</option><option value="u14">U14</option><option value="u16">U16</option><option value="adult">Adult</option></select></div>
+              <div class="field"><label class="field__label" for="mf-gender">Gender</label><select class="input" id="mf-gender"><option value="">Not given</option><option value="m">Male</option><option value="f">Female</option></select></div>
+              <div class="field"><label class="field__label" for="mf-contact">Parent or guardian's name</label><input class="input" id="mf-contact" maxlength="60" autocomplete="off"></div>
+            </div>
+          </fieldset>
+          <fieldset class="form__group" id="mf-consent">
+            <legend class="form__legend">Personal information consent</legend>
+            <dl class="consent">
+              <dt>Items collected</dt><dd>Google account email, name, member type, organization and mobile phone. For players we also ask for age group, gender and a parent or guardian's name.</dd>
+              <dt>Purpose of use</dt><dd>Confirming and managing membership, answering inquiries and sending match information</dd>
+              <dt>Retention period</dt><dd>Until you cancel your membership. Deleted without delay when you cancel.</dd>
+              <dt>Storage and processing</dt><dd>We use Firebase, a Google cloud service. Member details are stored in a data center in Seoul, and sign-in information (Google account email and sign-in records) is processed by Google in data centers in the United States.</dd>
+            </dl>
+            <div class="field"><label class="check"><input type="checkbox" id="mf-age" required aria-describedby="mf-age-hint" data-msg="Confirm that you are 14 or older."><span>I am 14 or older. (Required)</span></label><p class="field__hint" id="mf-age-hint">For children under 14, a parent or guardian joins and then registers the child as a player under 'My details'.</p></div>
+            <div class="field"><label class="check"><input type="checkbox" id="mf-agree" required data-msg="Please agree to the collection and use of personal information."><span>I agree to the collection and use of personal information. (Required)</span></label></div>
+          </fieldset>
+          <div class="btns"><button class="btn" type="submit" id="mf-submit">Join</button><button class="linkbtn" type="button" id="mf-cancel" hidden>Cancel</button></div>
+          <div class="result" role="status" aria-live="polite" hidden></div>
+        </form>
+      </div>
+    </div>
+
+    <!-- 회원 -->
+    <div id="mem-home" hidden>
+      <div class="mem__who">
+        <p class="mem__name"><strong id="mem-name" translate="no"></strong><span class="mem__types" id="mem-types"></span></p>
+        <p class="mem__mail"><span id="mem-email" translate="no"></span><button class="linkbtn" type="button" data-mem-signout>Sign out</button></p>
+      </div>
+      <p class="note note--warn" id="mem-held" hidden>The association has set this account as inactive, so inquiries and match updates are unavailable for now. If you have questions, message KYLA on Instagram.</p>
+      <p class="note" id="mem-staff" hidden>This is a staff (administrator) account. Members and inquiries are managed on the <a data-admin-link>admin page</a>.</p>
+
+      <div class="tabs" role="tablist" aria-label="Member menu">
+        <button class="tab" type="button" role="tab" id="mtab-profile" aria-controls="member-profile" aria-selected="true" data-mtab="profile">My details</button>
+        <button class="tab" type="button" role="tab" id="mtab-posts" aria-controls="member-posts" aria-selected="false" data-mtab="posts" tabindex="-1">Match updates</button>
+        <button class="tab" type="button" role="tab" id="mtab-inquiry" aria-controls="member-inquiry" aria-selected="false" data-mtab="inquiry" tabindex="-1">Inquiry</button>
+      </div>
+
+      <!-- 내 정보 -->
+      <div class="panel" role="tabpanel" id="member-profile" aria-labelledby="mtab-profile" tabindex="0">
+        <section class="mem__block" aria-labelledby="mem-h-me">
+          <h2 class="t-3" id="mem-h-me">Member details</h2>
+          <dl class="mem__facts" id="mem-facts"></dl>
+          <div id="mem-edit-open"><button class="linkbtn" type="button" id="mem-edit">Edit member details</button></div>
+          <div id="mem-edit-slot"></div>
+        </section>
+        <section class="mem__block" aria-labelledby="mem-h-kids">
+          <h2 class="t-3" id="mem-h-kids">Child players</h2>
+          <p class="secintro">Parents and guardians register children under 14 as players here. We do not ask for dates of birth or home addresses.</p>
+          <div id="mem-kids"></div>
+          <div id="mem-kid-open"><button class="linkbtn" type="button" id="mem-kid-add"><svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg>Register a child player</button></div>
+          <form class="form" id="mem-kid-form" hidden novalidate>
+            <fieldset class="form__group">
+              <legend class="form__legend" id="mem-kid-legend">Register a child player</legend>
+              <div class="field"><label class="field__label" for="mk-name"><span>Child's name</span><em>required</em></label><input class="input" id="mk-name" maxlength="60" required autocomplete="off" data-msg="Enter your child's name."></div>
+              <div class="form__grid form__grid--2">
+                <div class="field"><label class="field__label" for="mk-team">Organization</label><input class="input" id="mk-team" maxlength="80" autocomplete="off" placeholder="Team, club or school"></div>
+                <div class="field"><label class="field__label" for="mk-division">Age group</label><select class="input" id="mk-division"><option value="">Not sure yet</option><option value="u10">U10</option><option value="u12">U12</option><option value="u14">U14</option><option value="u16">U16</option></select></div>
+                <div class="field"><label class="field__label" for="mk-gender">Gender</label><select class="input" id="mk-gender"><option value="">Not given</option><option value="m">Male</option><option value="f">Female</option></select></div>
+              </div>
+              <div class="field" id="mk-consent"><label class="check"><input type="checkbox" id="mk-agree" required data-msg="Confirm your consent as legal guardian."><span>As my child's legal guardian, I agree to the use of my child's name, organization, age group and gender for membership management and match information. (Required)</span></label></div>
+            </fieldset>
+            <div class="btns"><button class="btn" type="submit" id="mk-submit">Register</button><button class="linkbtn" type="button" id="mk-cancel">Cancel</button></div>
+            <div class="result" role="status" aria-live="polite" hidden></div>
+          </form>
+        </section>
+        <section class="mem__block" aria-labelledby="mem-h-leave">
+          <h2 class="t-3" id="mem-h-leave">Cancel membership</h2>
+          <p class="secintro" id="mem-leave-text">Cancelling deletes your member details, the children you registered and your inquiries. This cannot be undone.</p>
+          <p class="note" id="mem-leave-staff" hidden>An account designated as staff (administrator) cannot cancel here. First ask the master administrator to remove the staff designation.</p>
+          <p class="note" id="mem-leave-held" hidden>An account the association has set as inactive cannot cancel here. To have your member details deleted, message KYLA on Instagram.</p>
+          <details class="mem__leave" id="mem-leave">
+            <summary>Cancel my membership</summary>
+            <div class="mem__leavebox">
+              <label class="check"><input type="checkbox" id="mem-leave-ok"><span>I understand what will be deleted and want to cancel.</span></label>
+              <p class="field__hint">The Google sign-in window opens once more to confirm it is you.</p>
+              <div class="btns"><button class="btn btn--ink" type="button" id="mem-leave-go" disabled>Cancel membership</button></div>
+              <p class="result result--err" id="mem-leave-msg" role="alert" hidden></p>
+            </div>
+          </details>
+        </section>
+      </div>
+
+      <!-- 시합 소식 -->
+      <div class="panel" role="tabpanel" id="member-posts" aria-labelledby="mtab-posts" tabindex="0" hidden>
+        <div class="empty" id="mem-posts-locked" hidden>
+          <p class="empty__title">This area opens to members taking part in matches</p>
+          <p class="empty__text">Match schedules and photos are shown only to members the association has given match access. Once participation is settled, the association turns it on. When a child takes part, access is turned on for the parent or guardian's account.</p>
+        </div>
+        <div id="mem-posts"></div>
+      </div>
+
+      <!-- 문의하기 -->
+      <div class="panel" role="tabpanel" id="member-inquiry" aria-labelledby="mtab-inquiry" tabindex="0" hidden>
+        <p class="note" id="mem-inq-staff" hidden>Staff (administrator) accounts cannot send inquiries. Inquiries from members are checked under <a data-admin-link="inquiries">Inquiries on the admin page</a>.</p>
+        <form class="form" id="mem-inq-form" novalidate>
+          <fieldset class="form__group">
+            <legend class="form__legend">Send an inquiry</legend>
+            <div class="field">
+              <label class="field__label" for="mi-cat"><span>Inquiry type</span><em>required</em></label>
+              <select class="input" id="mi-cat" required data-msg="Select an inquiry type.">
+                <option value="">Select</option>
+                <option value="member">Membership</option>
+                <option value="program">Programs</option>
+                <option value="event">Events & matches</option>
+                <option value="cert">Coach certification application</option>
+                <option value="docs">Document request</option>
+                <option value="intl">International exchange</option>
+                <option value="sponsor">Partners & sponsors</option>
+                <option value="etc">Other</option>
+              </select>
+            </div>
+            <div class="field"><label class="field__label" for="mi-subject"><span>Subject</span><em>required</em></label><input class="input" id="mi-subject" maxlength="100" required autocomplete="off" data-msg="Enter a subject."></div>
+            <div class="field"><label class="field__label" for="mi-body"><span>Details</span><em>required</em></label><textarea class="input" id="mi-body" maxlength="3000" required aria-describedby="mi-body-hint" data-msg="Enter your inquiry."></textarea><p class="field__hint" id="mi-body-hint">Text only, up to 3,000 characters. Photos and files cannot be attached. The reply appears on this page.</p></div>
+          </fieldset>
+          <div class="btns"><button class="btn" type="submit">Send inquiry</button></div>
+          <div class="result" role="status" aria-live="polite" hidden></div>
+        </form>
+        <section class="mem__block" aria-labelledby="mem-h-inq">
+          <h2 class="t-3" id="mem-h-inq">My inquiries</h2>
+          <div id="mem-inqs"></div>
+        </section>
+      </div>
+    </div>
+
+    <!-- 저장·등록이 끝났을 때 화면 아래에 잠깐 뜨는 알림 -->
+    <div class="mem__toast" id="mem-flash" role="status" aria-live="polite" hidden></div>
+
   </div></div>
 </section>
 
@@ -1141,7 +1305,7 @@
           </div>
           <div class="cta">
             <div><h2>Propose a partnership</h2><p>Tell us about your organization and the kind of partnership you have in mind, and we will get in touch.</p></div>
-            <div class="btns"><a class="btn" href="#apply-inquiry" data-inquiry="sponsor">Ask about sponsorship</a></div>
+            <div class="btns"><a class="btn" href="#member-inquiry" data-inquiry="sponsor">Ask about sponsorship</a></div>
           </div>
         </div>
       </div>
@@ -1159,21 +1323,25 @@
     <div class="prose">
       <h3 class="t-3">Information we collect and why</h3>
       <ul>
-        <li>Inquiries: name, organization, contact details and the content of the inquiry. Used to check and answer the inquiry.</li>
+        <li>Membership: Google account email, name, member type, organization and mobile phone. For players we also ask for age group, gender and a parent or guardian's name. Used to confirm and manage membership, answer inquiries and send match information.</li>
+        <li>Child player registration: the child's name, organization, age group and gender. Registered directly by the parent or guardian (legal guardian) and used for membership management and match information. We do not ask for dates of birth or home addresses.</li>
+        <li>Inquiries: the category, subject and content, and the sending member's name and email. Used to check and answer the inquiry.</li>
         <li>Event entries: team name, school or club, head coach's name and contact details, and players' names, birth years and jersey numbers. Used to confirm entries, form divisions, run the event and manage safety.</li>
         <li>International exchange inquiries: school or team name, country and city, contact person's name and contact details, and the exchange you have in mind. Used to discuss the exchange.</li>
         <li>Expressions of interest: organization or team name, country and region, contact person's name, position and contact details, possible divisions and expected numbers, and preferred dates. Used to discuss and send information about that event.</li>
       </ul>
       <h3 class="t-3">Where data is stored</h3>
-      <p>Expressions of interest are stored in Firebase (Cloud Firestore, Seoul region), a Google cloud service, and can be viewed only by administrators designated by the association.</p>
+      <p>Member details, inquiries and expressions of interest are stored in Firebase (Cloud Firestore, Seoul region), a Google cloud service. Members can see only their own details and their own inquiries; otherwise the data can be viewed only by administrators designated by the association.</p>
+      <p>Member sign-in goes through Google's sign-in service (Firebase Authentication). This service processes sign-in information (Google account email, sign-in records and IP address) in Google data centers in the United States. The association never receives or stores members' Google passwords. When you cancel and your sign-in account is deleted, Google removes the remaining data within 180 days.</p>
       <h3 class="t-3">Retention period</h3>
       <p>Information is destroyed without delay once the purpose of collection has been fulfilled. Retention periods for each item will be listed here once the association has confirmed them.</p>
+      <p>Member details are kept until you cancel your membership. When you cancel on the member page, your member details, the children you registered and your inquiries are deleted immediately. Backup copies kept for recovery may retain them for up to 60 days.</p>
       <h3 class="t-3">Children under 14</h3>
-      <p>Personal information of children under 14 is collected with the consent of their legal guardian. Event entries are submitted by the team's head coach after confirming the consent of each player's guardian.</p>
+      <p>Personal information of children under 14 is collected with the consent of their legal guardian. Children under 14 do not join as members themselves: a parent or guardian joins and then registers the child as a player. Event entries are submitted by the team's head coach after confirming the consent of each player's guardian.</p>
       <h3 class="t-3">Photos and video</h3>
       <p>Photos from events and training sessions are posted after guardian consent has been confirmed. If you would like a posted photo removed, let us know through the inquiry form.</p>
       <h3 class="t-3">Access, correction and deletion</h3>
-      <p>You or your legal guardian may ask to view, correct or delete your personal information. Please make the request through the <a href="#apply-inquiry" data-inquiry="etc">inquiry form</a>.</p>
+      <p>Members can view and correct their own details and their children's details on the <a href="#member">member page</a>, or cancel to delete them. In addition, you or your legal guardian may ask to view, correct or delete your personal information. Please make the request through the <a href="#member-inquiry" data-inquiry="etc">inquiry form</a> or by message to KYLA on Instagram.</p>
     </div>
   </div>
 </section>
@@ -1199,7 +1367,7 @@
     </nav>
     <div class="ftr__info">
       <p>Tax ID no. 501-82-75112</p>
-      <p>Contact us through the <a href="#apply-inquiry" data-inquiry="etc">inquiry form</a>.</p>
+      <p>Contact us through the <a href="#member-inquiry" data-inquiry="etc">inquiry form</a>.</p>
       <p data-instagram-wrap hidden>Instagram <a class="extlink" data-instagram rel="noopener"></a></p>
       <p data-email-wrap hidden>Email <span data-email></span></p>
       <p class="ftr__small">'Youth Lacrosse Coach' (<span lang="ko">유소년라크로스지도자</span>, registration no. 2026-007637) is a private qualification registered under the Framework Act on Qualifications. It is not a qualification accredited by the state.</p>

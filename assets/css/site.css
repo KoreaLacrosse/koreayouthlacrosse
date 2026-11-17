@@ -140,6 +140,10 @@ main{display:block;overflow-x:clip}
 .lang--plain a:hover{color:inherit;opacity:1}
 .lang--plain a[aria-current="true"]{color:inherit;opacity:1}
 .lang--plain a[aria-current="true"]::after{left:0;right:18px;bottom:8px;background:currentColor}
+/* 맨 위 줄 왼쪽의 회원 로그인 */
+.langbar__in{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.langbar__member{display:inline-flex;align-items:center;min-height:34px;font-size:13px;font-weight:900;line-height:1;letter-spacing:-0.01em;color:var(--ink);text-decoration:none;white-space:nowrap}
+.langbar__member:hover{text-decoration:underline;text-underline-offset:3px}
 
 /* ---------- 머리 ---------- */
 .hdr{position:sticky;top:0;z-index:50;background:#fff;padding-top:env(safe-area-inset-top)}
@@ -494,6 +498,69 @@ select.input{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
 .result__acts{display:flex;flex-wrap:wrap;align-items:center;gap:6px 24px;margin-top:8px}
 .note .extlink{vertical-align:bottom}
 
+/* ---------- 회원 (#member) ----------
+   기록지 줄(.rows)과 신청서(.form)의 모양을 그대로 씁니다. 여기에는 회원 화면에만 있는 것만 둡니다. */
+.mem{padding-bottom:24px}
+.mem__status{padding:22px 0;border-top:2px solid var(--ink);border-bottom:1px solid var(--line);font-weight:700}
+.mem__small{font-size:14.5px;color:var(--muted)}
+.mem__small a{font-weight:700;color:var(--ink);text-underline-offset:3px}
+.mem__acts{display:flex;flex-wrap:wrap;gap:0 24px}
+.mem__acct strong{overflow-wrap:anywhere}
+.mem__acct .linkbtn{display:inline;min-height:0;font-size:inherit;vertical-align:baseline}
+.mem__acct p + p{margin-top:6px}
+.mem__who{display:grid;gap:2px;padding:4px 0 20px}
+.mem__name{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;font-size:22px;line-height:1.3;letter-spacing:-0.03em}
+.mem__name strong{font-weight:900;overflow-wrap:anywhere}
+.mem__types{display:inline-flex;flex-wrap:wrap;gap:6px 8px;padding-left:4px}
+.mem__mail{display:flex;flex-wrap:wrap;align-items:center;gap:0 16px;font-size:14.5px;color:var(--muted)}
+.mem__mail span{overflow-wrap:anywhere}
+.mem__who ~ .note{margin-bottom:18px}
+/* 저장·등록이 끝났을 때 화면 아래에 잠깐 뜨는 알림. 휴대폰에서는 아래 바로가기 줄 위에 둡니다. */
+.mem__toast{position:fixed;left:50%;bottom:calc(var(--tab) + 16px + env(safe-area-inset-bottom));z-index:44;transform:translateX(-50%);width:max-content;max-width:min(calc(100vw - 32px),460px);padding:12px 18px;background:var(--ink);color:#fff;font-size:15px;font-weight:500;line-height:1.55;box-shadow:0 8px 28px rgba(6,22,46,.3)}
+.mem__toast.is-error{box-shadow:inset 5px 0 0 var(--red),0 8px 28px rgba(6,22,46,.3)}
+.mem__block{display:grid;gap:14px;padding:30px 0;border-bottom:1px solid var(--line)}
+.mem__block:first-child{padding-top:0}
+.mem__block:last-child{border-bottom:0;padding-bottom:0}
+.panel > .mem__block + .mem__block,.panel > .form + .mem__block{margin-top:0}
+.panel > .form + .mem__block{margin-top:34px;border-top:1px solid var(--line)}
+.mem__block .secintro{margin-top:0;color:var(--muted);max-width:34em}
+.mem__facts{border-top:2px solid var(--ink)}
+.mem__facts > div{display:grid;grid-template-columns:112px minmax(0,1fr);gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}
+.mem__facts dt{font-weight:700;font-size:14.5px;line-height:1.7;color:var(--muted)}
+.mem__facts dd{font-weight:500;overflow-wrap:anywhere}
+.mem__none{padding:16px 0;border-top:2px solid var(--ink);border-bottom:1px solid var(--line);color:var(--muted);font-size:15px}
+.mem__item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 14px;align-items:center;padding:13px 0;border-bottom:1px solid var(--line)}
+.mem__item-title{font-weight:700;font-size:17px;line-height:1.42;letter-spacing:-0.025em;overflow-wrap:anywhere}
+.mem__item-sub{font-size:14.5px;color:var(--muted)}
+.mem__item-acts{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:0 16px;grid-row:span 2}
+.mem__item-acts .linkbtn{min-height:40px;font-size:14.5px}
+.linkbtn--danger{color:var(--red)}
+.linkbtn[disabled]{color:var(--muted);text-decoration:none;cursor:default}
+/* 내가 남긴 문의: 누르면 내용과 답변이 펼쳐집니다 */
+.minqs{border-top:2px solid var(--ink)}
+.minq{border-bottom:1px solid var(--line)}
+.minq > summary{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;align-items:start;padding:14px 0;cursor:pointer;list-style:none}
+.minq > summary::-webkit-details-marker{display:none}
+.minq > summary .ico{margin-top:3px;color:var(--muted);transition:transform .15s}
+.minq[open] > summary .ico{transform:rotate(90deg)}
+.minq__title{font-weight:700;font-size:17px;line-height:1.42;letter-spacing:-0.025em;overflow-wrap:anywhere}
+.minq__meta{grid-column:1 / -1;display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;font-size:13.5px;color:var(--muted)}
+.minq__state{font-weight:900;color:var(--ink)}
+.minq__state--done{color:var(--green)}
+.minq__body{display:grid;gap:14px;padding:2px 0 20px}
+.minq__text{white-space:pre-line;overflow-wrap:anywhere;line-height:1.7}
+.minq__reply{padding:14px 16px;background:var(--tint);box-shadow:inset 4px 0 0 var(--green-bright)}
+.minq__reply h3{font-weight:900;font-size:14.5px;margin-bottom:4px}
+/* 시합 소식 */
+.mposts__h{margin:0 0 10px;font-weight:900;font-size:15px}
+.mposts__h:not(:first-child){margin-top:34px}
+.mpost{grid-template-columns:62px minmax(0,1fr)}
+.mpost .row__title{font-weight:900;font-size:18px;overflow-wrap:anywhere}
+.mpost__body{margin-top:2px;white-space:pre-line;overflow-wrap:anywhere;line-height:1.7}
+.mem__leave > summary{display:inline-flex;align-items:center;min-height:44px;font-weight:900;font-size:15px;color:var(--muted);text-decoration:underline;text-underline-offset:4px;cursor:pointer}
+.mem__leavebox{display:grid;gap:12px;margin-top:8px;padding:16px 18px;background:var(--tint)}
+html[lang="en"] .mem__facts > div{grid-template-columns:128px minmax(0,1fr)}
+
 /* ---------- 정의 목록 (국제교류: 함께할 수 있는 방식) ---------- */
 .deflist{border-top:2px solid var(--ink)}
 .deflist > div{display:grid;gap:2px;padding:15px 0;border-bottom:1px solid var(--line)}
@@ -536,6 +603,7 @@ select.input{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
   :root{--gutter:40px;--cut:44px;--hdr:68px}
   body{font-size:17px;padding-bottom:0}
   .tabbar{display:none}
+  .mem__toast{bottom:28px}
   .band{padding:96px 0}
   .band--tight{padding:64px 0}
   .brand__mark{height:34px}

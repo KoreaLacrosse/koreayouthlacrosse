@@ -46,7 +46,10 @@
 <a class="skip" href="#main" data-skip>本文へスキップ</a>
 
 <div class="langbar">
-  <nav class="wrap lang" aria-label="言語" translate="no"><a href="../" lang="ko" hreflang="ko" data-lang-link="ko">한국어</a><a href="../en/" lang="en" hreflang="en" data-lang-link="en">English</a><a href="./" lang="ja" hreflang="ja" data-lang-link="ja" aria-current="true">日本語</a></nav>
+  <div class="wrap langbar__in">
+    <a class="langbar__member" href="#member">会員ログイン</a>
+    <nav class="lang" aria-label="言語" translate="no"><a href="../" lang="ko" hreflang="ko" data-lang-link="ko">한국어</a><a href="../en/" lang="en" hreflang="en" data-lang-link="en">English</a><a href="./" lang="ja" hreflang="ja" data-lang-link="ja" aria-current="true">日本語</a></nav>
+  </div>
 </div>
 
 <header class="hdr">
@@ -80,6 +83,7 @@
           <a href="#notice">お知らせ</a>
           <a href="#apply-inquiry">お問い合わせ</a>
           <a href="#gallery">フォトギャラリー</a>
+          <a href="#member">会員</a>
         </div>
       </div>
     </nav>
@@ -117,6 +121,7 @@
       <a href="#notice">お知らせ</a>
       <a href="#apply-inquiry">お問い合わせ</a>
       <a href="#gallery">フォトギャラリー</a>
+      <a href="#member">会員</a>
     </div>
   </div>
   <a class="mnav__link" href="#apply">申込・お問い合わせ</a>
@@ -384,7 +389,7 @@
             <div><dt>活動地域</dt><dd>ソウルを拠点に、ソウルと済州、国内外の交流地域</dd></div>
             <div><dt>管理資格</dt><dd>ユースラクロス指導者 <span lang="ko">(유소년라크로스지도자)</span><small>登録民間資格 2026-007637、文化体育観光部所管</small></dd></div>
           </dl>
-          <div class="btns"><a class="btn btn--ghost" href="#apply-inquiry" data-inquiry="etc">協会に問い合わせる</a></div>
+          <div class="btns"><a class="btn btn--ghost" href="#member-inquiry" data-inquiry="etc">協会に問い合わせる</a></div>
         </div>
       </div>
     </section>
@@ -512,7 +517,7 @@
           </div>
           <div class="cta">
             <div><h2>私たちの学校・クラブで始めたい方へ</h2><p>体育の授業、放課後、クラブ活動、体験レッスンのいずれもご相談いただけます。学校やクラブの状況に合わせて一緒に計画します。</p></div>
-            <div class="btns"><a class="btn" href="#apply-inquiry" data-inquiry="school">プログラムについて問い合わせる</a></div>
+            <div class="btns"><a class="btn" href="#member-inquiry" data-inquiry="program">プログラムについて問い合わせる</a></div>
           </div>
         </div>
       </div>
@@ -659,7 +664,7 @@
           <div id="coach-events"></div>
           <div class="cta">
             <div><h2>研修の情報をいち早く受け取りたい方へ</h2><p>お問い合わせをいただければ、日程が確定した際にご案内します。</p></div>
-            <div class="btns"><a class="btn" href="#apply-inquiry" data-inquiry="cert">指導者資格について問い合わせる</a></div>
+            <div class="btns"><a class="btn" href="#member-inquiry" data-inquiry="cert">指導者資格について問い合わせる</a></div>
           </div>
         </div>
       </div>
@@ -976,7 +981,7 @@
     </div>
     <div class="wrap panel panel--flush">
       <div class="albums" id="album-list"></div>
-      <p class="note">掲載された写真の削除をご希望の場合は、<a href="#apply-inquiry" data-inquiry="etc">お問い合わせ</a>よりお知らせください。確認でき次第、対応します。</p>
+      <p class="note">掲載された写真の削除をご希望の場合は、<a href="#member-inquiry" data-inquiry="etc">お問い合わせ</a>よりお知らせください。確認でき次第、対応します。</p>
     </div>
   </div>
   <div class="wrap detail" id="album-detail" hidden></div>
@@ -986,7 +991,7 @@
 <section class="view" data-view="apply">
   <div class="wrap plainhead">
     <h1 class="t-page" tabindex="-1"><span class="oblique">申込・お問い合わせ</span></h1>
-    <p class="plainhead__lead">大会参加の申込、指導者教育の申込、プログラムや協力に関するお問い合わせを受け付けています。</p>
+    <p class="plainhead__lead">大会参加の申込と指導者教育の申込を受け付けています。お問い合わせは会員ページから送れます。</p>
   </div>
   <div class="wrap"><div class="narrow">
     <p class="note">2027 済州 国際ユースラクロス交流戦の参加意向は、<a href="#jeju2027">参加意向回答書</a>で受け付けています。</p>
@@ -1060,52 +1065,211 @@
       <div id="coach-status"></div>
       <div class="cta">
         <div><h2>日程が決まり次第お知らせします</h2><p>お問い合わせをいただければ、一般等級の研修日程が確定した際にご案内します。</p></div>
-        <div class="btns"><a class="btn" href="#apply-inquiry" data-inquiry="cert">指導者資格について問い合わせる</a></div>
+        <div class="btns"><a class="btn" href="#member-inquiry" data-inquiry="cert">指導者資格について問い合わせる</a></div>
       </div>
     </div>
 
-    <!-- 문의하기 -->
+    <!-- 문의하기: 회원 화면(#member)에서 받습니다 -->
     <div class="panel" role="tabpanel" id="panel-inquiry" aria-labelledby="tab-inquiry" tabindex="0" hidden>
-      <p class="note note--warn" data-preview-note hidden></p>
-      <p class="note" data-instagram-wrap data-when-connected hidden>KYLAのInstagram <a class="extlink" data-instagram rel="noopener"></a></p>
-      <form class="form" id="form-inquiry" data-form="inquiry" novalidate>
-        <fieldset class="form__group">
-          <legend class="form__legend">お問い合わせ内容</legend>
-          <div class="field">
-            <label class="field__label" for="inq-cat"><span>お問い合わせの分類</span><em>必須</em></label>
-            <select class="input" id="inq-cat" name="お問い合わせの分類" required data-msg="お問い合わせの分類を選択してください。">
-              <option value="">選択</option>
-              <option value="school">学校向け教育プログラム</option>
-              <option value="event">大会・クラブ</option>
-              <option value="cert">指導者資格</option>
-              <option value="intl">国際交流</option>
-              <option value="sponsor">協賛・スポンサー</option>
-              <option value="etc">その他のお問い合わせ</option>
-            </select>
-          </div>
-          <div class="field"><label class="field__label" for="inq-body"><span>内容</span><em>必須</em></label><textarea class="input" id="inq-body" name="内容" required data-msg="お問い合わせ内容を入力してください。"></textarea></div>
-        </fieldset>
-        <fieldset class="form__group">
-          <legend class="form__legend">ご連絡先</legend>
-          <div class="form__grid form__grid--2">
-            <div class="field"><label class="field__label" for="inq-name"><span>お名前</span><em>必須</em></label><input class="input" id="inq-name" name="お名前" required autocomplete="name" data-msg="お名前を入力してください。"></div>
-            <div class="field"><label class="field__label" for="inq-org">所属</label><input class="input" id="inq-org" name="所属" autocomplete="organization"></div>
-          </div>
-          <div class="field"><label class="field__label" for="inq-contact"><span>メールアドレスまたは電話番号</span><em>必須</em></label><input class="input" id="inq-contact" name="連絡先" required data-msg="返信先のメールアドレスまたは電話番号を入力してください。"></div>
-        </fieldset>
-        <fieldset class="form__group">
-          <legend class="form__legend">個人情報への同意</legend>
-          <dl class="consent">
-            <dt>収集項目</dt><dd>氏名、所属、連絡先、お問い合わせ内容</dd>
-            <dt>利用目的</dt><dd>お問い合わせの確認と回答</dd>
-            <dt>保有期間</dt><dd>収集目的を達成した後、遅滞なく破棄します。</dd>
-          </dl>
-          <div class="field"><label class="check"><input type="checkbox" name="個人情報の収集・利用への同意" value="同意" required data-msg="個人情報の収集・利用に同意してください。"><span>個人情報の収集・利用に同意します。（必須）</span></label></div>
-        </fieldset>
-        <div class="btns"><button class="btn" type="submit">お問い合わせを送信</button></div>
-        <div class="result" role="status" aria-live="polite" hidden></div>
-      </form>
+      <div class="cta">
+        <div><h2>お問い合わせは会員ページで受け付けています</h2><p>Googleアカウントでログインして会員登録すると、お問い合わせを送り、回答も同じ場所で確認できます。入会金はありません。</p></div>
+        <div class="btns"><a class="btn" href="#member-inquiry">ログインして問い合わせる</a></div>
+      </div>
+      <p class="note" data-instagram-wrap hidden>登録せずにお問い合わせの場合は、KYLAのInstagram <a class="extlink" data-instagram rel="noopener"></a> にメッセージをお送りください。</p>
     </div>
+  </div></div>
+</section>
+
+<!-- ============================================================ 회원 -->
+<!-- 이 화면의 동작은 assets/js/member.js 가 맡습니다. 그 파일과 구글 로그인에 쓰는 파일은 이 화면을 열 때만 불러옵니다. -->
+<section class="view" data-view="member">
+  <div class="wrap plainhead">
+    <h1 class="t-page" tabindex="-1"><span class="oblique">会員</span></h1>
+    <p class="plainhead__lead">協会の会員に登録すると、お問い合わせを送り、回答を確認できます。試合に参加する会員は、試合の日程と写真もここで見られます。</p>
+  </div>
+  <div class="wrap"><div class="narrow mem" id="mem">
+
+    <!-- 확인하는 중, 불러오지 못함 -->
+    <div class="panel" id="mem-loading">
+      <p class="mem__status" id="mem-loading-text" role="status">ログイン状態を確認しています。</p>
+      <div class="btns" id="mem-retry-wrap" hidden><button class="btn btn--ghost" type="button" id="mem-retry">もう一度試す</button></div>
+    </div>
+
+    <!-- 로그인 전 -->
+    <div class="panel" id="mem-signin" hidden>
+      <p class="note" id="mem-signin-why" hidden>お問い合わせは、会員としてログインすると送れます。</p>
+      <p class="result result--ok" id="mem-left" role="status" hidden>退会しました。会員情報、登録したお子さまの情報、送信したお問い合わせをすべて削除しました。</p>
+      <div class="cta">
+        <div><h2>Googleアカウントでログインします</h2><p>新しいパスワードは作らず、お使いのGoogleアカウントでログインします。初めての方はログイン後すぐに登録でき、入会金はありません。</p></div>
+        <div class="btns"><button class="btn" type="button" id="mem-google">Googleアカウントでログイン</button></div>
+      </div>
+      <p class="result result--err" id="mem-signin-msg" role="alert" hidden></p>
+      <div class="note note--warn" id="mem-inapp" hidden>
+        <p><strong>この画面ではGoogleログインが使えません。</strong> カカオトークやInstagramなどのアプリ内で開いた画面のためです。ChromeまたはSafariでこのアドレスを開いてください。</p>
+        <p class="mem__acts"><a class="linkbtn" id="mem-open-ext" hidden>別のブラウザで開く</a><button class="linkbtn" type="button" id="mem-copy-url">このページのアドレスをコピー</button></p>
+      </div>
+      <dl class="deflist">
+        <div><dt>お問い合わせ</dt><dd>協会にお問い合わせを送り、同じ画面で回答を確認できます。</dd></div>
+        <div><dt>試合情報</dt><dd>試合に参加する会員には協会が権限を付与し、試合の日程と写真を見られるようになります。</dd></div>
+        <div><dt>お子さまを選手として登録</dt><dd>満14歳未満の選手は本人が登録せず、保護者が登録したうえでお子さまを選手として登録します。</dd></div>
+      </dl>
+      <p class="mem__small">登録時にいただく情報と保管期間は、<a href="#privacy">プライバシーポリシー</a>に記載しています。</p>
+    </div>
+
+    <!-- 가입: 로그인했지만 아직 회원이 아닐 때. 아래 양식(#mem-form)은 '회원 정보 수정'에서도 같이 씁니다. -->
+    <div class="panel" id="mem-join" hidden>
+      <p class="note" id="mem-join-staff" hidden>スタッフ（管理者）のアカウントです。会員とお問い合わせは<a data-admin-link>管理者ページ</a>で管理します。会員ページを実際に使ってみる場合は、以下から登録できます。</p>
+      <div class="note mem__acct">
+        <p><span>現在ログイン中のGoogleアカウント</span> <strong id="mem-join-email" translate="no"></strong></p>
+        <p>まだ会員ではありません。以下の内容を入力すると、このアカウントですぐに登録されます。別のアカウントで登録する場合は、<button class="linkbtn" type="button" data-mem-signout>ログアウト</button>してからもう一度ログインしてください。</p>
+      </div>
+      <div id="mem-join-slot">
+        <form class="form" id="mem-form" novalidate>
+          <fieldset class="form__group">
+            <legend class="form__legend">会員情報</legend>
+            <div class="field"><label class="field__label" for="mf-name"><span>お名前</span><em>必須</em></label><input class="input" id="mf-name" maxlength="60" required autocomplete="name" data-msg="お名前を入力してください。"></div>
+            <fieldset class="field" id="mf-types">
+              <legend class="field__label"><span>会員の種類</span><em>必須</em></legend>
+              <div class="checks">
+                <label class="check"><input type="checkbox" data-mtype="player"><span>選手</span></label>
+                <label class="check"><input type="checkbox" data-mtype="parent"><span>保護者</span></label>
+                <label class="check"><input type="checkbox" data-mtype="coach"><span>指導者</span></label>
+                <label class="check"><input type="checkbox" data-mtype="general"><span>一般</span></label>
+              </div>
+              <p class="field__hint">当てはまるものをすべて選んでください。指導者資格の申請は、登録後にお問い合わせから送れます。</p>
+            </fieldset>
+            <div class="form__grid form__grid--2">
+              <div class="field"><label class="field__label" for="mf-team">所属</label><input class="input" id="mf-team" maxlength="80" autocomplete="organization" placeholder="チーム、クラブまたは学校"></div>
+              <div class="field"><label class="field__label" for="mf-phone">携帯電話</label><input class="input" id="mf-phone" type="tel" maxlength="40" inputmode="tel" autocomplete="tel" placeholder="010-0000-0000" aria-describedby="mf-phone-hint"><p class="field__hint" id="mf-phone-hint">選手の場合は、保護者の連絡先を入力してください。</p></div>
+            </div>
+            <div class="form__grid form__grid--2" id="mf-player" hidden>
+              <div class="field"><label class="field__label" for="mf-division">年齢区分</label><select class="input" id="mf-division"><option value="">該当なし</option><option value="u10">U10</option><option value="u12">U12</option><option value="u14">U14</option><option value="u16">U16</option><option value="adult">成人</option></select></div>
+              <div class="field"><label class="field__label" for="mf-gender">性別</label><select class="input" id="mf-gender"><option value="">未記入</option><option value="m">男</option><option value="f">女</option></select></div>
+              <div class="field"><label class="field__label" for="mf-contact">保護者の氏名</label><input class="input" id="mf-contact" maxlength="60" autocomplete="off"></div>
+            </div>
+          </fieldset>
+          <fieldset class="form__group" id="mf-consent">
+            <legend class="form__legend">個人情報への同意</legend>
+            <dl class="consent">
+              <dt>収集項目</dt><dd>Googleアカウントのメールアドレス、氏名、会員の種類、所属、携帯電話。選手の場合は、年齢区分、性別、保護者の氏名もいただきます。</dd>
+              <dt>利用目的</dt><dd>会員の確認と管理、お問い合わせへの回答、試合のご案内</dd>
+              <dt>保有期間</dt><dd>退会まで。退会時に遅滞なく削除します。</dd>
+              <dt>保管と処理</dt><dd>Googleのクラウドサービス Firebase を利用します。会員情報はソウルのデータセンターに保存し、ログイン情報（Googleアカウントのメールアドレス、ログイン記録）はGoogleが米国のデータセンターで処理します。</dd>
+            </dl>
+            <div class="field"><label class="check"><input type="checkbox" id="mf-age" required aria-describedby="mf-age-hint" data-msg="満14歳以上であることをご確認ください。"><span>満14歳以上です。（必須）</span></label><p class="field__hint" id="mf-age-hint">満14歳未満の場合は、保護者が登録したうえで「登録情報」からお子さまを選手として登録します。</p></div>
+            <div class="field"><label class="check"><input type="checkbox" id="mf-agree" required data-msg="個人情報の収集・利用に同意してください。"><span>個人情報の収集・利用に同意します。（必須）</span></label></div>
+          </fieldset>
+          <div class="btns"><button class="btn" type="submit" id="mf-submit">会員登録</button><button class="linkbtn" type="button" id="mf-cancel" hidden>キャンセル</button></div>
+          <div class="result" role="status" aria-live="polite" hidden></div>
+        </form>
+      </div>
+    </div>
+
+    <!-- 회원 -->
+    <div id="mem-home" hidden>
+      <div class="mem__who">
+        <p class="mem__name"><strong id="mem-name" translate="no"></strong><span class="mem__types" id="mem-types"></span></p>
+        <p class="mem__mail"><span id="mem-email" translate="no"></span><button class="linkbtn" type="button" data-mem-signout>ログアウト</button></p>
+      </div>
+      <p class="note note--warn" id="mem-held" hidden>協会がこのアカウントを活動中でない状態にしているため、現在はお問い合わせと試合情報をご利用いただけません。ご不明な点はKYLAのInstagramまでお知らせください。</p>
+      <p class="note" id="mem-staff" hidden>スタッフ（管理者）のアカウントです。会員とお問い合わせは<a data-admin-link>管理者ページ</a>で管理します。</p>
+
+      <div class="tabs" role="tablist" aria-label="会員メニュー">
+        <button class="tab" type="button" role="tab" id="mtab-profile" aria-controls="member-profile" aria-selected="true" data-mtab="profile">登録情報</button>
+        <button class="tab" type="button" role="tab" id="mtab-posts" aria-controls="member-posts" aria-selected="false" data-mtab="posts" tabindex="-1">試合情報</button>
+        <button class="tab" type="button" role="tab" id="mtab-inquiry" aria-controls="member-inquiry" aria-selected="false" data-mtab="inquiry" tabindex="-1">お問い合わせ</button>
+      </div>
+
+      <!-- 내 정보 -->
+      <div class="panel" role="tabpanel" id="member-profile" aria-labelledby="mtab-profile" tabindex="0">
+        <section class="mem__block" aria-labelledby="mem-h-me">
+          <h2 class="t-3" id="mem-h-me">会員情報</h2>
+          <dl class="mem__facts" id="mem-facts"></dl>
+          <div id="mem-edit-open"><button class="linkbtn" type="button" id="mem-edit">会員情報を修正</button></div>
+          <div id="mem-edit-slot"></div>
+        </section>
+        <section class="mem__block" aria-labelledby="mem-h-kids">
+          <h2 class="t-3" id="mem-h-kids">お子さま（選手）</h2>
+          <p class="secintro">満14歳未満のお子さまは、保護者がここで選手として登録します。生年月日と自宅住所はいただきません。</p>
+          <div id="mem-kids"></div>
+          <div id="mem-kid-open"><button class="linkbtn" type="button" id="mem-kid-add"><svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg>お子さまを選手として登録</button></div>
+          <form class="form" id="mem-kid-form" hidden novalidate>
+            <fieldset class="form__group">
+              <legend class="form__legend" id="mem-kid-legend">お子さまを選手として登録</legend>
+              <div class="field"><label class="field__label" for="mk-name"><span>お子さまのお名前</span><em>必須</em></label><input class="input" id="mk-name" maxlength="60" required autocomplete="off" data-msg="お子さまのお名前を入力してください。"></div>
+              <div class="form__grid form__grid--2">
+                <div class="field"><label class="field__label" for="mk-team">所属</label><input class="input" id="mk-team" maxlength="80" autocomplete="off" placeholder="チーム、クラブまたは学校"></div>
+                <div class="field"><label class="field__label" for="mk-division">年齢区分</label><select class="input" id="mk-division"><option value="">まだわからない</option><option value="u10">U10</option><option value="u12">U12</option><option value="u14">U14</option><option value="u16">U16</option></select></div>
+                <div class="field"><label class="field__label" for="mk-gender">性別</label><select class="input" id="mk-gender"><option value="">未記入</option><option value="m">男</option><option value="f">女</option></select></div>
+              </div>
+              <div class="field" id="mk-consent"><label class="check"><input type="checkbox" id="mk-agree" required data-msg="法定代理人としての同意をご確認ください。"><span>お子さまの法定代理人として、お子さまの氏名・所属・年齢区分・性別を会員管理と試合のご案内に使用することに同意します。（必須）</span></label></div>
+            </fieldset>
+            <div class="btns"><button class="btn" type="submit" id="mk-submit">登録</button><button class="linkbtn" type="button" id="mk-cancel">キャンセル</button></div>
+            <div class="result" role="status" aria-live="polite" hidden></div>
+          </form>
+        </section>
+        <section class="mem__block" aria-labelledby="mem-h-leave">
+          <h2 class="t-3" id="mem-h-leave">退会</h2>
+          <p class="secintro" id="mem-leave-text">退会すると、会員情報、登録したお子さまの情報、送信したお問い合わせがすべて削除され、元に戻せません。</p>
+          <p class="note" id="mem-leave-staff" hidden>スタッフ（管理者）に指定されたアカウントは、ここでは退会できません。先にマスター管理者にスタッフ指定の解除を依頼してください。</p>
+          <p class="note" id="mem-leave-held" hidden>協会が活動中でない状態にしているアカウントは、ここでは退会できません。会員情報の削除をご希望の場合は、KYLAのInstagramまでお知らせください。</p>
+          <details class="mem__leave" id="mem-leave">
+            <summary>退会する</summary>
+            <div class="mem__leavebox">
+              <label class="check"><input type="checkbox" id="mem-leave-ok"><span>削除される内容を確認し、退会します。</span></label>
+              <p class="field__hint">ご本人確認のため、Googleのログイン画面がもう一度開きます。</p>
+              <div class="btns"><button class="btn btn--ink" type="button" id="mem-leave-go" disabled>退会</button></div>
+              <p class="result result--err" id="mem-leave-msg" role="alert" hidden></p>
+            </div>
+          </details>
+        </section>
+      </div>
+
+      <!-- 시합 소식 -->
+      <div class="panel" role="tabpanel" id="member-posts" aria-labelledby="mtab-posts" tabindex="0" hidden>
+        <div class="empty" id="mem-posts-locked" hidden>
+          <p class="empty__title">試合に参加する会員に公開される場所です</p>
+          <p class="empty__text">試合の日程と写真は、協会が試合参加の権限を付与した会員にのみ表示されます。参加が決まると協会が権限を有効にします。お子さまが参加する場合は、保護者のアカウントに権限が付きます。</p>
+        </div>
+        <div id="mem-posts"></div>
+      </div>
+
+      <!-- 문의하기 -->
+      <div class="panel" role="tabpanel" id="member-inquiry" aria-labelledby="mtab-inquiry" tabindex="0" hidden>
+        <p class="note" id="mem-inq-staff" hidden>スタッフ（管理者）のアカウントではお問い合わせを送れません。会員からのお問い合わせは<a data-admin-link="inquiries">管理者ページのお問い合わせ</a>で確認します。</p>
+        <form class="form" id="mem-inq-form" novalidate>
+          <fieldset class="form__group">
+            <legend class="form__legend">お問い合わせを送る</legend>
+            <div class="field">
+              <label class="field__label" for="mi-cat"><span>お問い合わせの分類</span><em>必須</em></label>
+              <select class="input" id="mi-cat" required data-msg="お問い合わせの分類を選択してください。">
+                <option value="">選択</option>
+                <option value="member">会員・登録</option>
+                <option value="program">教育プログラム</option>
+                <option value="event">大会・試合</option>
+                <option value="cert">指導者資格の申請</option>
+                <option value="docs">証明書類の請求</option>
+                <option value="intl">国際交流</option>
+                <option value="sponsor">協賛・協力</option>
+                <option value="etc">その他のお問い合わせ</option>
+              </select>
+            </div>
+            <div class="field"><label class="field__label" for="mi-subject"><span>件名</span><em>必須</em></label><input class="input" id="mi-subject" maxlength="100" required autocomplete="off" data-msg="件名を入力してください。"></div>
+            <div class="field"><label class="field__label" for="mi-body"><span>内容</span><em>必須</em></label><textarea class="input" id="mi-body" maxlength="3000" required aria-describedby="mi-body-hint" data-msg="お問い合わせ内容を入力してください。"></textarea><p class="field__hint" id="mi-body-hint">文字のみ入力できます（3,000文字まで）。写真やファイルは添付できません。回答はこの画面で確認できます。</p></div>
+          </fieldset>
+          <div class="btns"><button class="btn" type="submit">お問い合わせを送信</button></div>
+          <div class="result" role="status" aria-live="polite" hidden></div>
+        </form>
+        <section class="mem__block" aria-labelledby="mem-h-inq">
+          <h2 class="t-3" id="mem-h-inq">送信したお問い合わせ</h2>
+          <div id="mem-inqs"></div>
+        </section>
+      </div>
+    </div>
+
+    <!-- 저장·등록이 끝났을 때 화면 아래에 잠깐 뜨는 알림 -->
+    <div class="mem__toast" id="mem-flash" role="status" aria-live="polite" hidden></div>
+
   </div></div>
 </section>
 
@@ -1141,7 +1305,7 @@
           </div>
           <div class="cta">
             <div><h2>ご提案をお寄せください</h2><p>貴団体のご紹介とお考えの協力の形をお知らせいただければ、担当者よりご連絡します。</p></div>
-            <div class="btns"><a class="btn" href="#apply-inquiry" data-inquiry="sponsor">協賛・協力について問い合わせる</a></div>
+            <div class="btns"><a class="btn" href="#member-inquiry" data-inquiry="sponsor">協賛・協力について問い合わせる</a></div>
           </div>
         </div>
       </div>
@@ -1159,21 +1323,25 @@
     <div class="prose">
       <h3 class="t-3">収集する情報と目的</h3>
       <ul>
-        <li>お問い合わせ：氏名、所属、連絡先、お問い合わせ内容。お問い合わせの確認と回答に使用します。</li>
+        <li>会員登録：Googleアカウントのメールアドレス、氏名、会員の種類、所属、携帯電話。選手の場合は、年齢区分、性別、保護者の氏名もいただきます。会員の確認と管理、お問い合わせへの回答、試合のご案内に使用します。</li>
+        <li>お子さまの選手登録：お子さまの氏名、所属、年齢区分、性別。保護者（法定代理人）が直接登録し、会員管理と試合のご案内に使用します。生年月日と自宅住所はいただきません。</li>
+        <li>お問い合わせ：分類、件名、内容と、送信した会員の氏名、メールアドレス。お問い合わせの確認と回答に使用します。</li>
         <li>大会参加申込：チーム名、所属学校・クラブ、担当指導者の氏名と連絡先、選手の氏名・生まれ年・背番号。受付の確認、ディビジョン編成、大会運営と安全管理に使用します。</li>
         <li>国際交流のお問い合わせ：学校・チーム名、国と都市、担当者の氏名と連絡先、ご希望の交流内容。交流の協議に使用します。</li>
         <li>参加意向の回答：所属団体・参加チーム名、国と地域、担当者の氏名・役職と連絡先、参加可能なディビジョンと予想人数、希望日程。当該大会に関する協議とご案内に使用します。</li>
       </ul>
       <h3 class="t-3">保管場所</h3>
-      <p>参加意向の回答は、Googleのクラウドサービス Firebase（Cloud Firestore、ソウルリージョン）に保存し、協会が指定した管理者のみが閲覧できます。</p>
+      <p>会員情報、お問い合わせ、参加意向の回答は、Googleのクラウドサービス Firebase（Cloud Firestore、ソウルリージョン）に保存します。会員が見られるのは自分の情報と自分が送信したお問い合わせのみで、それ以外は協会が指定した管理者のみが閲覧できます。</p>
+      <p>会員ログインは、Googleのログインサービス（Firebase Authentication）を利用します。このサービスは、ログイン情報（Googleアカウントのメールアドレス、ログイン記録、接続IPアドレス）を米国にあるGoogleのデータセンターで処理します。協会が会員のGoogleパスワードを受け取ったり保管したりすることはありません。退会してログインアカウントが削除されると、Googleは180日以内に残りのデータを削除します。</p>
       <h3 class="t-3">保有期間</h3>
       <p>収集目的を達成した後、遅滞なく破棄します。項目ごとの保有期間は、協会で確定した後こちらに記載します。</p>
+      <p>会員情報は退会まで保管します。会員ページで退会すると、会員情報、登録したお子さまの情報、送信したお問い合わせを直ちに削除します。データ復旧用のバックアップには、最長60日間残ることがあります。</p>
       <h3 class="t-3">満14歳未満の児童</h3>
-      <p>満14歳未満の児童の個人情報は、法定代理人の同意を得て収集します。大会参加申込は、チームの担当指導者が選手の保護者の同意を確認したうえで提出します。</p>
+      <p>満14歳未満の児童の個人情報は、法定代理人の同意を得て収集します。満14歳未満の方は本人が会員登録せず、保護者が登録したうえでお子さまを選手として登録します。大会参加申込は、チームの担当指導者が選手の保護者の同意を確認したうえで提出します。</p>
       <h3 class="t-3">写真と映像</h3>
       <p>大会と教育の現場の写真は、保護者の同意を確認したうえで掲載します。掲載された写真の削除をご希望の場合は、お問い合わせよりお知らせください。</p>
       <h3 class="t-3">閲覧・訂正・削除</h3>
-      <p>ご本人または法定代理人は、個人情報の閲覧、訂正、削除を請求できます。<a href="#apply-inquiry" data-inquiry="etc">お問い合わせ</a>よりご請求ください。</p>
+      <p>会員は<a href="#member">会員ページ</a>で自分の情報とお子さまの情報を直接確認・修正でき、退会して削除することもできます。そのほか、ご本人または法定代理人は、個人情報の閲覧、訂正、削除を請求できます。<a href="#member-inquiry" data-inquiry="etc">お問い合わせ</a>またはKYLAのInstagramメッセージでご請求ください。</p>
     </div>
   </div>
 </section>
@@ -1199,7 +1367,7 @@
     </nav>
     <div class="ftr__info">
       <p>固有番号 501-82-75112</p>
-      <p>お問い合わせは<a href="#apply-inquiry" data-inquiry="etc">お問い合わせフォーム</a>で受け付けています。</p>
+      <p>お問い合わせは<a href="#member-inquiry" data-inquiry="etc">お問い合わせフォーム</a>で受け付けています。</p>
       <p data-instagram-wrap hidden>Instagram <a class="extlink" data-instagram rel="noopener"></a></p>
       <p data-email-wrap hidden>メール <span data-email></span></p>
       <p class="ftr__small">「ユースラクロス指導者」（<span lang="ko">유소년라크로스지도자</span>、登録番号 2026-007637）は、資格基本法の規定に基づいて登録した民間資格であり、国が認めた公認資格ではありません。</p>

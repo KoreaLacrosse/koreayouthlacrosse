@@ -7,7 +7,17 @@ rules_version = '2';
 // 컬렉션
 //   admins/{이메일}   관리자(직원) 명단. 문서 ID 는 구글 계정 이메일(소문자), role 은 master 또는 admin
 //   eoiReplies/{id}   2027 제주 교류전 참가 의향 회신. 방문자는 제출만, 관리자는 보기·추가·수정·삭제
-//   members/{id}      회원 명부. 관리자만 보기·추가·수정·삭제. 직원 여부는 여기 적지 않고 admins 로 정합니다.
+//   members/{id}      회원 명부. 직원 여부는 여기 적지 않고 admins 로 정합니다. 문서는 세 가지 길로 생깁니다.
+//                       · 관리자가 넣은 회원: 문서 ID 는 임의의 20자
+//                       · 본인이 가입한 회원(source = self): 문서 ID 는 로그인 계정의 고유 번호(uid). 본인은 자기 문서만 보고 고칩니다.
+//                       · 보호자가 등록한 자녀(source = guardian): guardian 이 보호자의 uid. 보호자만 보고 고칩니다.
+//                     상태(status), 시합 참가 권한(matchAccess), 협회 메모(note)는 관리자만 바꿉니다.
+//                     본인 탈퇴(삭제)는 활동 상태일 때만 됩니다. 계정을 막으려면 지우지 말고 상태를 휴면으로 바꿉니다.
+//                     회원이 만든 문서는 그 회원이 읽을 수 있습니다. 그래서 그런 문서에는 협회 메모를 적지 않고(memberNotes 에 둡니다),
+//                     고친 사람도 이메일이 아니라 로그인 계정의 고유 번호(uid)로 남깁니다(직원 이메일이 회원에게 보이지 않게).
+//   memberNotes/{id}  협회만 보는 회원 메모. 문서 ID 는 회원 문서의 ID. 관리자만 읽고 씁니다.
+//   inquiries/{id}    회원이 남긴 문의. 활동 회원만 남기고(직원은 남길 수 없음), 본인과 관리자만 봅니다. 답변과 처리 상태는 관리자가 적습니다.
+//   matchPosts/{id}   시합 소식. 관리자가 쓰고, 시합 참가 권한을 받은 활동 회원이 '공개' 글만 봅니다.
 service cloud.firestore {
   match /databases/{database}/documents {
 
@@ -48,8 +58,36 @@ service cloud.firestore {
         && (!('deletedBy' in d) || (d.deletedBy is string && d.deletedBy.size() <= 200));
     }
 
+    // 회원이 읽을 수 있는 문서(회원이 만든 회원 문서, 문의, 시합 소식)에는 고친 사람과 휴지통에 넣은 사람을
+    // 이메일이 아니라 로그인 계정의 고유 번호(uid)로 남깁니다. 그 문서를 읽는 회원에게 직원의 이메일이 보이지 않게 하려는 것입니다.
+    function stampedUid(d) {
+      return d.updatedAt == request.time && d.updatedBy == request.auth.uid;
+    }
+
+    // 휴지통에 넣은 사람(deletedBy)은 넣는 사람 자신의 uid 여야 하고, 그 뒤로는 그대로 둘 수만 있습니다.
+    function validTrashUid(d) {
+      return (!('deletedAt' in d) || d.deletedAt is timestamp)
+        && (!('deletedBy' in d)
+            || d.deletedBy == request.auth.uid
+            || d.deletedBy == resource.data.get('deletedBy', ''));
+    }
+
     function shortText(d, key, max) {
       return d[key] is string && d[key].size() <= max;
+    }
+
+    // 활동 회원: 본인 회원 문서(문서 ID 가 로그인 계정의 uid)가 있고, 활동 상태이며, 휴지통에 있지 않은 사람
+    function activeMember() {
+      return signedInEmail()
+        && exists(/databases/$(database)/documents/members/$(request.auth.uid))
+        && get(/databases/$(database)/documents/members/$(request.auth.uid)).data.status == 'active'
+        && !('deletedAt' in get(/databases/$(database)/documents/members/$(request.auth.uid)).data);
+    }
+
+    // 시합 참가 권한을 받은 활동 회원. 권한은 관리자가 회원 화면에서 켭니다.
+    function hasMatchAccess() {
+      return activeMember()
+        && get(/databases/$(database)/documents/members/$(request.auth.uid)).data.matchAccess == true;
     }
 
     // ---------- 관리자 명단 ----------
@@ -78,17 +116,34 @@ service cloud.firestore {
 
     // ---------- 참가 의향 회신 ----------
 
-    function validCount(m, key) {
-      return !(key in m) || (m[key] is int && m[key] >= 0 && m[key] <= 9999);
+    // 디비전 한 칸: 팀·선수·스태프 수. 적은 것만 들어 있고, 모두 0~9999 의 정수여야 합니다.
+    // 규칙은 요청 한 번에 계산할 수 있는 식의 수에 한도(1,000개)가 있어, 일곱 디비전을 모두 채운 회신도 넉넉히 들어가도록 짧게 적었습니다.
+    // 세 값을 더한 것이 정수이면 셋 다 정수입니다(하나라도 글자·소수·빈 값이면 더할 수 없거나 정수가 되지 않습니다).
+    function validCounts(g) {
+      let t = g.get('teams', 0);
+      let p = g.get('players', 0);
+      let s = g.get('staff', 0);
+      return g.keys().hasOnly(['teams', 'players', 'staff'])
+        && (t + p + s) is int
+        && t >= 0 && t <= 9999
+        && p >= 0 && p <= 9999
+        && s >= 0 && s <= 9999;
     }
 
     function validDivision(divs, code) {
-      return !(code in divs)
-        || (divs[code] is map
-            && divs[code].keys().hasOnly(['teams', 'players', 'staff'])
-            && validCount(divs[code], 'teams')
-            && validCount(divs[code], 'players')
-            && validCount(divs[code], 'staff'));
+      return !(code in divs) || validCounts(divs[code]);
+    }
+
+    function validDivisions(divs) {
+      return divs is map
+        && divs.keys().hasOnly(['u10mixed', 'u12boys', 'u12girls', 'u14boys', 'u14girls', 'u16boys', 'u16girls'])
+        && validDivision(divs, 'u10mixed')
+        && validDivision(divs, 'u12boys')
+        && validDivision(divs, 'u12girls')
+        && validDivision(divs, 'u14boys')
+        && validDivision(divs, 'u14girls')
+        && validDivision(divs, 'u16boys')
+        && validDivision(divs, 'u16girls');
     }
 
     // 회신 한 건에 꼭 있어야 하는 항목(방문자 제출과 관리자 수정 모두)
@@ -98,7 +153,7 @@ service cloud.firestore {
               'intent', 'fee', 'note', 'consent', 'text', 'submittedAt'];
     }
 
-    // 항목마다의 형과 크기(방문자 제출과 관리자 수정 모두)
+    // 항목마다의 형과 크기(방문자 제출과 관리자 수정 모두). 디비전(divisions)은 validDivisions 로 따로 봅니다.
     function replyFields(d) {
       return d.kind == 'eoi'
         && d.v == 1
@@ -112,15 +167,6 @@ service cloud.firestore {
         && d.contactMethods.size() <= 5
         && d.contactMethods.hasOnly(['whatsapp', 'line', 'kakaotalk', 'instagram', 'other'])
         && shortText(d, 'contactDetail', 300)
-        && d.divisions is map
-        && d.divisions.keys().hasOnly(['u10mixed', 'u12boys', 'u12girls', 'u14boys', 'u14girls', 'u16boys', 'u16girls'])
-        && validDivision(d.divisions, 'u10mixed')
-        && validDivision(d.divisions, 'u12boys')
-        && validDivision(d.divisions, 'u12girls')
-        && validDivision(d.divisions, 'u14boys')
-        && validDivision(d.divisions, 'u14girls')
-        && validDivision(d.divisions, 'u16boys')
-        && validDivision(d.divisions, 'u16girls')
         && d.period in ['', '2027-06', 'other']
         && shortText(d, 'dates', 300)
         && d.intent in ['active', 'internal', 'undecided', 'unable']
@@ -135,6 +181,7 @@ service cloud.firestore {
       return d.keys().hasOnly(replyKeys())
         && d.keys().hasAll(replyKeys())
         && replyFields(d)
+        && validDivisions(d.divisions)
         && d.country.size() > 0
         && d.contactName.size() > 0
         && d.email.matches('^[^@ ]+@[^@ ]+[.][^@ ]+$')
@@ -162,12 +209,16 @@ service cloud.firestore {
         || (isAdmin()
             && id.matches('^[A-Za-z0-9]{20}$')
             && validManagedReply(request.resource.data)
+            && validDivisions(request.resource.data.divisions)
             && request.resource.data.source == 'manual'
             && request.resource.data.submittedAt == request.time);
       allow get, list: if isAdmin();
       // 관리자는 내용을 고칠 수 있지만 접수 시각과 입력 경로는 바꿀 수 없습니다.
+      // 디비전을 건드리지 않은 수정(진행 상태, 비고 등)에서는 디비전을 다시 검사하지 않습니다.
       allow update: if isAdmin()
         && validManagedReply(request.resource.data)
+        && (request.resource.data.divisions == resource.data.divisions
+            || validDivisions(request.resource.data.divisions))
         && request.resource.data.submittedAt == resource.data.submittedAt
         && request.resource.data.get('source', '') == resource.data.get('source', '');
       allow delete: if isAdmin();
@@ -180,8 +231,9 @@ service cloud.firestore {
               'joinedOn', 'note', 'createdAt', 'updatedAt', 'updatedBy'];
     }
 
+    // 회원 문서의 모양. 관리자가 넣은 회원, 본인이 가입한 회원, 보호자가 등록한 자녀 모두 같습니다.
     function validMember(d) {
-      return d.keys().hasOnly(memberKeys().concat(['deletedAt', 'deletedBy']))
+      return d.keys().hasOnly(memberKeys().concat(['deletedAt', 'deletedBy', 'source', 'guardian', 'agreedAt']))
         && d.keys().hasAll(memberKeys())
         && shortText(d, 'name', 60) && d.name.size() > 0
         // 종류는 여러 개를 함께 가질 수 있습니다(같은 값을 두 번 적을 수는 없습니다). 직원은 admins 로 정하므로 여기에 없습니다.
@@ -202,18 +254,186 @@ service cloud.firestore {
         && (d.joinedOn == '' || d.joinedOn.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$'))
         && shortText(d, 'note', 1000)
         && d.createdAt is timestamp
-        && validTrash(d)
-        && stamped(d);
+        // 가입 경로: self(본인이 가입), guardian(보호자가 등록한 자녀). 관리자가 넣은 회원에는 이 세 항목이 없습니다.
+        && (!('source' in d) || d.source in ['self', 'guardian'])
+        && (!('guardian' in d) || (d.guardian is string && d.guardian.size() > 0 && d.guardian.size() <= 128))
+        && (!('agreedAt' in d) || d.agreedAt is timestamp)
+        // 협회 메모는 관리자가 넣은 회원 문서에만 적습니다. 회원이 만든 문서의 메모는 memberNotes 에 따로 둡니다.
+        && (!('source' in d) || d.note == '')
+        // 보호자가 등록한 자녀는 선수로만 둡니다.
+        && (!('guardian' in d) || d.types == ['player'])
+        // 고친 사람: 관리자가 넣은 회원 문서에는 이메일, 회원이 읽을 수 있는 문서에는 uid
+        && ((('source' in d) && validTrashUid(d) && stampedUid(d))
+            || (!('source' in d) && validTrash(d) && stamped(d)));
+    }
+
+    // 회원이 가입하거나 자녀를 등록할 때 스스로 정할 수 없는 값:
+    // 활동 상태로 시작하고, 시합 참가 권한은 꺼져 있고, 협회 메모는 비어 있고, 이메일은 로그인한 계정의 것이며,
+    // 개인정보 동의 시각과 가입 시각은 서버 시각입니다. 가입일(joinedOn)은 비워 둡니다(가입 시각으로 보고, 필요하면 협회가 적습니다).
+    function joinedByMember(d) {
+      return d.status == 'active'
+        && d.matchAccess == false
+        && d.note == ''
+        && d.joinedOn == ''
+        && !('deletedAt' in d)
+        && !('deletedBy' in d)
+        && d.email == me()
+        && d.agreedAt == request.time
+        && d.createdAt == request.time;
     }
 
     match /members/{id} {
+      // ── 관리자: 모두 보고, 넣고, 고치고, 지웁니다. 가입 경로와 동의 기록은 바꿀 수 없습니다.
       allow get, list: if isAdmin();
       allow create: if isAdmin()
         && id.matches('^[A-Za-z0-9]{20}$')
         && validMember(request.resource.data)
+        && !('source' in request.resource.data)
+        && !('guardian' in request.resource.data)
+        && !('agreedAt' in request.resource.data)
         && request.resource.data.createdAt == request.time;
       allow update: if isAdmin()
         && validMember(request.resource.data)
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.get('source', '') == resource.data.get('source', '')
+        && request.resource.data.get('guardian', '') == resource.data.get('guardian', '')
+        && request.resource.data.get('agreedAt', null) == resource.data.get('agreedAt', null);
+      allow delete: if isAdmin();
+
+      // ── 회원 본인: 자기 문서(문서 ID = 로그인 계정의 uid)만 봅니다. 가입하고, 정해진 항목만 고치고, 탈퇴(삭제)할 수 있습니다.
+      allow get: if signedInEmail() && id == request.auth.uid;
+      allow create: if signedInEmail()
+        && id == request.auth.uid
+        && validMember(request.resource.data)
+        && request.resource.data.source == 'self'
+        && !('guardian' in request.resource.data)
+        && request.resource.data.types.size() >= 1
+        && joinedByMember(request.resource.data);
+      allow update: if signedInEmail()
+        && id == request.auth.uid
+        && resource.data.get('source', '') == 'self'
+        && validMember(request.resource.data)
+        && request.resource.data.types.size() >= 1
+        && request.resource.data.diff(resource.data).affectedKeys()
+             .hasOnly(['name', 'types', 'team', 'division', 'gender', 'contactName', 'phone', 'updatedAt', 'updatedBy']);
+      // 탈퇴(삭제)는 활동 상태일 때만 스스로 할 수 있습니다. 협회가 휴면·탈퇴로 바꿔 두었거나 휴지통에 넣은 계정이
+      // 문서를 지우고 다시 가입해 상태를 되돌리지 못하게 하려는 것입니다. 그런 계정의 삭제는 협회가 합니다.
+      allow delete: if signedInEmail()
+        && id == request.auth.uid
+        && resource.data.status == 'active'
+        && !('deletedAt' in resource.data);
+
+      // ── 보호자: 자기가 등록한 자녀(guardian 이 자기 uid 인 문서)만 봅니다. 자녀는 선수로만 등록합니다.
+      allow get, list: if signedInEmail() && resource.data.guardian == request.auth.uid;
+      allow create: if activeMember()
+        && id.matches('^[A-Za-z0-9]{20}$')
+        && validMember(request.resource.data)
+        && request.resource.data.source == 'guardian'
+        && request.resource.data.guardian == request.auth.uid
+        && joinedByMember(request.resource.data);
+      allow update: if signedInEmail()
+        && resource.data.get('guardian', '') == request.auth.uid
+        && validMember(request.resource.data)
+        && request.resource.data.diff(resource.data).affectedKeys()
+             .hasOnly(['name', 'team', 'division', 'gender', 'contactName', 'phone', 'updatedAt', 'updatedBy']);
+      allow delete: if signedInEmail() && resource.data.get('guardian', '') == request.auth.uid;
+    }
+
+    // ---------- 협회만 보는 회원 메모 ----------
+
+    // 회원이 만든 회원 문서는 그 회원이 읽을 수 있으므로, 협회 안에서만 볼 메모는 여기에 따로 둡니다.
+    // 문서 ID 는 그 회원 문서의 ID 와 같고, 관리자만 읽고 씁니다. 메모를 비우면 문서를 지웁니다.
+    function validMemberNote(d) {
+      return d.keys().hasOnly(['text', 'updatedAt', 'updatedBy'])
+        && d.keys().hasAll(['text', 'updatedAt', 'updatedBy'])
+        && shortText(d, 'text', 1000) && d.text.size() > 0
+        && stamped(d);
+    }
+
+    match /memberNotes/{id} {
+      allow get, list: if isAdmin();
+      allow create, update: if isAdmin() && id.size() <= 128 && validMemberNote(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
+    // ---------- 문의 ----------
+
+    // 회원이 남기는 문의 한 건: 정해진 항목만, 본인 이름으로, 접수 시각은 서버 시각
+    function validInquiry(d) {
+      return d.keys().hasOnly(['uid', 'name', 'email', 'category', 'subject', 'body', 'status', 'createdAt'])
+        && d.keys().hasAll(['uid', 'name', 'email', 'category', 'subject', 'body', 'status', 'createdAt'])
+        && d.uid == request.auth.uid
+        && d.email == me()
+        && shortText(d, 'name', 60) && d.name.size() > 0
+        && d.category in ['member', 'program', 'event', 'cert', 'docs', 'intl', 'sponsor', 'etc']
+        && shortText(d, 'subject', 100) && d.subject.size() > 0
+        && shortText(d, 'body', 3000) && d.body.size() > 0
+        && d.status == 'new'
+        && d.createdAt == request.time;
+    }
+
+    // 관리자가 고친 문의: 처리 상태, 답변, 휴지통 표시만 더하거나 바꿉니다.
+    function validManagedInquiry(d) {
+      return d.keys().hasOnly(['uid', 'name', 'email', 'category', 'subject', 'body', 'status', 'createdAt',
+                               'reply', 'repliedAt', 'updatedAt', 'updatedBy', 'deletedAt', 'deletedBy'])
+        && d.status in ['new', 'read', 'done']
+        && (!('reply' in d) || shortText(d, 'reply', 3000))
+        && (!('repliedAt' in d) || d.repliedAt is timestamp)
+        && validTrashUid(d)
+        && stampedUid(d);
+    }
+
+    match /inquiries/{id} {
+      // 활동 회원만 문의를 남깁니다. 직원(관리자)은 남길 수 없습니다.
+      allow create: if activeMember()
+        && !isAdmin()
+        && id.matches('^[A-Za-z0-9]{20}$')
+        && validInquiry(request.resource.data);
+      // 회원은 자기가 남긴 문의만, 관리자는 모두 봅니다.
+      allow get, list: if signedInEmail() && resource.data.uid == request.auth.uid;
+      allow get, list: if isAdmin();
+      // 회원이 적은 내용은 관리자도 바꿀 수 없습니다.
+      allow update: if isAdmin()
+        && validManagedInquiry(request.resource.data)
+        && request.resource.data.diff(resource.data).affectedKeys()
+             .hasOnly(['status', 'reply', 'repliedAt', 'updatedAt', 'updatedBy', 'deletedAt', 'deletedBy']);
+      // 회원은 탈퇴할 때 자기 문의를 함께 지웁니다. 관리자는 휴지통을 거쳐 지웁니다.
+      allow delete: if signedInEmail() && resource.data.uid == request.auth.uid;
+      allow delete: if isAdmin();
+    }
+
+    // ---------- 시합 소식 ----------
+
+    function validPost(d) {
+      return d.keys().hasOnly(['title', 'body', 'eventOn', 'place', 'albumUrl', 'state',
+                               'createdAt', 'updatedAt', 'updatedBy', 'deletedAt', 'deletedBy'])
+        && d.keys().hasAll(['title', 'body', 'eventOn', 'place', 'albumUrl', 'state', 'createdAt', 'updatedAt', 'updatedBy'])
+        && shortText(d, 'title', 120) && d.title.size() > 0
+        && shortText(d, 'body', 5000)
+        && d.eventOn is string
+        && (d.eventOn == '' || d.eventOn.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$'))
+        && shortText(d, 'place', 120)
+        // 사진은 올리지 않고 앨범 주소(https)만 적습니다.
+        && shortText(d, 'albumUrl', 500)
+        && (d.albumUrl == '' || d.albumUrl.matches('^https://[^ "<>]+$'))
+        // published(공개)인 글만 회원에게 보입니다. 휴지통에 있는 글은 draft(숨김)여야 합니다.
+        && d.state in ['published', 'draft']
+        && (!('deletedAt' in d) || d.state == 'draft')
+        && d.createdAt is timestamp
+        && validTrashUid(d)
+        && stampedUid(d);
+    }
+
+    match /matchPosts/{id} {
+      // 시합 참가 권한을 받은 활동 회원은 공개된 글만 봅니다. 관리자는 모두 봅니다.
+      allow get, list: if hasMatchAccess() && resource.data.state == 'published';
+      allow get, list: if isAdmin();
+      allow create: if isAdmin()
+        && id.matches('^[A-Za-z0-9]{20}$')
+        && validPost(request.resource.data)
+        && request.resource.data.createdAt == request.time;
+      allow update: if isAdmin()
+        && validPost(request.resource.data)
         && request.resource.data.createdAt == resource.data.createdAt;
       allow delete: if isAdmin();
     }

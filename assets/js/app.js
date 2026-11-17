@@ -71,7 +71,7 @@
   var VIEW_NAMES = {
     home: '', about: T('협회 소개'), programs: T('유소년 교육'), schedule: T('대회·일정'), coach: T('지도자 자격'),
     international: T('국제교류'), notice: T('공지사항'), gallery: T('포토갤러리'), apply: T('신청·문의'),
-    contact: T('후원·협력'), privacy: T('개인정보처리방침'),
+    contact: T('후원·협력'), privacy: T('개인정보처리방침'), member: T('회원'),
     jeju2027: T('2027 제주 국제 유소년 라크로스 교류전')
   };
   var BASE_TITLE = T('KYLA 한국유소년라크로스협회');
@@ -582,7 +582,6 @@
 
   var FORM_TEXT = {
     team: { head: T('대회 참가 신청'), ok: T('참가 신청서를 제출했습니다'), okText: T('담당자가 확인한 뒤 연락드립니다.') },
-    inquiry: { head: T('문의'), ok: T('문의를 보냈습니다'), okText: T('담당자가 확인한 뒤 남겨 주신 연락처로 답변드립니다.') },
     intl: { head: T('국제교류 문의'), ok: T('문의를 보냈습니다'), okText: T('이메일로 답변드립니다.') },
     eoi: {
       head: T('2027 제주 국제 유소년 라크로스 교류전 참가 의향 회신'), ok: T('참가 의향을 보냈습니다'), okText: T('담당자가 확인한 뒤 이메일로 연락드립니다.'),
@@ -709,6 +708,43 @@
         }
       })
       .then(function () { btn.disabled = false; btn.textContent = label; });
+  }
+
+  /* ---------- 회원 화면 (#member) ----------
+     회원 화면의 동작(assets/js/member.js)과 구글 로그인에 쓰는 파일(assets/vendor/)은 이 화면을 처음 열 때 불러옵니다.
+     다른 화면만 보는 방문자는 이 파일들을 내려받지 않습니다. member.js 는 아래 KYLA_APP 으로 문구(T)와 설정을 받습니다. */
+  window.KYLA_APP = { T: T, lang: LANG, base: BASE, cfg: CFG, fmtLong: fmtLong, fmtMD: fmtMD, weekday: weekday };
+  var memberReady = null;
+  function loadScript(src) {
+    return new Promise(function (resolve, reject) {
+      var s = document.createElement('script');
+      s.src = src;
+      s.onload = resolve;
+      s.onerror = function () { s.remove(); reject(new Error(src)); };
+      document.head.appendChild(s);
+    });
+  }
+  // tab: 열어 둘 탭(profile | posts | inquiry), inquiry: 미리 골라 둘 문의 분류
+  function openMember(tab, inquiry) {
+    var text = $('#mem-loading-text'), retry = $('#mem-retry-wrap');
+    if (!text) return;
+    if (!memberReady) {
+      text.textContent = T('로그인 상태를 확인하고 있습니다.');
+      retry.hidden = true;
+      // 로그인 파일이 이미 있으면(점검·미리보기) 다시 불러오지 않습니다.
+      var files = (window.firebase && window.firebase.auth ? [] : ['assets/vendor/firebase-app-compat.js', 'assets/vendor/firebase-auth-compat.js'])
+        .concat(window.KYLA_MEMBER ? [] : ['assets/js/member.js']);
+      memberReady = files.reduce(function (p, f) { return p.then(function () { return loadScript(BASE + f); }); }, Promise.resolve());
+    }
+    var mine = memberReady;
+    mine.then(function () {
+      if (window.KYLA_MEMBER) window.KYLA_MEMBER.show({ tab: tab || '', inquiry: inquiry || '' });
+    }, function () {
+      if (memberReady !== mine) return;
+      memberReady = null;
+      text.textContent = T('회원 화면을 불러오지 못했습니다. 인터넷 연결을 확인한 뒤 다시 시도해 주세요.');
+      retry.hidden = false;
+    });
   }
 
   /* ---------- 히어로: 최근 대회 표 ---------- */
@@ -965,6 +1001,7 @@
     if ((m = h.match(/^event-(.+)$/))) return { view: 'schedule', id: m[1] };
     if ((m = h.match(/^album-(.+)$/))) return { view: 'gallery', id: m[1] };
     if ((m = h.match(/^apply-(team|coach|inquiry)$/))) return { view: 'apply', tab: m[1] };
+    if ((m = h.match(/^member-(profile|posts|inquiry)$/))) return { view: 'member', tab: m[1] };
     // '#about-org' 처럼 화면 이름으로 시작하는 주소는 그 화면 안의 구역으로 바로 갑니다.
     if ((m = h.match(/^([a-z0-9]+)-/)) && VIEWS.indexOf(m[1]) >= 0) {
       var sec = document.getElementById(h);
@@ -1033,10 +1070,9 @@
       $('#album-detail').hidden = !item;
       if (item) { renderAlbumDetail(item); title = item.title; }
     }
-    if (r.view === 'apply') {
-      setTab(pendingInquiry ? 'inquiry' : (r.tab || 'team'));
-      if (pendingInquiry) { var sel = $('#inq-cat'); if (sel) sel.value = pendingInquiry; }
-    }
+    if (r.view === 'apply') setTab(r.tab || 'team');
+    // 문의로 가는 단추(data-inquiry)를 누르고 왔으면 그 분류를 회원 화면의 문의하기에 미리 골라 둡니다.
+    if (r.view === 'member') openMember(r.tab, pendingInquiry);
     pendingInquiry = null;
 
     markCurrent(r);
@@ -1120,7 +1156,8 @@
       if (again) again.focus();
       return;
     }
-    if ((el = t.closest('.tab'))) { setTab(el.getAttribute('data-tab')); return; }
+    if ((el = t.closest('.tab[data-tab]'))) { setTab(el.getAttribute('data-tab')); return; }
+    if (t.closest('#mem-retry')) { openMember(parseHash().tab, ''); return; }
     if (t.closest('#roster-add')) {
       var row = addRosterRow();
       $('[data-roster="name"]', row).focus();
@@ -1151,7 +1188,7 @@
       if (drop) { closeDropdowns(); $('.nav__top', drop).focus(); }
       var open = !$('#mnav').hidden; closeMenu(); if (open) $('#menu-btn').focus();
     }
-    var tab = ev.target.closest && ev.target.closest('.tab');
+    var tab = ev.target.closest && ev.target.closest('.tab[data-tab]');
     if (tab && (ev.key === 'ArrowRight' || ev.key === 'ArrowLeft')) {
       var i = TABS.indexOf(tab.getAttribute('data-tab'));
       setTab(TABS[(i + (ev.key === 'ArrowRight' ? 1 : TABS.length - 1)) % TABS.length], true);
