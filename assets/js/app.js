@@ -1039,6 +1039,12 @@
         g.classList.toggle('is-current', !!$('a[aria-current="page"]', g));
       });
     });
+    // 머리줄의 회원 로그인
+    var login = $('.hdr__login');
+    if (login) {
+      if (r.view === 'member') login.setAttribute('aria-current', 'page');
+      else login.removeAttribute('aria-current');
+    }
   }
   // PC 상단 메뉴의 하위 메뉴
   function closeDropdowns() {
