@@ -388,6 +388,9 @@ a.row:hover .ico{color:var(--red)}
 .cta--top{margin-top:36px}
 .cta .cta__due{margin-top:8px;font-weight:700;color:var(--ink)}
 .cta__due strong{font-weight:900;margin-right:10px}
+.cta .cta__acct{margin-top:10px;color:var(--ink)}                 /* 직원 계정 안내: 지금 로그인한 계정 */
+.cta__acct span{margin-right:8px;font-size:14.5px;color:var(--muted)}
+.cta__acct strong{font-weight:700;overflow-wrap:anywhere}
 
 /* 과목 */
 .subjects{display:grid;gap:0;border-top:2px solid var(--ink)}
@@ -545,6 +548,8 @@ select.input{appearance:none;-webkit-appearance:none;padding-right:42px;backgrou
 .mem{padding-bottom:24px}
 .mem__status{padding:22px 0;border-top:2px solid var(--ink);border-bottom:1px solid var(--line);font-weight:700}
 .mem__small{font-size:14.5px;color:var(--muted)}
+.mem__staffbox > * + *{margin-top:16px}                            /* 가입하지 않은 직원 계정: 안내 상자와 '회원으로도 가입하기' */
+.mem__staffbox .linkbtn{display:inline;min-height:0;font-size:inherit;vertical-align:baseline}
 .mem__small a{font-weight:700;color:var(--ink);text-underline-offset:3px}
 .mem__acts{display:flex;flex-wrap:wrap;gap:0 24px}
 .mem__acct strong{overflow-wrap:anywhere}

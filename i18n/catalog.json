@@ -3291,8 +3291,20 @@
   "en": "The member page could not be set up. Please refresh the page.",
   "ja": "会員ページを準備できませんでした。画面を再読み込みしてください。"
  },
- "직원(관리자) 계정입니다. 회원과 문의는 <1>관리자 화면</1>에서 관리합니다. 회원 화면을 직접 써 보려면 아래에서 가입할 수 있습니다.": {
-  "en": "This is a staff (administrator) account. Members and inquiries are managed on the <1>admin page</1>. To try the member page yourself, you can join below.",
-  "ja": "スタッフ（管理者）のアカウントです。会員とお問い合わせは<1>管理者ページ</1>で管理します。会員ページを実際に使ってみる場合は、以下から登録できます。"
+ "직원(관리자) 계정입니다": {
+  "en": "This is a staff (administrator) account",
+  "ja": "スタッフ（管理者）のアカウントです"
+ },
+ "관리자로 지정된 계정이라 회원 가입을 하지 않아도 됩니다. 회원, 문의, 시합, 회신은 관리자 화면에서 관리합니다.": {
+  "en": "This account is designated as an administrator, so you do not need to join as a member. Members, inquiries, matches and replies are managed on the admin page.",
+  "ja": "管理者に指定されたアカウントのため、会員登録は必要ありません。会員、お問い合わせ、試合、回答は管理者ページで管理します。"
+ },
+ "관리자 화면 열기": {
+  "en": "Open the admin page",
+  "ja": "管理者ページを開く"
+ },
+ "자녀 선수 등록이나 시합 소식 같은 회원 화면도 쓰려면 회원으로도 가입할 수 있습니다. <1>회원으로도 가입하기</1>": {
+  "en": "If you also want to use the member page, for example to register a child player or see match updates, you can join as a member too. <1>Join as a member too</1>",
+  "ja": "お子さまの選手登録や試合のお知らせなど、会員ページも使いたい場合は、会員としても登録できます。<1>会員としても登録する</1>"
  }
 }

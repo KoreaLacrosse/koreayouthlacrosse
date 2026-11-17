@@ -1140,8 +1140,20 @@
 
     <!-- 가입: 로그인했지만 아직 회원이 아닐 때. 아래 양식(#mem-form)은 '회원 정보 수정'에서도 같이 씁니다. -->
     <div class="panel" id="mem-join" hidden>
-      <p class="note" id="mem-join-staff" hidden>직원(관리자) 계정입니다. 회원과 문의는 <a data-admin-link>관리자 화면</a>에서 관리합니다. 회원 화면을 직접 써 보려면 아래에서 가입할 수 있습니다.</p>
-      <div class="note mem__acct">
+      <!-- 직원(관리자) 계정: 관리자 명단에 있으면 회원으로 가입하지 않아도 됩니다(2026-11-18 담당자 요청).
+           그 아래의 계정 안내와 가입 양식은 '회원으로도 가입하기'를 눌렀을 때만 엽니다(member.js 의 syncJoin). -->
+      <div class="mem__staffbox" id="mem-join-staff" hidden>
+        <div class="cta">
+          <div>
+            <h2>직원(관리자) 계정입니다</h2>
+            <p>관리자로 지정된 계정이라 회원 가입을 하지 않아도 됩니다. 회원, 문의, 시합, 회신은 관리자 화면에서 관리합니다.</p>
+            <p class="cta__acct"><span>지금 로그인한 구글 계정</span> <strong id="mem-staff-email" translate="no"></strong></p>
+          </div>
+          <div class="btns"><a class="btn" data-admin-link>관리자 화면 열기</a><button class="linkbtn" type="button" data-mem-signout>로그아웃</button></div>
+        </div>
+        <p class="mem__small" id="mem-join-more">자녀 선수 등록이나 시합 소식 같은 회원 화면도 쓰려면 회원으로도 가입할 수 있습니다. <button class="linkbtn" type="button" id="mem-join-open">회원으로도 가입하기</button></p>
+      </div>
+      <div class="note mem__acct" id="mem-join-acct">
         <p><span>지금 로그인한 구글 계정</span> <strong id="mem-join-email" translate="no"></strong></p>
         <p>아직 회원이 아닙니다. 아래 내용을 적으면 이 계정으로 바로 가입됩니다. 다른 계정으로 가입하려면 <button class="linkbtn" type="button" data-mem-signout>로그아웃</button>한 뒤 다시 로그인해 주세요.</p>
       </div>

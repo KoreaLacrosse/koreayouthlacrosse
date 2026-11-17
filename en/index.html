@@ -1140,8 +1140,20 @@
 
     <!-- 가입: 로그인했지만 아직 회원이 아닐 때. 아래 양식(#mem-form)은 '회원 정보 수정'에서도 같이 씁니다. -->
     <div class="panel" id="mem-join" hidden>
-      <p class="note" id="mem-join-staff" hidden>This is a staff (administrator) account. Members and inquiries are managed on the <a data-admin-link>admin page</a>. To try the member page yourself, you can join below.</p>
-      <div class="note mem__acct">
+      <!-- 직원(관리자) 계정: 관리자 명단에 있으면 회원으로 가입하지 않아도 됩니다(2026-11-18 담당자 요청).
+           그 아래의 계정 안내와 가입 양식은 '회원으로도 가입하기'를 눌렀을 때만 엽니다(member.js 의 syncJoin). -->
+      <div class="mem__staffbox" id="mem-join-staff" hidden>
+        <div class="cta">
+          <div>
+            <h2>This is a staff (administrator) account</h2>
+            <p>This account is designated as an administrator, so you do not need to join as a member. Members, inquiries, matches and replies are managed on the admin page.</p>
+            <p class="cta__acct"><span>Google account you are signed in with</span> <strong id="mem-staff-email" translate="no"></strong></p>
+          </div>
+          <div class="btns"><a class="btn" data-admin-link>Open the admin page</a><button class="linkbtn" type="button" data-mem-signout>Sign out</button></div>
+        </div>
+        <p class="mem__small" id="mem-join-more">If you also want to use the member page, for example to register a child player or see match updates, you can join as a member too. <button class="linkbtn" type="button" id="mem-join-open">Join as a member too</button></p>
+      </div>
+      <div class="note mem__acct" id="mem-join-acct">
         <p><span>Google account you are signed in with</span> <strong id="mem-join-email" translate="no"></strong></p>
         <p>You are not a member yet. Fill in the details below to join with this account right away. To join with a different account, <button class="linkbtn" type="button" data-mem-signout>sign out</button> and sign in again.</p>
       </div>

@@ -459,12 +459,23 @@
       a.href = BASE + 'admin/' + (to ? '#' + to : '');
     });
   }
+  // 직원(관리자) 계정은 회원으로 가입하지 않아도 됩니다(2026-11-18 담당자 요청). 가입하지 않은 직원에게는 "아직 회원이 아닙니다"와 가입 양식 대신
+  // 직원 계정이라는 안내와 관리자 화면 단추를 보여 주고, '회원으로도 가입하기'를 눌렀을 때만 가입 양식을 엽니다.
+  var joinOpen = true;
+  function syncJoin() {
+    $('mem-join-staff').hidden = !staff;
+    $('mem-join-more').hidden = joinOpen;
+    $('mem-join-acct').hidden = !joinOpen;
+    $('mem-join-slot').hidden = !joinOpen;
+  }
   function showJoin() {
     gate('join');
     setFormMode('join');
-    $('mem-join-staff').hidden = !staff;
+    joinOpen = !staff;
+    syncJoin();
     setAdminLinks();
     $('mem-join-email').textContent = user.email || '';
+    $('mem-staff-email').textContent = user.email || '';
     fillForm({ name: clean(user.displayName, 60) });
   }
   function readForm() {
@@ -999,6 +1010,7 @@
     fillDob('mf-birth', 90); fillDob('mc-birth', 25); fillDob('mk-birth', 25);
     $('mf-cancel').addEventListener('click', function () { closeEdit(); });
     $('mem-edit').addEventListener('click', openEdit);
+    $('mem-join-open').addEventListener('click', function () { joinOpen = true; syncJoin(); $('mf-name').focus(); });
     $('mem-kid-add').addEventListener('click', function () { flash(''); openKid(null); });
     $('mem-kid-form').addEventListener('submit', submitKid);
     $('mk-cancel').addEventListener('click', closeKid);
