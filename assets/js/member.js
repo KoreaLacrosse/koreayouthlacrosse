@@ -358,6 +358,7 @@
     ]).then(function (r) {
       if (user !== u) return null;
       me = r[0]; staff = r[1];
+      markAccount(staff ? 'staff' : 'user');
       if (!me) { showJoin(); return null; }
       return loadMore().then(function () { if (user === u) showHome(); });
     }).catch(function (err) {
@@ -386,12 +387,19 @@
     }
     return Promise.all(jobs);
   }
+  // 머리줄의 로그인 상태(마이페이지·로그아웃·관리자 화면)를 app.js 에 알립니다.
+  // 'in' 로그인함, 'out' 로그아웃함, 'staff' 직원(관리자) 계정으로 확인됨, 'user' 직원이 아닌 계정으로 확인됨.
+  // 직원인지 확인하지 못했을 때(인터넷 문제)는 알리지 않아, 앞서 적어 둔 표시가 그대로 남습니다.
+  function markAccount(state) { if (APP.account) APP.account(state); }
+  var leaving = false;      // 머리줄의 '로그아웃'으로 들어왔을 때: 회원 정보를 읽지 않고 바로 로그아웃합니다
   function onUser(u) {
     user = u || null;
     me = null; staff = false; kids = []; inquiries = []; posts = null; matches = []; kidEditing = null;
     resetForms();
     flash('');
-    if (!user) { showSignin(); return; }
+    markAccount(user ? 'in' : 'out');
+    if (!user) { leaving = false; showSignin(); return; }
+    if (leaving) return;
     load();
   }
 
@@ -486,6 +494,10 @@
     var mark = function (input, msg) { markError(input, msg); first = first || input; };
     if (!v.types.length) mark(typeBoxes()[0], T('회원 종류를 하나 이상 골라 주세요.'));
     else if (v.player && v.parent) mark(typeBoxes()[0], T('선수와 학부모는 함께 고를 수 없습니다. 하나만 골라 주세요.'));
+    // 자녀 선수를 등록해 둔 학부모가 학부모를 빼려면 등록부터 지웁니다(자녀 등록은 학부모 회원만 하기 때문입니다).
+    else if (!join && isParent() && !v.parent && shownKids().length) {
+      mark(typeBoxes()[0], T('등록한 자녀 선수가 있어 학부모를 뺄 수 없습니다. 자녀 선수 등록을 먼저 지워 주세요.'));
+    }
     if (v.player) {
       var bad = v.birth.error || (!v.birth.value ? T('출생 연월일을 골라 주세요.')
         : (is14(v.birth.value) ? '' : T('만 14세 미만은 본인이 가입할 수 없습니다. 보호자가 학부모로 가입해 자녀를 선수로 등록해 주세요.')));
@@ -526,7 +538,7 @@
         Object.keys(saved).forEach(function (k) { me[k] = saved[k]; });
         me.updatedAt = t;
         closeEdit();
-        renderWho(); renderFacts();
+        renderWho(); renderFacts(); syncKids();
         flash(T('회원 정보를 저장했습니다.'));
         return null;
       }
@@ -610,6 +622,19 @@
 
   /* ---------- 자녀 선수 ---------- */
   function shownKids() { return kids.filter(function (k) { return !k.deletedAt; }); }
+  // 자녀 선수 등록은 회원 종류에 학부모가 있는 회원만 합니다(2026-11-17 담당자 요청. 보안 규칙도 같습니다).
+  function isParent() { return !!me && (me.types || []).indexOf('parent') >= 0; }
+  function canAddKid() { return active() && isParent(); }
+  // 학부모가 아닌 회원에게는 등록 단추 대신 안내를 보여 줍니다. 선수 회원은 학부모를 함께 고를 수 없으니 이 칸을 아예 감춥니다.
+  // 예전에 등록해 둔 자녀가 있으면 학부모가 아니어도 목록은 보여 줍니다(고치거나 지울 수 있게).
+  function syncKids() {
+    var parent = isParent(), has = shownKids().length > 0, player = !!me && (me.types || []).indexOf('player') >= 0;
+    $('mem-kids-block').hidden = !parent && !has && player;
+    $('mem-kids-intro').hidden = !parent;
+    $('mem-kids').hidden = !parent && !has;
+    $('mem-kid-only').hidden = parent;
+    $('mem-kid-open').hidden = !canAddKid() || !$('mem-kid-form').hidden;
+  }
   // 출생 연월일을 적기 전에 등록한 자녀는 예전에 고른 연령 구분을 대신 보여 줍니다.
   function kidSummary(k) {
     return [k.team, k.birth ? T('{date} 출생', { date: dots(k.birth) }) : (DIVISIONS[k.division] || ''), GENDERS[k.gender] || ''].filter(Boolean).join(', ');
@@ -617,7 +642,7 @@
   function renderKids() {
     var box = $('mem-kids'), list = shownKids();
     box.textContent = '';
-    if (!list.length) { box.appendChild(el('p', 'mem__none', T('등록한 자녀 선수가 없습니다.'))); return; }
+    if (!list.length) { box.appendChild(el('p', 'mem__none', T('등록한 자녀 선수가 없습니다.'))); syncKids(); return; }
     var ul = el('ul', 'mem__list');
     list.sort(function (a, b) { return text(a.createdAt) < text(b.createdAt) ? -1 : 1; }).forEach(function (k) {
       var li = el('li', 'mem__item'), acts = el('div', 'mem__item-acts');
@@ -633,6 +658,7 @@
       ul.appendChild(li);
     });
     box.appendChild(ul);
+    syncKids();
   }
   // k: 고칠 자녀(새로 등록하면 null). preset: 새로 등록할 때 미리 채울 값
   function openKid(k, preset) {
@@ -641,6 +667,7 @@
     clearErrors(form);
     result(form, '', '');
     busy(form, false);
+    if (!k && !canAddKid()) return;            // 등록은 학부모 회원만(단추도 보이지 않습니다)
     if (!k && shownKids().length >= MAX_KIDS) {
       flash(T('자녀 선수는 {n}명까지 등록할 수 있습니다. 더 등록해야 하면 문의하기로 알려 주세요.', { n: MAX_KIDS }), true);
       return;
@@ -661,7 +688,7 @@
   function closeKid() {
     kidEditing = null;
     $('mem-kid-form').hidden = true;
-    $('mem-kid-open').hidden = !active();
+    syncKids();
   }
   function submitKid(ev) {
     ev.preventDefault();
@@ -896,7 +923,7 @@
     $('mem-leave-staff').hidden = !staff;
     $('mem-leave-held').hidden = staff || active();
     $('mem-leave-text').hidden = !canLeave;
-    $('mem-kid-open').hidden = !active();
+    syncKids();
     setAdminLinks();
     applyWant();
   }
@@ -1015,6 +1042,13 @@
       if (!started) { started = true; start(); return; }
       if (state === 'failed' && user) { load(); return; }
       applyWant();
+    },
+    // 머리줄과 메뉴의 '로그아웃'(app.js). 회원 화면을 연 적이 없어도 됩니다. 로그인을 쓸 수 없는 브라우저면 false
+    signOut: function () {
+      if (!started) { started = true; leaving = true; start(); }
+      if (!auth) { leaving = false; return false; }
+      signOut();
+      return true;
     }
   };
 })();

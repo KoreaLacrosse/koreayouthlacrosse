@@ -1695,17 +1695,17 @@
   "en": "Event entries: team name, school or club, head coach's name and contact details, and players' names, birth years and jersey numbers. Used to confirm entries, form divisions, run the event and manage safety.",
   "ja": "大会参加申込：チーム名、所属学校・クラブ、担当指導者の氏名と連絡先、選手の氏名・生まれ年・背番号。受付の確認、ディビジョン編成、大会運営と安全管理に使用します。"
  },
- "국제교류 문의: 학교·팀 이름, 국가와 도시, 담당자 이름과 연락처, 희망하는 교류 내용. 교류 협의에 씁니다.": {
-  "en": "International exchange inquiries: school or team name, country and city, contact person's name and contact details, and the exchange you have in mind. Used to discuss the exchange.",
-  "ja": "国際交流のお問い合わせ：学校・チーム名、国と都市、担当者の氏名と連絡先、ご希望の交流内容。交流の協議に使用します。"
+ "국제교류 의향 회신: 학교·팀 이름, 국가와 도시, 담당자 이름과 연락처, 참가 인원, 희망하는 교류 내용. 교류 협의와 답변에 씁니다.": {
+  "en": "Interest in international exchange: school or team name, country and city, contact person's name and contact details, expected numbers, and the exchange you have in mind. Used to discuss the exchange and reply to you.",
+  "ja": "国際交流の意向回答：学校・チーム名、国と都市、担当者の氏名と連絡先、参加人数、ご希望の交流内容。交流の協議とご回答に使用します。"
  },
  "보유 기간이 지나거나 수집 목적을 달성하면 지체 없이 파기합니다.": {
   "en": "Information is destroyed without delay once its retention period has passed or the purpose of collection has been fulfilled.",
   "ja": "保有期間が過ぎるか、収集目的を達成した後、遅滞なく破棄します。"
  },
- "참가 의향 회신, 국제교류 문의, 대회 참가 신청으로 받은 정보는 받은 날부터 3년 동안 보관한 뒤 파기합니다. 그 전이라도 삭제를 요청하시면 지웁니다.": {
-  "en": "Information received through expressions of interest, international exchange inquiries and event entries is kept for three years from the date we receive it and then destroyed. We will delete it earlier if you ask us to.",
-  "ja": "参加意向の回答、国際交流のお問い合わせ、大会参加申込でいただいた情報は、受け取った日から3年間保管した後、破棄します。それ以前でも、削除のご依頼があれば削除します。"
+ "참가 의향 회신, 국제교류 의향 회신, 대회 참가 신청으로 받은 정보는 받은 날부터 3년 동안 보관한 뒤 파기합니다. 그 전이라도 삭제를 요청하시면 지웁니다.": {
+  "en": "Information received through expressions of interest, replies about international exchange and event entries is kept for three years from the date we receive it and then destroyed. We will delete it earlier if you ask us to.",
+  "ja": "参加意向の回答、国際交流の意向回答、大会参加申込でいただいた情報は、受け取った日から3年間保管した後、破棄します。それ以前でも、削除のご依頼があれば削除します。"
  },
  "만 14세 미만 아동": {
   "en": "Children under 14",
@@ -2019,9 +2019,17 @@
   "en": "Inquiry sent",
   "ja": "お問い合わせを送信しました"
  },
- "국제교류 문의": {
-  "en": "International exchange inquiry",
-  "ja": "国際交流のお問い合わせ"
+ "국제교류 의향 회신": {
+  "en": "Interest in international exchange",
+  "ja": "国際交流の意向回答"
+ },
+ "국제교류 의향을 보냈습니다": {
+  "en": "Your reply has been sent",
+  "ja": "国際交流の意向を送信しました"
+ },
+ "잠시 뒤 다시 제출해 주세요. 급하시면 아래 내용을 복사해 인스타그램 메시지로 보내 주셔도 됩니다. 입력한 내용은 그대로 남아 있습니다.": {
+  "en": "Please try again in a moment. If it is urgent, you can copy the text below and send it by Instagram message. What you entered is still in the form.",
+  "ja": "しばらくしてからもう一度送信してください。お急ぎの場合は、下の内容をコピーして、Instagramのメッセージでお送りいただいても構いません。入力内容はそのまま残っています。"
  },
  "이메일로 답변드립니다.": {
   "en": "We will reply by email.",
@@ -2299,6 +2307,22 @@
   "en": "Expression of interest form",
   "ja": "参加意向回答書"
  },
+ "참가 의향 회신": {
+  "en": "Expression of interest",
+  "ja": "参加意向の回答"
+ },
+ "국내외 협회·학교·클럽 모두 회신하실 수 있습니다. 회신서는 신청·문의 화면에 있습니다.": {
+  "en": "Associations, schools and clubs in Korea and abroad are all welcome to reply. The form is on the Apply & contact page.",
+  "ja": "国内外の協会・学校・クラブのいずれからもご回答いただけます。回答フォームは「申込・お問い合わせ」ページにあります。"
+ },
+ "교류 의향을 알려 주세요": {
+  "en": "Tell us what you have in mind",
+  "ja": "交流のご意向をお聞かせください"
+ },
+ "학교나 팀을 소개하고 희망하는 교류를 알려 주시면, 실현 가능한 계획을 제안해 드립니다. 회신서는 신청·문의 화면에 있습니다.": {
+  "en": "Introduce your school or team and tell us the kind of exchange you are hoping for, and we will suggest a plan that can work. The form is on the Apply & contact page.",
+  "ja": "学校やチームのご紹介とご希望の交流内容をお知らせいただければ、実現可能なプランをご提案します。回答フォームは「申込・お問い合わせ」ページにあります。"
+ },
  "<1>회신 기한</1>2026년 11월 30일(월)": {
   "en": "<1>Reply by</1>Monday, November 30, 2026",
   "ja": "<1>回答期限</1>2026年11月30日（月）"
@@ -2374,10 +2398,6 @@
  "참가 의향 보내기": {
   "en": "Send expression of interest",
   "ja": "参加意向を送信"
- },
- "2027 제주 국제 유소년 라크로스 교류전의 참가 의향은 <1>참가 의향 회신서</1>로 받습니다.": {
-  "en": "For the 2027 Jeju International Youth Lacrosse Exchange, please reply using the <1>expression of interest form</1>.",
-  "ja": "2027 済州 国際ユースラクロス交流戦の参加意向は、<1>参加意向回答書</1>で受け付けています。"
  },
  "온라인 접수는 연결을 준비하고 있습니다. 지금은 아래에 적은 내용을 복사해, 제안서에 적힌 회신 이메일이나 인스타그램 {ig} 메시지로 보내 주세요.": {
   "en": "Online submission is being set up. For now, please copy what you write below and send it to the reply email given in the proposal, or to us on Instagram {ig}.",
@@ -2519,13 +2539,57 @@
   "en": "Sign in",
   "ja": "ログイン"
  },
+ "마이페이지": {
+  "en": "My page",
+  "ja": "マイページ"
+ },
+ "관리자 화면 [hdr]": {
+  "en": "Admin",
+  "ja": "管理画面"
+ },
+ "관리자 [hdr]": {
+  "en": "Admin",
+  "ja": "管理"
+ },
  "회원": {
   "en": "Members",
   "ja": "会員"
  },
- "대회 참가 신청과 지도자 교육 신청을 받습니다. 문의는 회원 화면에서 남길 수 있습니다.": {
-  "en": "Enter an event or apply for coach education. Inquiries are made from the member page.",
-  "ja": "大会参加の申込と指導者教育の申込を受け付けています。お問い合わせは会員ページから送れます。"
+ "대회 참가 신청과 지도자 교육 신청, 국제교류 회신을 받습니다. 문의는 회원 화면에서 남길 수 있습니다.": {
+  "en": "Enter an event, apply for coach education or reply about international exchange. Inquiries are made from the member page.",
+  "ja": "大会参加の申込、指導者教育の申込、国際交流のご回答を受け付けています。お問い合わせは会員ページから送れます。"
+ },
+ "국제교류 [tab]": {
+  "en": "International",
+  "ja": "国際交流"
+ },
+ "회신 종류": {
+  "en": "Type of reply",
+  "ja": "回答の種類"
+ },
+ "2027 제주 교류전 참가 의향": {
+  "en": "Interest in the 2027 Jeju Exchange",
+  "ja": "2027 済州交流戦への参加意向"
+ },
+ "2027년 6월 제주도에서 추진하는 국제 유소년 교류전에 참가할 뜻이 있는지 알려 주세요.": {
+  "en": "Tell us whether you may take part in the international youth exchange tournament we are planning on Jeju Island in June 2027.",
+  "ja": "2027年6月に済州島で開催を進めている国際ユース交流戦に、参加のご意向があるかお知らせください。"
+ },
+ "국제교류 의향": {
+  "en": "Interest in international exchange",
+  "ja": "国際交流の意向"
+ },
+ "방문, 초청, 합동훈련, 캠프처럼 특정 대회와 상관없이 함께하고 싶은 교류를 알려 주세요.": {
+  "en": "Tell us about any exchange you would like to do together, such as visits, invitations, joint training or camps, whether or not it is tied to a particular event.",
+  "ja": "訪問、招待、合同練習、キャンプなど、特定の大会に関係なく一緒に行いたい交流をお知らせください。"
+ },
+ "개최 계획(안) 보기": {
+  "en": "See the draft plan",
+  "ja": "開催計画（案）を見る"
+ },
+ "국제교류 의향 보내기": {
+  "en": "Send your reply",
+  "ja": "国際交流の意向を送信"
  },
  "문의는 회원 화면에서 받습니다": {
   "en": "Inquiries are made from the member page",
@@ -2919,9 +2983,9 @@
   "en": "Inquiries: the category, subject and content, and the sending member's name and email. Used to check and answer the inquiry.",
   "ja": "お問い合わせ：分類、件名、内容と、送信した会員の氏名、メールアドレス。お問い合わせの確認と回答に使用します。"
  },
- "회원 정보와 문의, 참가 의향 회신은 Google의 클라우드 서비스 Firebase(Cloud Firestore, 서울 리전)에 저장합니다. 회원은 자기 정보와 자기가 남긴 문의만 볼 수 있고, 그 밖에는 협회가 지정한 관리자만 열람할 수 있습니다.": {
-  "en": "Member details, inquiries and expressions of interest are stored in Firebase (Cloud Firestore, Seoul region), a Google cloud service. Members can see only their own details and their own inquiries; otherwise the data can be viewed only by administrators designated by the association.",
-  "ja": "会員情報、お問い合わせ、参加意向の回答は、Googleのクラウドサービス Firebase（Cloud Firestore、ソウルリージョン）に保存します。会員が見られるのは自分の情報と自分が送信したお問い合わせのみで、それ以外は協会が指定した管理者のみが閲覧できます。"
+ "회원 정보와 문의, 참가 의향 회신, 국제교류 의향 회신은 Google의 클라우드 서비스 Firebase(Cloud Firestore, 서울 리전)에 저장합니다. 회원은 자기 정보와 자기가 남긴 문의만 볼 수 있고, 그 밖에는 협회가 지정한 관리자만 열람할 수 있습니다.": {
+  "en": "Member details, inquiries, expressions of interest and replies about international exchange are stored in Firebase (Cloud Firestore, Seoul region), a Google cloud service. Members can see only their own details and their own inquiries; otherwise the data can be viewed only by administrators designated by the association.",
+  "ja": "会員情報、お問い合わせ、参加意向の回答、国際交流の意向回答は、Googleのクラウドサービス Firebase（Cloud Firestore、ソウルリージョン）に保存します。会員が見られるのは自分の情報と自分が送信したお問い合わせのみで、それ以外は協会が指定した管理者のみが閲覧できます。"
  },
  "회원 로그인은 Google의 로그인 서비스(Firebase Authentication)를 거칩니다. 이 서비스는 로그인 정보(구글 계정 이메일, 로그인 기록, 접속 IP 주소)를 미국에 있는 Google의 데이터센터에서 처리합니다. 협회는 회원의 구글 비밀번호를 받거나 보관하지 않습니다. 탈퇴해 로그인 계정이 지워지면 Google은 180일 안에 남은 자료를 삭제합니다.": {
   "en": "Member sign-in goes through Google's sign-in service (Firebase Authentication). This service processes sign-in information (Google account email, sign-in records and IP address) in Google data centers in the United States. The association never receives or stores members' Google passwords. When you cancel and your sign-in account is deleted, Google removes the remaining data within 180 days.",
@@ -3110,6 +3174,14 @@
  "등록한 자녀 선수가 없습니다.": {
   "en": "No child players registered.",
   "ja": "登録したお子さま（選手）はいません。"
+ },
+ "자녀 선수 등록은 학부모 회원만 할 수 있습니다. 회원 종류는 위의 '회원 정보 수정'에서 바꿀 수 있습니다.": {
+  "en": "Only members whose type includes Parent can register a child player. You can change your member type under \"Edit member details\" above.",
+  "ja": "お子さまを選手として登録できるのは、会員の種類に「保護者」がある会員のみです。会員の種類は、上の「会員情報を修正」から変更できます。"
+ },
+ "등록한 자녀 선수가 있어 학부모를 뺄 수 없습니다. 자녀 선수 등록을 먼저 지워 주세요.": {
+  "en": "You have child players registered, so Parent cannot be removed. Delete the child registrations first.",
+  "ja": "登録したお子さま（選手）がいるため、「保護者」を外せません。先にお子さまの登録を削除してください。"
  },
  "등록 지우기": {
   "en": "Delete registration",

@@ -219,7 +219,9 @@ body.adm{padding-bottom:0;background:#fff;--series:var(--blue);--pad:20px}
 .adm-read__top{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;font-size:13.5px;color:var(--muted)}
 .adm-read__title{font-size:18px;font-weight:900;line-height:1.4;letter-spacing:-0.03em;overflow-wrap:anywhere}
 .adm-read__text{font-size:15.5px;line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere}
-.adm-read + .adm-meta{border-top:0;padding-top:0}
+.adm-read__label{margin-top:6px;font-size:13.5px;font-weight:900;color:var(--muted)}
+.adm-read + .adm-meta{border-top:0;padding-top:0;margin-top:14px}
+.adm-meta + .adm-form{margin-top:20px}                                        /* 보기 창: 읽는 칸, 딸린 정보, 고치는 칸 사이를 띄웁니다 */
 .adm-raw summary{display:inline-block;min-height:40px;padding:8px 0;font-weight:700;font-size:15px;text-decoration:underline;text-underline-offset:4px;cursor:pointer}
 .adm-raw pre{margin:4px 0 0;padding:14px 16px;background:var(--tint);font-family:inherit;font-size:14.5px;line-height:1.65;white-space:pre-wrap;overflow-wrap:anywhere}
 

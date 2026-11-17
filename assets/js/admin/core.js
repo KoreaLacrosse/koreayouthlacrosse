@@ -215,7 +215,7 @@
   };
 
   /* ---------- 읽어 온 자료 보관 (화면을 오갈 때 다시 읽지 않게) ---------- */
-  var ORDER = { eoiReplies: ['submittedAt', true], members: ['createdAt', true], inquiries: ['createdAt', true], matches: ['createdAt', true], matchPosts: ['createdAt', true], admins: null, memberNotes: null, memberExits: ['leftAt', true] };
+  var ORDER = { eoiReplies: ['submittedAt', true], intlReplies: ['submittedAt', true], members: ['createdAt', true], inquiries: ['createdAt', true], matches: ['createdAt', true], matchPosts: ['createdAt', true], admins: null, memberNotes: null, memberExits: ['leftAt', true] };
   var cache = {};
   A.store.load = function (col, force) {
     var c = cache[col];
@@ -768,6 +768,8 @@
     });
     nav.appendChild(ul);
   }
+  // 메뉴의 숫자만 다시 맞춥니다(화면이 그려진 뒤에 따로 읽어 온 자료가 있을 때).
+  A.refreshNav = function () { keepFocus(buildNav); };
   function sectionRoot(s) {
     var id = 'adm-s-' + s.id, root = $(id);
     if (!root) { root = el('section', 'adm-sec'); root.id = id; $('main').appendChild(root); }
@@ -809,7 +811,7 @@
         // 내주지 않는 것이니(규칙이 옛것일 때), 화면을 다시 그리지 않고 알립니다. 다시 그리면 같은 거절이 끝없이 되풀이됩니다.
         A.api.get('admins', A.email).then(function (doc) {
           if (A.user !== u || current !== s) return;
-          if (!doc) { A.role = ''; setDenied('none'); return; }
+          if (!doc) { A.role = ''; markAccount('user'); setDenied('none'); return; }
           failed('게시된 보안 규칙이 이 화면의 자료를 내주지 않습니다. Firebase 콘솔의 Firestore > 규칙에 최신 보안 규칙(tools/firestore.rules)을 게시했는지 확인해 주세요.');
         }, function (e) {
           if (A.user !== u) return;
@@ -900,6 +902,17 @@
     $('adm-recheck').hidden = state === 'none';
     gate('denied');
   }
+  // 방문자 화면 머리줄의 로그인 상태(마이페이지·로그아웃·관리자 화면 단추)를 이 브라우저에 적어 둡니다.
+  // app.js 의 ACCOUNT_KEY 와 같은 이름, 같은 값입니다: 'user' 로그인함, 'staff' 직원(관리자) 계정으로 확인됨.
+  // 머리줄에 무엇을 보일지만 정하는 표시입니다. 권한은 로그인과 보안 규칙이 정하고, 계정 이메일은 적지 않습니다.
+  // state: 'out' 로그아웃함, 'in' 로그인함(권한은 아직 확인 전), 'staff', 'user'. 권한을 확인하지 못했을 때(인터넷 문제, 규칙 미게시)는 부르지 않습니다.
+  function markAccount(state) {
+    try {
+      var ls = window.localStorage, now = ls.getItem('kyla.account');
+      if (state === 'out') ls.removeItem('kyla.account');
+      else ls.setItem('kyla.account', state === 'in' ? (now === 'staff' ? 'staff' : 'user') : (state === 'staff' ? 'staff' : 'user'));
+    } catch (e) { /* 저장소를 못 쓰는 브라우저: 머리줄만 바뀌지 않습니다 */ }
+  }
   // 관리자 명단에 있는지 확인하고, 있으면 화면을 엽니다. 명단의 문서 ID 는 소문자 이메일입니다.
   function verify() {
     var u = A.user;
@@ -908,8 +921,9 @@
     gate('loading', false);
     A.api.get('admins', A.email).then(function (doc) {
       if (A.user !== u) return;                  // 그 사이에 로그아웃했거나 계정을 바꿈
-      if (!doc) { A.role = ''; setDenied('none'); return; }
+      if (!doc) { A.role = ''; markAccount('user'); setDenied('none'); return; }
       A.role = doc.role === 'master' ? 'master' : 'admin';
+      markAccount('staff');
       renderWho();
       gate('app');
       route(true);
@@ -931,6 +945,7 @@
     if ($('adm-ask').open) $('adm-ask').close();
     A.ui.toast('');
     renderWho();
+    markAccount(A.user ? 'in' : 'out');
     if (!A.user) { loadingText('로그인 상태를 확인하고 있습니다.'); signinMsg(''); gate('signin'); return; }
     verify();
   }

@@ -24,7 +24,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,400;0,500;0,600;0,700;1,600;1,800&amp;family=Gothic+A1:wght@400;700;900&amp;display=swap">
 <link rel="stylesheet" href="../assets/css/site.css">
-<script>document.documentElement.classList.add('js')</script>
+<script>document.documentElement.classList.add('js');(function(){try{var a=localStorage.getItem('kyla.account');if(a==='user'||a==='staff')document.documentElement.setAttribute('data-account',a)}catch(e){}})()</script>
 </head>
 <body>
 
@@ -86,8 +86,12 @@
         </div>
       </div>
     </nav>
-    <!-- 회원 로그인: 머리줄 오른쪽. 넓은 화면에서는 메뉴 바로 옆, 좁은 화면에서는 '메뉴' 단추 왼쪽에 짧게 '로그인' -->
-    <a class="hdr__login" href="#member"><span class="hdr__login-long">Sign in</span><span class="hdr__login-short" aria-hidden="true">Sign in</span></a>
+    <!-- 회원 로그인: 머리줄 오른쪽. 넓은 화면에서는 메뉴 바로 옆, 좁은 화면에서는 '메뉴' 단추 왼쪽에 짧게 '로그인'.
+         로그인한 브라우저에서는 '마이페이지'로 바뀌고 넓은 화면에서는 옆에 '로그아웃'이 나옵니다(좁은 화면의 로그아웃은 메뉴 안).
+         직원(관리자) 계정이면 '관리자 화면' 단추도 나옵니다. 무엇을 보일지는 html 의 data-account 로 정합니다(app.js 의 '머리줄의 로그인 상태') -->
+    <a class="hdr__login" href="#member"><span class="hdr__login-long">Sign in</span><span class="hdr__login-short" aria-hidden="true">Sign in</span><span class="hdr__login-my">My page</span></a>
+    <button class="hdr__logout" type="button" data-signout>Sign out</button>
+    <a class="btn btn--ghost hdr__admin" id="hdr-admin" href="../admin/"><span class="hdr__admin-long" data-ctx="hdr">Admin</span><span class="hdr__admin-short" data-ctx="hdr" aria-hidden="true">Admin</span></a>
     <a class="btn btn--sm hdr__cta" href="#apply" data-ctx="cta">Apply & contact</a>
     <button class="hdr__menu" type="button" id="menu-btn" aria-expanded="false" aria-controls="mnav">
       <span id="menu-label">Menu</span>
@@ -129,6 +133,7 @@
   <p class="mnav__foot">
     <a class="extlink" data-instagram="Instagram" rel="noopener" hidden></a>
     <a href="#privacy">Privacy policy</a>
+    <button class="linkbtn mnav__signout" type="button" data-signout>Sign out</button>
   </p>
   <p class="mnav__lang lang lang--plain" translate="no"><a href="../" lang="ko" hreflang="ko" data-lang-link="ko">한국어</a><a href="./" lang="en" hreflang="en" data-lang-link="en" aria-current="true">English</a><a href="../ja/" lang="ja" hreflang="ja" data-lang-link="ja">日本語</a></p>
 </nav>
@@ -685,7 +690,7 @@
   <div class="wrap">
     <div class="cta cta--top">
       <div><h2>2027 Jeju International Youth Lacrosse Exchange</h2><p>We are working towards an international youth exchange tournament on Jeju Island in June 2027. We are first collecting expressions of interest and preferred dates from associations, schools and clubs in Korea and abroad.</p></div>
-      <div class="btns"><a class="btn" href="#jeju2027">Send an expression of interest</a></div>
+      <div class="btns"><a class="btn" href="#apply-jeju">Send an expression of interest</a><a class="btn btn--ghost" href="#jeju2027">See the draft plan</a></div>
     </div>
     <section class="sect">
       <div class="sect__grid">
@@ -720,70 +725,10 @@
       </div>
     </section>
 
-    <section class="sect" id="intl-form">
-      <div class="sect__grid">
-        <div>
-          <h2 class="t-2">Tell us about your team</h2>
-          <p class="secintro">A few details help us suggest a realistic plan. We reply by email.</p>
-        </div>
-        <div class="sect__body">
-          <p class="note note--warn" data-preview-note hidden></p>
-          <form class="form" id="form-intl" data-form="intl" novalidate>
-            <fieldset class="form__group">
-              <legend class="form__legend">School or team</legend>
-              <div class="field"><label class="field__label" for="intl-team"><span>School or team name</span><em>required</em></label><input class="input" id="intl-team" name="School or team name" required autocomplete="organization" data-msg="Enter your school or team name."></div>
-              <div class="form__grid form__grid--2">
-                <div class="field"><label class="field__label" for="intl-country"><span>Country</span><em>required</em></label><input class="input" id="intl-country" name="Country" required autocomplete="country-name" data-msg="Enter your country."></div>
-                <div class="field"><label class="field__label" for="intl-city">City</label><input class="input" id="intl-city" name="City" autocomplete="address-level2"></div>
-              </div>
-            </fieldset>
-            <fieldset class="form__group">
-              <legend class="form__legend">Contact person</legend>
-              <div class="form__grid form__grid--2">
-                <div class="field"><label class="field__label" for="intl-name"><span>Name</span><em>required</em></label><input class="input" id="intl-name" name="Contact name" required autocomplete="name" data-msg="Enter a contact name."></div>
-                <div class="field"><label class="field__label" for="intl-email"><span>Email</span><em>required</em></label><input class="input" id="intl-email" name="Email" type="email" required autocomplete="email" inputmode="email" data-msg="Enter an email address we can reply to." data-msg-type="Check the email address format."></div>
-              </div>
-              <div class="field"><label class="field__label" for="intl-other">Other contact</label><input class="input" id="intl-other" name="Other contact" aria-describedby="intl-other-hint"><p class="field__hint" id="intl-other-hint">WhatsApp, LINE or KakaoTalk, if you use one.</p></div>
-            </fieldset>
-            <fieldset class="form__group">
-              <legend class="form__legend">Your group</legend>
-              <fieldset class="field">
-                <legend class="field__label">Divisions</legend>
-                <div class="checks">
-                  <label class="check"><input type="checkbox" name="Divisions" value="U10"><span>U10</span></label>
-                  <label class="check"><input type="checkbox" name="Divisions" value="U12"><span>U12</span></label>
-                  <label class="check"><input type="checkbox" name="Divisions" value="U14"><span>U14</span></label>
-                  <label class="check"><input type="checkbox" name="Divisions" value="U16"><span>U16</span></label>
-                </div>
-              </fieldset>
-              <div class="form__grid form__grid--2">
-                <div class="field"><label class="field__label" for="intl-players">Players</label><input class="input" id="intl-players" name="Players" type="number" min="0" inputmode="numeric"></div>
-                <div class="field"><label class="field__label" for="intl-staff">Coaches and staff</label><input class="input" id="intl-staff" name="Coaches and staff" type="number" min="0" inputmode="numeric"></div>
-              </div>
-            </fieldset>
-            <fieldset class="form__group">
-              <legend class="form__legend">What you have in mind</legend>
-              <fieldset class="field">
-                <legend class="field__label">Interested in</legend>
-                <div class="checks">
-                  <label class="check"><input type="checkbox" name="Interested in" value="Visiting Korea"><span>Visiting Korea</span></label>
-                  <label class="check"><input type="checkbox" name="Interested in" value="Hosting a Korean team"><span>Hosting a Korean team</span></label>
-                  <label class="check"><input type="checkbox" name="Interested in" value="Friendly games"><span>Friendly games</span></label>
-                  <label class="check"><input type="checkbox" name="Interested in" value="Joint training"><span>Joint training</span></label>
-                  <label class="check"><input type="checkbox" name="Interested in" value="Camp"><span>Camp</span></label>
-                  <label class="check"><input type="checkbox" name="Interested in" value="Co-hosted tournament"><span>Co-hosted tournament</span></label>
-                </div>
-              </fieldset>
-              <div class="field"><label class="field__label" for="intl-when">Preferred dates, length and location</label><textarea class="input" id="intl-when" name="Preferred dates, length and location"></textarea></div>
-              <div class="field"><label class="field__label" for="intl-note">Anything else</label><textarea class="input" id="intl-note" name="Anything else"></textarea></div>
-            </fieldset>
-            <div class="field">
-              <label class="check"><input type="checkbox" name="Consent to use of details" value="Agreed" required data-msg="Please agree so we can reply to you."><span>I agree that KYLA may use the details above to reply to this inquiry. (Required)</span></label>
-            </div>
-            <div class="btns"><button class="btn" type="submit">Send inquiry</button></div>
-            <div class="result" role="status" aria-live="polite" hidden></div>
-          </form>
-        </div>
+    <section class="sect" id="international-reply">
+      <div class="cta">
+        <div><h2>Tell us what you have in mind</h2><p>Introduce your school or team and tell us the kind of exchange you are hoping for, and we will suggest a plan that can work. The form is on the Apply & contact page.</p></div>
+        <div class="btns"><a class="btn" href="#apply-exchange">Send your reply</a></div>
       </div>
     </section>
   </div>
@@ -795,7 +740,7 @@
     <div class="wrap">
       <h1 class="t-page t-page--long" tabindex="-1"><span class="oblique">2027 Jeju<br>International Youth<br>Lacrosse Exchange</span></h1>
       <p class="pagehead__lead"><strong>Partnership proposal and expression of interest</strong>KYLA is working towards an international youth exchange tournament on Jeju Island in June 2027. We want to hear first about interest and preferred dates from associations, schools and clubs in Korea and abroad, and then prepare the event together with each group.</p>
-      <div class="btns"><button class="btn btn--ink" type="button" data-jump="jeju2027-form">Send an expression of interest</button><p class="btns__note"><strong>Reply by</strong>Monday, November 30, 2026</p></div>
+      <div class="btns"><a class="btn btn--ink" href="#apply-jeju">Send an expression of interest</a><p class="btns__note"><strong>Reply by</strong>Monday, November 30, 2026</p></div>
     </div>
   </header>
 
@@ -824,137 +769,10 @@
       </div>
     </section>
 
-    <section class="sect" id="jeju2027-form">
-      <div class="sect__grid">
-        <div>
-          <h2 class="t-2">Expression of interest form</h2>
-          <p class="secintro secintro--due"><strong>Reply by</strong>Monday, November 30, 2026</p>
-          <p class="secintro">Associations, schools and clubs in Korea and abroad are all welcome to reply. Sending an expression of interest is not a formal entry or a commitment to pay the entry fee.</p>
-        </div>
-        <div class="sect__body">
-          <p class="note note--warn" data-preview-note="eoi" hidden></p>
-          <form class="form" id="form-eoi" data-form="eoi" novalidate>
-            <fieldset class="form__group">
-              <legend class="form__legend">Organization and contact person</legend>
-              <div class="field"><label class="field__label" for="eoi-org"><span>Organization or team name</span><em>required</em></label><input class="input" id="eoi-org" maxlength="200" name="Organization or team name" required autocomplete="organization" data-msg="Enter your organization or team name."></div>
-              <div class="field"><label class="field__label" for="eoi-country"><span>Country / region</span><em>required</em></label><input class="input" id="eoi-country" maxlength="120" name="Country / region" required data-msg="Enter your country and region."></div>
-              <div class="form__grid form__grid--2">
-                <div class="field"><label class="field__label" for="eoi-name"><span>Contact name</span><em>required</em></label><input class="input" id="eoi-name" maxlength="120" name="Contact name" required autocomplete="name" data-msg="Enter a contact name."></div>
-                <div class="field"><label class="field__label" for="eoi-role">Position</label><input class="input" id="eoi-role" maxlength="120" name="Position" autocomplete="organization-title"></div>
-              </div>
-              <div class="field"><label class="field__label" for="eoi-email"><span>Email</span><em>required</em></label><input class="input" id="eoi-email" maxlength="200" name="Email" type="email" required autocomplete="email" inputmode="email" data-msg="Enter an email address we can reply to." data-msg-type="Check the email address format."></div>
-              <fieldset class="field">
-                <legend class="field__label">Preferred contact method</legend>
-                <div class="checks">
-                  <label class="check"><input type="checkbox" name="Preferred contact method" value="WhatsApp" data-key="contactMethods" data-code="whatsapp"><span>WhatsApp</span></label>
-                  <label class="check"><input type="checkbox" name="Preferred contact method" value="LINE" data-key="contactMethods" data-code="line"><span>LINE</span></label>
-                  <label class="check"><input type="checkbox" name="Preferred contact method" value="KakaoTalk" data-key="contactMethods" data-code="kakaotalk"><span>KakaoTalk</span></label>
-                  <label class="check"><input type="checkbox" name="Preferred contact method" value="Instagram" data-key="contactMethods" data-code="instagram"><span>Instagram</span></label>
-                  <label class="check"><input type="checkbox" name="Preferred contact method" value="Other" data-key="contactMethods" data-code="other"><span>Other</span></label>
-                </div>
-              </fieldset>
-              <div class="field"><label class="field__label" for="eoi-contact">Contact ID, link or phone number</label><input class="input" id="eoi-contact" maxlength="300" name="Contact ID, link or phone number"></div>
-            </fieldset>
-            <fieldset class="form__group">
-              <legend class="form__legend">Divisions and expected numbers</legend>
-              <p class="field__hint">Select every division you could consider entering, and give the expected number of teams, players, and coaches or chaperones. An association may reply on behalf of several of its member teams.</p>
-              <div class="divs">
-                <div class="div">
-                  <label class="check"><input type="checkbox" data-div="u10mixed"><span>U10 mixed</span></label>
-                  <div class="div__nums" hidden>
-                    <label><span>Teams</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="teams"></label>
-                    <label><span>Players</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="players"></label>
-                    <label><span>Staff</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="staff"></label>
-                  </div>
-                </div>
-                <div class="div">
-                  <label class="check"><input type="checkbox" data-div="u12boys"><span>U12 boys</span></label>
-                  <div class="div__nums" hidden>
-                    <label><span>Teams</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="teams"></label>
-                    <label><span>Players</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="players"></label>
-                    <label><span>Staff</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="staff"></label>
-                  </div>
-                </div>
-                <div class="div">
-                  <label class="check"><input type="checkbox" data-div="u12girls"><span>U12 girls</span></label>
-                  <div class="div__nums" hidden>
-                    <label><span>Teams</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="teams"></label>
-                    <label><span>Players</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="players"></label>
-                    <label><span>Staff</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="staff"></label>
-                  </div>
-                </div>
-                <div class="div">
-                  <label class="check"><input type="checkbox" data-div="u14boys"><span>U14 boys</span></label>
-                  <div class="div__nums" hidden>
-                    <label><span>Teams</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="teams"></label>
-                    <label><span>Players</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="players"></label>
-                    <label><span>Staff</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="staff"></label>
-                  </div>
-                </div>
-                <div class="div">
-                  <label class="check"><input type="checkbox" data-div="u14girls"><span>U14 girls</span></label>
-                  <div class="div__nums" hidden>
-                    <label><span>Teams</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="teams"></label>
-                    <label><span>Players</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="players"></label>
-                    <label><span>Staff</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="staff"></label>
-                  </div>
-                </div>
-                <div class="div">
-                  <label class="check"><input type="checkbox" data-div="u16boys"><span>U16 boys</span></label>
-                  <div class="div__nums" hidden>
-                    <label><span>Teams</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="teams"></label>
-                    <label><span>Players</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="players"></label>
-                    <label><span>Staff</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="staff"></label>
-                  </div>
-                </div>
-                <div class="div">
-                  <label class="check"><input type="checkbox" data-div="u16girls"><span>U16 girls</span></label>
-                  <div class="div__nums" hidden>
-                    <label><span>Teams</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="teams"></label>
-                    <label><span>Players</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="players"></label>
-                    <label><span>Staff</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="staff"></label>
-                  </div>
-                </div>
-              </div>
-            </fieldset>
-            <fieldset class="form__group">
-              <legend class="form__legend">Dates, entry fee and interest</legend>
-              <fieldset class="field">
-                <legend class="field__label">Preferred period</legend>
-                <div class="checks">
-                  <label class="check"><input type="radio" name="Preferred period" value="June 2027" data-key="period" data-code="2027-06"><span>June 2027</span></label>
-                  <label class="check"><input type="radio" name="Preferred period" value="Suggest another period" data-key="period" data-code="other"><span>Suggest another period</span></label>
-                </div>
-              </fieldset>
-              <div class="field"><label class="field__label" for="eoi-dates">Available weekends or specific preferred dates</label><input class="input" id="eoi-dates" maxlength="300" name="Available weekends or specific preferred dates"></div>
-              <fieldset class="field">
-                <legend class="field__label"><span>Level of interest</span><em>required</em></legend>
-                <div class="checks">
-                  <label class="check"><input type="radio" name="Level of interest" value="Strongly considering" data-key="intent" data-code="active" required data-msg="Select your level of interest."><span>Strongly considering</span></label>
-                  <label class="check"><input type="radio" name="Level of interest" value="To be decided after internal discussion" data-key="intent" data-code="internal" required data-msg="Select your level of interest."><span>To be decided after internal discussion</span></label>
-                  <label class="check"><input type="radio" name="Level of interest" value="Undecided" data-key="intent" data-code="undecided" required data-msg="Select your level of interest."><span>Undecided</span></label>
-                  <label class="check"><input type="radio" name="Level of interest" value="Unable to take part at this time" data-key="intent" data-code="unable" required data-msg="Select your level of interest."><span>Unable to take part at this time</span></label>
-                </div>
-              </fieldset>
-              <fieldset class="field">
-                <legend class="field__label">Estimated entry fee</legend>
-                <p class="field__hint">Estimated at KRW 1,500,000–2,000,000 per team. This may change.</p>
-                <div class="checks">
-                  <label class="check"><input type="radio" name="Estimated entry fee" value="Can consider" data-key="fee" data-code="ok"><span>Can consider</span></label>
-                  <label class="check"><input type="radio" name="Estimated entry fee" value="Needs discussion" data-key="fee" data-code="discuss"><span>Needs discussion</span></label>
-                  <label class="check"><input type="radio" name="Estimated entry fee" value="No view yet" data-key="fee" data-code="hold"><span>No view yet</span></label>
-                </div>
-              </fieldset>
-              <div class="field"><label class="field__label" for="eoi-note">Other requests or suggestions</label><textarea class="input" id="eoi-note" maxlength="3000" name="Other requests or suggestions"></textarea></div>
-            </fieldset>
-            <div class="field">
-              <label class="check"><input type="checkbox" name="Consent to use of details" value="Agreed" required data-msg="Please agree so we can reply to you."><span>I agree that KYLA may use the details above to discuss and send information about this event. (Required)</span></label>
-              <p class="field__hint">We keep the information you send for three years and then destroy it. Details are in the <a href="#privacy">privacy policy</a>.</p>
-            </div>
-            <div class="btns"><button class="btn" type="submit">Send expression of interest</button></div>
-            <div class="result" role="status" aria-live="polite" hidden></div>
-          </form>
-        </div>
+    <section class="sect" id="jeju2027-reply">
+      <div class="cta">
+        <div><h2>Expression of interest</h2><p>Associations, schools and clubs in Korea and abroad are all welcome to reply. The form is on the Apply & contact page.</p><p class="cta__due"><strong>Reply by</strong>Monday, November 30, 2026</p></div>
+        <div class="btns"><a class="btn" href="#apply-jeju">Send an expression of interest</a></div>
       </div>
     </section>
   </div>
@@ -994,13 +812,13 @@
 <section class="view" data-view="apply">
   <div class="wrap plainhead">
     <h1 class="t-page" tabindex="-1"><span class="oblique">Apply & contact</span></h1>
-    <p class="plainhead__lead">Enter an event or apply for coach education. Inquiries are made from the member page.</p>
+    <p class="plainhead__lead">Enter an event, apply for coach education or reply about international exchange. Inquiries are made from the member page.</p>
   </div>
   <div class="wrap"><div class="narrow">
-    <p class="note">For the 2027 Jeju International Youth Lacrosse Exchange, please reply using the <a href="#jeju2027">expression of interest form</a>.</p>
-    <div class="tabs" role="tablist" aria-label="Type of application">
+    <div class="tabs tabs--four" role="tablist" aria-label="Type of application">
       <button class="tab" type="button" role="tab" id="tab-team" aria-controls="panel-team" aria-selected="true" data-tab="team">Event entry</button>
       <button class="tab" type="button" role="tab" id="tab-coach" aria-controls="panel-coach" aria-selected="false" data-tab="coach" tabindex="-1">Coach education</button>
+      <button class="tab" type="button" role="tab" id="tab-intl" aria-controls="panel-intl" aria-selected="false" data-tab="intl" tabindex="-1" data-ctx="tab">International</button>
       <button class="tab" type="button" role="tab" id="tab-inquiry" aria-controls="panel-inquiry" aria-selected="false" data-tab="inquiry" tabindex="-1">Inquiry</button>
     </div>
 
@@ -1070,6 +888,207 @@
         <div><h2>We will let you know when dates are set</h2><p>Leave an inquiry and we will let you know when the General grade course schedule is confirmed.</p></div>
         <div class="btns"><a class="btn" href="#member-inquiry" data-inquiry="cert">Ask about coach education</a></div>
       </div>
+    </div>
+
+    <!-- 국제교류: 2027 제주 교류전 참가 의향 회신서와 국제교류 의향 회신서(2026-11-17 담당자 요청으로 국제교류 메뉴의 두 화면에서 이리로 옮김).
+         두 회신서 가운데 고른 것만 보입니다(app.js 의 setIntlPick). 주소는 #apply-jeju, #apply-exchange -->
+    <div class="panel" role="tabpanel" id="panel-intl" aria-labelledby="tab-intl" tabindex="0" hidden>
+      <div class="picks" role="group" aria-label="Type of reply">
+        <button class="pick" type="button" data-intl-pick="jeju" aria-pressed="true"><span class="pick__title">Interest in the 2027 Jeju Exchange</span><span class="pick__text">Tell us whether you may take part in the international youth exchange tournament we are planning on Jeju Island in June 2027.</span></button>
+        <button class="pick" type="button" data-intl-pick="exchange" aria-pressed="false"><span class="pick__title">Interest in international exchange</span><span class="pick__text">Tell us about any exchange you would like to do together, such as visits, invitations, joint training or camps, whether or not it is tied to a particular event.</span></button>
+      </div>
+
+      <section class="replyform" id="intl-jeju" aria-labelledby="intl-jeju-h">
+        <h2 class="t-2" id="intl-jeju-h">Expression of interest form</h2>
+        <p class="secintro secintro--due"><strong>Reply by</strong>Monday, November 30, 2026</p>
+        <p class="secintro">Associations, schools and clubs in Korea and abroad are all welcome to reply. Sending an expression of interest is not a formal entry or a commitment to pay the entry fee.</p>
+        <p class="secintro"><a href="#jeju2027">See the draft plan</a></p>
+        <p class="note note--warn" data-preview-note="eoi" hidden></p>
+        <form class="form" id="form-eoi" data-form="eoi" novalidate>
+          <fieldset class="form__group">
+            <legend class="form__legend">Organization and contact person</legend>
+            <div class="field"><label class="field__label" for="eoi-org"><span>Organization or team name</span><em>required</em></label><input class="input" id="eoi-org" maxlength="200" name="Organization or team name" required autocomplete="organization" data-msg="Enter your organization or team name."></div>
+            <div class="field"><label class="field__label" for="eoi-country"><span>Country / region</span><em>required</em></label><input class="input" id="eoi-country" maxlength="120" name="Country / region" required data-msg="Enter your country and region."></div>
+            <div class="form__grid form__grid--2">
+              <div class="field"><label class="field__label" for="eoi-name"><span>Contact name</span><em>required</em></label><input class="input" id="eoi-name" maxlength="120" name="Contact name" required autocomplete="name" data-msg="Enter a contact name."></div>
+              <div class="field"><label class="field__label" for="eoi-role">Position</label><input class="input" id="eoi-role" maxlength="120" name="Position" autocomplete="organization-title"></div>
+            </div>
+            <div class="field"><label class="field__label" for="eoi-email"><span>Email</span><em>required</em></label><input class="input" id="eoi-email" maxlength="200" name="Email" type="email" required autocomplete="email" inputmode="email" data-msg="Enter an email address we can reply to." data-msg-type="Check the email address format."></div>
+            <fieldset class="field">
+              <legend class="field__label">Preferred contact method</legend>
+              <div class="checks">
+                <label class="check"><input type="checkbox" name="Preferred contact method" value="WhatsApp" data-key="contactMethods" data-code="whatsapp"><span>WhatsApp</span></label>
+                <label class="check"><input type="checkbox" name="Preferred contact method" value="LINE" data-key="contactMethods" data-code="line"><span>LINE</span></label>
+                <label class="check"><input type="checkbox" name="Preferred contact method" value="KakaoTalk" data-key="contactMethods" data-code="kakaotalk"><span>KakaoTalk</span></label>
+                <label class="check"><input type="checkbox" name="Preferred contact method" value="Instagram" data-key="contactMethods" data-code="instagram"><span>Instagram</span></label>
+                <label class="check"><input type="checkbox" name="Preferred contact method" value="Other" data-key="contactMethods" data-code="other"><span>Other</span></label>
+              </div>
+            </fieldset>
+            <div class="field"><label class="field__label" for="eoi-contact">Contact ID, link or phone number</label><input class="input" id="eoi-contact" maxlength="300" name="Contact ID, link or phone number"></div>
+          </fieldset>
+          <fieldset class="form__group">
+            <legend class="form__legend">Divisions and expected numbers</legend>
+            <p class="field__hint">Select every division you could consider entering, and give the expected number of teams, players, and coaches or chaperones. An association may reply on behalf of several of its member teams.</p>
+            <div class="divs">
+              <div class="div">
+                <label class="check"><input type="checkbox" data-div="u10mixed"><span>U10 mixed</span></label>
+                <div class="div__nums" hidden>
+                  <label><span>Teams</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="teams"></label>
+                  <label><span>Players</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="players"></label>
+                  <label><span>Staff</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="staff"></label>
+                </div>
+              </div>
+              <div class="div">
+                <label class="check"><input type="checkbox" data-div="u12boys"><span>U12 boys</span></label>
+                <div class="div__nums" hidden>
+                  <label><span>Teams</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="teams"></label>
+                  <label><span>Players</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="players"></label>
+                  <label><span>Staff</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="staff"></label>
+                </div>
+              </div>
+              <div class="div">
+                <label class="check"><input type="checkbox" data-div="u12girls"><span>U12 girls</span></label>
+                <div class="div__nums" hidden>
+                  <label><span>Teams</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="teams"></label>
+                  <label><span>Players</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="players"></label>
+                  <label><span>Staff</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="staff"></label>
+                </div>
+              </div>
+              <div class="div">
+                <label class="check"><input type="checkbox" data-div="u14boys"><span>U14 boys</span></label>
+                <div class="div__nums" hidden>
+                  <label><span>Teams</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="teams"></label>
+                  <label><span>Players</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="players"></label>
+                  <label><span>Staff</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="staff"></label>
+                </div>
+              </div>
+              <div class="div">
+                <label class="check"><input type="checkbox" data-div="u14girls"><span>U14 girls</span></label>
+                <div class="div__nums" hidden>
+                  <label><span>Teams</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="teams"></label>
+                  <label><span>Players</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="players"></label>
+                  <label><span>Staff</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="staff"></label>
+                </div>
+              </div>
+              <div class="div">
+                <label class="check"><input type="checkbox" data-div="u16boys"><span>U16 boys</span></label>
+                <div class="div__nums" hidden>
+                  <label><span>Teams</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="teams"></label>
+                  <label><span>Players</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="players"></label>
+                  <label><span>Staff</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="staff"></label>
+                </div>
+              </div>
+              <div class="div">
+                <label class="check"><input type="checkbox" data-div="u16girls"><span>U16 girls</span></label>
+                <div class="div__nums" hidden>
+                  <label><span>Teams</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="teams"></label>
+                  <label><span>Players</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="players"></label>
+                  <label><span>Staff</span><input class="input" type="number" min="0" max="9999" inputmode="numeric" data-div-num="staff"></label>
+                </div>
+              </div>
+            </div>
+          </fieldset>
+          <fieldset class="form__group">
+            <legend class="form__legend">Dates, entry fee and interest</legend>
+            <fieldset class="field">
+              <legend class="field__label">Preferred period</legend>
+              <div class="checks">
+                <label class="check"><input type="radio" name="Preferred period" value="June 2027" data-key="period" data-code="2027-06"><span>June 2027</span></label>
+                <label class="check"><input type="radio" name="Preferred period" value="Suggest another period" data-key="period" data-code="other"><span>Suggest another period</span></label>
+              </div>
+            </fieldset>
+            <div class="field"><label class="field__label" for="eoi-dates">Available weekends or specific preferred dates</label><input class="input" id="eoi-dates" maxlength="300" name="Available weekends or specific preferred dates"></div>
+            <fieldset class="field">
+              <legend class="field__label"><span>Level of interest</span><em>required</em></legend>
+              <div class="checks">
+                <label class="check"><input type="radio" name="Level of interest" value="Strongly considering" data-key="intent" data-code="active" required data-msg="Select your level of interest."><span>Strongly considering</span></label>
+                <label class="check"><input type="radio" name="Level of interest" value="To be decided after internal discussion" data-key="intent" data-code="internal" required data-msg="Select your level of interest."><span>To be decided after internal discussion</span></label>
+                <label class="check"><input type="radio" name="Level of interest" value="Undecided" data-key="intent" data-code="undecided" required data-msg="Select your level of interest."><span>Undecided</span></label>
+                <label class="check"><input type="radio" name="Level of interest" value="Unable to take part at this time" data-key="intent" data-code="unable" required data-msg="Select your level of interest."><span>Unable to take part at this time</span></label>
+              </div>
+            </fieldset>
+            <fieldset class="field">
+              <legend class="field__label">Estimated entry fee</legend>
+              <p class="field__hint">Estimated at KRW 1,500,000–2,000,000 per team. This may change.</p>
+              <div class="checks">
+                <label class="check"><input type="radio" name="Estimated entry fee" value="Can consider" data-key="fee" data-code="ok"><span>Can consider</span></label>
+                <label class="check"><input type="radio" name="Estimated entry fee" value="Needs discussion" data-key="fee" data-code="discuss"><span>Needs discussion</span></label>
+                <label class="check"><input type="radio" name="Estimated entry fee" value="No view yet" data-key="fee" data-code="hold"><span>No view yet</span></label>
+              </div>
+            </fieldset>
+            <div class="field"><label class="field__label" for="eoi-note">Other requests or suggestions</label><textarea class="input" id="eoi-note" maxlength="3000" name="Other requests or suggestions"></textarea></div>
+          </fieldset>
+          <div class="field">
+            <label class="check"><input type="checkbox" name="Consent to use of details" value="Agreed" required data-msg="Please agree so we can reply to you."><span>I agree that KYLA may use the details above to discuss and send information about this event. (Required)</span></label>
+            <p class="field__hint">We keep the information you send for three years and then destroy it. Details are in the <a href="#privacy">privacy policy</a>.</p>
+          </div>
+          <div class="btns"><button class="btn" type="submit">Send expression of interest</button></div>
+          <div class="result" role="status" aria-live="polite" hidden></div>
+        </form>
+      </section>
+
+      <section class="replyform" id="intl-exchange" aria-labelledby="intl-exchange-h" hidden>
+        <h2 class="t-2" id="intl-exchange-h">Tell us about your team</h2>
+        <p class="secintro">A few details help us suggest a realistic plan. We reply by email.</p>
+        <p class="secintro"><a href="#international">International exchange</a></p>
+        <p class="note note--warn" data-preview-note="intl" hidden></p>
+        <form class="form" id="form-intl" data-form="intl" novalidate>
+          <fieldset class="form__group">
+            <legend class="form__legend">School or team</legend>
+            <div class="field"><label class="field__label" for="intl-team"><span>School or team name</span><em>required</em></label><input class="input" id="intl-team" name="School or team name" maxlength="200" required autocomplete="organization" data-msg="Enter your school or team name."></div>
+            <div class="form__grid form__grid--2">
+              <div class="field"><label class="field__label" for="intl-country"><span>Country</span><em>required</em></label><input class="input" id="intl-country" name="Country" maxlength="120" required autocomplete="country-name" data-msg="Enter your country."></div>
+              <div class="field"><label class="field__label" for="intl-city">City</label><input class="input" id="intl-city" name="City" maxlength="120" autocomplete="address-level2"></div>
+            </div>
+          </fieldset>
+          <fieldset class="form__group">
+            <legend class="form__legend">Contact person</legend>
+            <div class="form__grid form__grid--2">
+              <div class="field"><label class="field__label" for="intl-name"><span>Name</span><em>required</em></label><input class="input" id="intl-name" name="Contact name" maxlength="120" required autocomplete="name" data-msg="Enter a contact name."></div>
+              <div class="field"><label class="field__label" for="intl-email"><span>Email</span><em>required</em></label><input class="input" id="intl-email" name="Email" type="email" maxlength="200" required autocomplete="email" inputmode="email" data-msg="Enter an email address we can reply to." data-msg-type="Check the email address format."></div>
+            </div>
+            <div class="field"><label class="field__label" for="intl-other">Other contact</label><input class="input" id="intl-other" name="Other contact" maxlength="300" aria-describedby="intl-other-hint"><p class="field__hint" id="intl-other-hint">WhatsApp, LINE or KakaoTalk, if you use one.</p></div>
+          </fieldset>
+          <fieldset class="form__group">
+            <legend class="form__legend">Your group</legend>
+            <fieldset class="field">
+              <legend class="field__label">Divisions</legend>
+              <div class="checks">
+                <label class="check"><input type="checkbox" name="Divisions" value="U10" data-key="divisions" data-code="u10"><span>U10</span></label>
+                <label class="check"><input type="checkbox" name="Divisions" value="U12" data-key="divisions" data-code="u12"><span>U12</span></label>
+                <label class="check"><input type="checkbox" name="Divisions" value="U14" data-key="divisions" data-code="u14"><span>U14</span></label>
+                <label class="check"><input type="checkbox" name="Divisions" value="U16" data-key="divisions" data-code="u16"><span>U16</span></label>
+              </div>
+            </fieldset>
+            <div class="form__grid form__grid--2">
+              <div class="field"><label class="field__label" for="intl-players">Players</label><input class="input" id="intl-players" name="Players" type="number" min="0" max="9999" step="1" inputmode="numeric"></div>
+              <div class="field"><label class="field__label" for="intl-staff">Coaches and staff</label><input class="input" id="intl-staff" name="Coaches and staff" type="number" min="0" max="9999" step="1" inputmode="numeric"></div>
+            </div>
+          </fieldset>
+          <fieldset class="form__group">
+            <legend class="form__legend">What you have in mind</legend>
+            <fieldset class="field">
+              <legend class="field__label">Interested in</legend>
+              <div class="checks">
+                <label class="check"><input type="checkbox" name="Interested in" value="Visiting Korea" data-key="ways" data-code="visit"><span>Visiting Korea</span></label>
+                <label class="check"><input type="checkbox" name="Interested in" value="Hosting a Korean team" data-key="ways" data-code="invite"><span>Hosting a Korean team</span></label>
+                <label class="check"><input type="checkbox" name="Interested in" value="Friendly games" data-key="ways" data-code="friendly"><span>Friendly games</span></label>
+                <label class="check"><input type="checkbox" name="Interested in" value="Joint training" data-key="ways" data-code="training"><span>Joint training</span></label>
+                <label class="check"><input type="checkbox" name="Interested in" value="Camp" data-key="ways" data-code="camp"><span>Camp</span></label>
+                <label class="check"><input type="checkbox" name="Interested in" value="Co-hosted tournament" data-key="ways" data-code="tournament"><span>Co-hosted tournament</span></label>
+              </div>
+            </fieldset>
+            <div class="field"><label class="field__label" for="intl-when">Preferred dates, length and location</label><textarea class="input" id="intl-when" name="Preferred dates, length and location" maxlength="1000"></textarea></div>
+            <div class="field"><label class="field__label" for="intl-note">Anything else</label><textarea class="input" id="intl-note" name="Anything else" maxlength="3000"></textarea></div>
+          </fieldset>
+          <div class="field">
+            <label class="check"><input type="checkbox" name="Consent to use of details" value="Agreed" required data-msg="Please agree so we can reply to you."><span>I agree that KYLA may use the details above to reply to this inquiry. (Required)</span></label>
+            <p class="field__hint">We keep the information you send for three years and then destroy it. Details are in the <a href="#privacy">privacy policy</a>.</p>
+          </div>
+          <div class="btns"><button class="btn" type="submit">Send your reply</button></div>
+          <div class="result" role="status" aria-live="polite" hidden></div>
+        </form>
+      </section>
     </div>
 
     <!-- 문의하기: 회원 화면(#member)에서 받습니다 -->
@@ -1210,10 +1229,12 @@
           <div id="mem-edit-open"><button class="linkbtn" type="button" id="mem-edit">Edit member details</button></div>
           <div id="mem-edit-slot"></div>
         </section>
-        <section class="mem__block" aria-labelledby="mem-h-kids">
+        <!-- 자녀 선수 등록은 회원 종류에 학부모가 있는 회원만 합니다(member.js 의 syncKids, 보안 규칙도 같습니다) -->
+        <section class="mem__block" id="mem-kids-block" aria-labelledby="mem-h-kids">
           <h2 class="t-3" id="mem-h-kids">Child players</h2>
-          <p class="secintro">Parents and guardians register children under 14 as players here. The date of birth is used to decide the age group for matches. We do not ask for home addresses.</p>
+          <p class="secintro" id="mem-kids-intro">Parents and guardians register children under 14 as players here. The date of birth is used to decide the age group for matches. We do not ask for home addresses.</p>
           <div id="mem-kids"></div>
+          <p class="note" id="mem-kid-only" hidden>Only members whose type includes Parent can register a child player. You can change your member type under "Edit member details" above.</p>
           <div id="mem-kid-open"><button class="linkbtn" type="button" id="mem-kid-add"><svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg>Register a child player</button></div>
           <form class="form" id="mem-kid-form" hidden novalidate>
             <fieldset class="form__group">
@@ -1352,15 +1373,15 @@
         <li>Child player registration: the child's name, organization, date of birth and gender. Registered directly by the parent or guardian (legal guardian) and used for membership management and match information. The date of birth is used to decide the age group for matches. We do not ask for home addresses.</li>
         <li>Inquiries: the category, subject and content, and the sending member's name and email. Used to check and answer the inquiry.</li>
         <li>Event entries: team name, school or club, head coach's name and contact details, and players' names, birth years and jersey numbers. Used to confirm entries, form divisions, run the event and manage safety.</li>
-        <li>International exchange inquiries: school or team name, country and city, contact person's name and contact details, and the exchange you have in mind. Used to discuss the exchange.</li>
+        <li>Interest in international exchange: school or team name, country and city, contact person's name and contact details, expected numbers, and the exchange you have in mind. Used to discuss the exchange and reply to you.</li>
         <li>Expressions of interest: organization or team name, country and region, contact person's name, position and contact details, possible divisions and expected numbers, and preferred dates. Used to discuss and send information about that event.</li>
       </ul>
       <h3 class="t-3">Where data is stored</h3>
-      <p>Member details, inquiries and expressions of interest are stored in Firebase (Cloud Firestore, Seoul region), a Google cloud service. Members can see only their own details and their own inquiries; otherwise the data can be viewed only by administrators designated by the association.</p>
+      <p>Member details, inquiries, expressions of interest and replies about international exchange are stored in Firebase (Cloud Firestore, Seoul region), a Google cloud service. Members can see only their own details and their own inquiries; otherwise the data can be viewed only by administrators designated by the association.</p>
       <p>Member sign-in goes through Google's sign-in service (Firebase Authentication). This service processes sign-in information (Google account email, sign-in records and IP address) in Google data centers in the United States. The association never receives or stores members' Google passwords. When you cancel and your sign-in account is deleted, Google removes the remaining data within 180 days.</p>
       <h3 class="t-3">Retention period</h3>
       <p>Information is destroyed without delay once its retention period has passed or the purpose of collection has been fulfilled.</p>
-      <p>Information received through expressions of interest, international exchange inquiries and event entries is kept for three years from the date we receive it and then destroyed. We will delete it earlier if you ask us to.</p>
+      <p>Information received through expressions of interest, replies about international exchange and event entries is kept for three years from the date we receive it and then destroyed. We will delete it earlier if you ask us to.</p>
       <p>Member details are kept until you cancel your membership. When you cancel on the member page, your member details, the children you registered and your inquiries are deleted immediately. However, so that the cancellation can be confirmed, your name, member type, join date and cancellation date are kept separately as a cancellation record for one year and then deleted. Contact details and dates of birth are not kept in the cancellation record. Backup copies kept for recovery may retain data for up to 60 days.</p>
       <h3 class="t-3">Children under 14</h3>
       <p>Personal information of children under 14 is collected with the consent of their legal guardian. Children under 14 do not join as members themselves: a parent or guardian joins and then registers the child as a player. Event entries are submitted by the team's head coach after confirming the consent of each player's guardian.</p>

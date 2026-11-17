@@ -356,7 +356,7 @@ def localize(src, lang, catalog, missing):
             el.set('data-base', '../')
         for a in ('src', 'href'):
             v = el.get(a)
-            if v and v.startswith('assets/'):
+            if v and (v.startswith('assets/') or v == 'admin/'):       # admin/: 머리줄의 '관리자 화면' 단추
                 el.set(a, '../' + v)
         if el.tag == 'link' and (el.get('href') or '').startswith('https://fonts.googleapis.com/css2'):
             el.set('href', FONTS[lang])

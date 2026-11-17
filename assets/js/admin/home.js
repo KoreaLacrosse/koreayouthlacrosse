@@ -1,6 +1,6 @@
 /* ==========================================================================
    관리자 화면 : 대시보드
-   회원, 문의, 참가 의향 회신의 주요 숫자, 확인이 필요한 일, 간단한 통계를 한 화면에 모읍니다.
+   회원, 문의, 참가 의향 회신, 국제교류 의향 회신의 주요 숫자, 확인이 필요한 일, 간단한 통계를 한 화면에 모읍니다.
    직원(관리자) 여부를 알려면 관리자 명단이 필요해 admins 도 함께 읽습니다.
    숫자는 모두 휴지통에 있는 것을 뺀 값입니다.
    ========================================================================== */
@@ -54,6 +54,25 @@
     var recentBox = el('div');
     add(recentBox, replies.length ? recent : el('p', 'adm-none', '아직 받은 회신이 없습니다.'), A.button('linkbtn', '회신 모두 보기', function () { E.open(); }));
     add(cards, A.ui.card('최근 회신', recentBox));
+
+    // 국제교류 의향 회신: 대시보드의 다른 자료와 따로 읽습니다. 이 자료를 못 읽어도(보안 규칙이 옛것일 때) 대시보드는 열려야 하기 때문입니다.
+    var intlBox = el('div'), I = A.intl, user = A.user;
+    add(intlBox, el('p', 'adm-none', '불러오고 있습니다.'));
+    A.store.load('intlReplies').then(function () {
+      if (A.user !== user || !intlBox.isConnected) return;
+      var got = I.all().filter(function (r) { return !r.deleted; }), fresh2 = got.filter(function (r) { return r.status === 'new'; });
+      var kv2 = el('dl', 'adm-kv');
+      add(kv2, add(el('div'), el('dt', '', '받은 회신'), el('dd', '', num(got.length) + '건')),
+        add(el('div'), el('dt', '', '아직 확인하지 않은 회신'), el('dd', '', num(fresh2.length) + '건')));
+      intlBox.textContent = '';
+      add(intlBox, kv2, A.button('linkbtn', fresh2.length ? '새 회신 보기' : '회신 모두 보기', function () { I.open(fresh2.length ? { status: 'new' } : null); }));
+      A.refreshNav();                 // 메뉴의 '국제교류 의향 회신' 옆 숫자
+    }, function () {
+      if (A.user !== user || !intlBox.isConnected) return;
+      intlBox.textContent = '';
+      add(intlBox, el('p', 'adm-none', '아직 읽을 수 없습니다. 최신 보안 규칙을 게시하면 보입니다.'));
+    });
+    add(cards, A.ui.card('국제교류 의향 회신', intlBox, '신청·문의 화면의 국제교류 탭에서 보낸 학교·팀 소개와 희망하는 교류입니다.'));
 
     // 사이트에 올라가 있는 내용 (assets/js/data.js)
     var D = window.KYLA_DATA || {}, site = el('dl', 'adm-kv');

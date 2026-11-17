@@ -355,7 +355,17 @@
   }
 
   /* ---------- 신청·문의 ---------- */
-  var TABS = ['team', 'coach', 'inquiry'];
+  var TABS = ['team', 'coach', 'intl', 'inquiry'];
+  // 국제교류 탭 안의 두 회신서: jeju(2027 제주 교류전 참가 의향), exchange(국제교류 의향). 고른 것만 보여 줍니다.
+  var PICKS = ['jeju', 'exchange'];
+  function setIntlPick(kind) {
+    if (PICKS.indexOf(kind) < 0) kind = 'jeju';
+    PICKS.forEach(function (k) {
+      var on = k === kind;
+      $('[data-intl-pick="' + k + '"]').setAttribute('aria-pressed', on ? 'true' : 'false');
+      $('#intl-' + k).hidden = !on;
+    });
+  }
   function setTab(name, focus) {
     if (TABS.indexOf(name) < 0) name = 'team';
     TABS.forEach(function (t) {
@@ -503,7 +513,9 @@
      홈페이지에는 서버가 없어, 브라우저가 Firestore 에 바로 한 건을 '만들기'만 합니다.
      읽기·고치기·지우기는 보안 규칙(tools/firestore.rules)이 막고, 관리자 화면(/admin/)에서 로그인한 관리자만 봅니다. */
   var FB = CFG.firebase && CFG.firebase.projectId && CFG.firebase.apiKey ? CFG.firebase : null;
-  function savesOnline(kind) { return !!CFG.formEndpoint || (kind === 'eoi' && !!FB); }
+  // 참가 의향 회신과 국제교류 의향 회신은 협회 DB(Firestore)에 바로 저장합니다. 그 밖의 양식은 받는 주소(formEndpoint)가 있을 때만 보냅니다.
+  var STORES = { eoi: 'eoiReplies', intl: 'intlReplies' };
+  function savesOnline(kind) { return !!CFG.formEndpoint || (!!STORES[kind] && !!FB); }
 
   function fsValue(v) {
     if (v === null || v === undefined) return { nullValue: null };
@@ -548,6 +560,27 @@
     };
   }
 
+  // 국제교류 의향 회신서. 보기는 화면 언어와 상관없는 코드(data-code)로 저장합니다. 글자 수 한도는 보안 규칙과 같습니다.
+  function intlRecord(form, text) {
+    var val = function (id, max) { var el = $('#' + id, form); return el ? el.value.trim().slice(0, max) : ''; };
+    var codes = function (key) {
+      return $$('input[data-key="' + key + '"]', form).filter(function (c) { return c.checked; }).map(function (c) { return c.getAttribute('data-code'); });
+    };
+    var rec = {
+      kind: 'intl', v: 1, lang: LANG,
+      team: val('intl-team', 200), country: val('intl-country', 120), city: val('intl-city', 120),
+      contactName: val('intl-name', 120), email: val('intl-email', 200), contactDetail: val('intl-other', 300),
+      divisions: codes('divisions'), ways: codes('ways'), when: val('intl-when', 1000), note: val('intl-note', 3000),
+      consent: true, text: text.slice(0, 8000)
+    };
+    // 인원은 적었을 때만 넣습니다(0~9999 의 정수)
+    [['players', 'intl-players'], ['staff', 'intl-staff']].forEach(function (x) {
+      var raw = val(x[1], 6), n = parseInt(raw, 10);
+      if (/^\d+$/.test(raw) && n >= 0 && n <= 9999) rec[x[0]] = n;
+    });
+    return rec;
+  }
+
   function saveToFirestore(collection, record) {
     var abc = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789', buf = new Uint8Array(20), id = '';
     window.crypto.getRandomValues(buf);
@@ -582,7 +615,7 @@
 
   var FORM_TEXT = {
     team: { head: T('대회 참가 신청'), ok: T('참가 신청서를 제출했습니다'), okText: T('담당자가 확인한 뒤 연락드립니다.') },
-    intl: { head: T('국제교류 문의'), ok: T('문의를 보냈습니다'), okText: T('이메일로 답변드립니다.') },
+    intl: { head: T('국제교류 의향 회신'), ok: T('국제교류 의향을 보냈습니다'), okText: T('이메일로 답변드립니다.') },
     eoi: {
       head: T('2027 제주 국제 유소년 라크로스 교류전 참가 의향 회신'), ok: T('참가 의향을 보냈습니다'), okText: T('담당자가 확인한 뒤 이메일로 연락드립니다.'),
       manual: T('아래 내용을 복사해 제안서에 적힌 회신 이메일이나 인스타그램 메시지로 보내 주세요.')
@@ -683,9 +716,9 @@
         .then(function (body) { if (/^\s*error/i.test(body)) throw new Error(body); });
     };
     var sent;
-    if (kind === 'eoi' && FB) {
-      // 참가 의향 회신은 Firestore 가 원본입니다. 시트 주소가 있으면 사본을 함께 남기고, 저장이 안 되면 시트로라도 받습니다.
-      sent = saveToFirestore('eoiReplies', eoiRecord(form, text)).then(function () {
+    if (STORES[kind] && FB) {
+      // 참가 의향 회신과 국제교류 의향 회신은 Firestore 가 원본입니다. 시트 주소가 있으면 사본을 함께 남기고, 저장이 안 되면 시트로라도 받습니다.
+      sent = saveToFirestore(STORES[kind], (kind === 'eoi' ? eoiRecord : intlRecord)(form, text)).then(function () {
         if (CFG.formEndpoint) sendToSheet().catch(function () {});
       }, function (err) {
         if (CFG.formEndpoint) return sendToSheet();
@@ -700,7 +733,10 @@
         showResult(form, 'ok', ft.ok, ft.okText);
       })
       .catch(function () {
-        if (kind === 'eoi') {
+        if (kind === 'intl') {
+          showManual('err', T('전송하지 못했습니다'),
+            T('잠시 뒤 다시 제출해 주세요. 급하시면 아래 내용을 복사해 인스타그램 메시지로 보내 주셔도 됩니다. 입력한 내용은 그대로 남아 있습니다.'));
+        } else if (kind === 'eoi') {
           showManual('err', T('전송하지 못했습니다'),
             T('잠시 뒤 다시 제출해 주세요. 급하시면 아래 내용을 복사해 제안서에 적힌 회신 이메일이나 인스타그램 메시지로 보내 주셔도 됩니다. 입력한 내용은 그대로 남아 있습니다.'));
         } else {
@@ -710,10 +746,45 @@
       .then(function () { btn.disabled = false; btn.textContent = label; });
   }
 
+  /* ---------- 머리줄의 로그인 상태: 마이페이지, 로그아웃, 관리자 화면 ----------
+     로그인한 브라우저에서는 '회원 로그인' 자리가 '마이페이지'와 '로그아웃'으로 바뀌고, 직원(관리자) 계정이면 '관리자 화면' 단추도 나옵니다.
+     '관리자 화면'을 누르면 /admin/ 이 열리고, 로그인은 같은 사이트 안에서 이어지므로 다시 로그인하지 않습니다.
+     로그인했는지, 직원 계정인지는 회원 화면(member.js)과 관리자 화면(admin/core.js)이 계정을 확인했을 때 이 브라우저에 적어 둡니다.
+     머리줄 때문에 로그인 파일을 불러오지 않으려는 것입니다(공지와 일정만 보는 방문자의 화면은 그대로 가볍습니다).
+     화면을 그리기 전에 index.html 머리의 짧은 스크립트가 같은 표시를 읽어 html 에 data-account 를 붙이고, 모양은 site.css 가 정합니다.
+     이 표시는 머리줄에 무엇을 보일지만 정합니다. 표시를 누가 지어내도 회원 정보와 관리자 화면의 자료는 로그인과 보안 규칙이 지킵니다.
+     표시가 실제와 어긋나 있으면(다른 곳에서 로그아웃함) 회원 화면이나 관리자 화면을 여는 순간 바로잡힙니다. 계정 이메일 같은 것은 적지 않습니다. */
+  var ACCOUNT_KEY = 'kyla.account', accountMemo = null;      // accountMemo: 저장소에 적지 못했을 때 이 화면에서만 기억하는 값
+  function readAccount() {
+    var v = '';
+    if (accountMemo !== null) v = accountMemo;
+    else { try { v = window.localStorage.getItem(ACCOUNT_KEY) || ''; } catch (e) { v = ''; } }
+    return v === 'user' || v === 'staff' ? v : '';
+  }
+  function showAccount() {
+    var v = readAccount(), root = document.documentElement;
+    if (v) root.setAttribute('data-account', v);
+    else root.removeAttribute('data-account');
+  }
+  // 회원 화면이 계정을 확인했을 때 부릅니다.
+  // state: 'out' 로그아웃함, 'in' 로그인함(직원인지는 아직 확인 전), 'user' 직원이 아닌 계정, 'staff' 직원(관리자) 계정
+  function setAccount(state) {
+    var next = state === 'out' ? '' : state === 'in' ? (readAccount() || 'user') : (state === 'staff' ? 'staff' : 'user');
+    try {
+      if (next) window.localStorage.setItem(ACCOUNT_KEY, next);
+      else window.localStorage.removeItem(ACCOUNT_KEY);
+      accountMemo = null;
+    } catch (e) { accountMemo = next; }
+    showAccount();
+  }
+  // 다른 탭에서 로그인·로그아웃했거나, 관리자 화면에서 뒤로 돌아왔을 때도 맞춰 둡니다.
+  window.addEventListener('storage', function (ev) { if (!ev.key || ev.key === ACCOUNT_KEY) showAccount(); });
+  window.addEventListener('pageshow', showAccount);
+
   /* ---------- 회원 화면 (#member) ----------
      회원 화면의 동작(assets/js/member.js)과 구글 로그인에 쓰는 파일(assets/vendor/)은 이 화면을 처음 열 때 불러옵니다.
      다른 화면만 보는 방문자는 이 파일들을 내려받지 않습니다. member.js 는 아래 KYLA_APP 으로 문구(T)와 설정을 받습니다. */
-  window.KYLA_APP = { T: T, lang: LANG, base: BASE, cfg: CFG, fmtLong: fmtLong, fmtMD: fmtMD, weekday: weekday };
+  window.KYLA_APP = { T: T, lang: LANG, base: BASE, cfg: CFG, fmtLong: fmtLong, fmtMD: fmtMD, weekday: weekday, account: setAccount };
   var memberReady = null;
   function loadScript(src) {
     return new Promise(function (resolve, reject) {
@@ -724,6 +795,17 @@
       document.head.appendChild(s);
     });
   }
+  // 로그인 파일과 member.js 를 불러옵니다(한 번만). 실패하면 다음에 다시 불러올 수 있게 비워 둡니다.
+  function loadMember() {
+    if (!memberReady) {
+      // 로그인 파일이 이미 있으면(점검·미리보기) 다시 불러오지 않습니다.
+      var files = (window.firebase && window.firebase.auth ? [] : ['assets/vendor/firebase-app-compat.js', 'assets/vendor/firebase-auth-compat.js'])
+        .concat(window.KYLA_MEMBER ? [] : ['assets/js/member.js']);
+      var mine = memberReady = files.reduce(function (p, f) { return p.then(function () { return loadScript(BASE + f); }); }, Promise.resolve());
+      mine.then(null, function () { if (memberReady === mine) memberReady = null; });
+    }
+    return memberReady;
+  }
   // tab: 열어 둘 탭(profile | posts | inquiry), inquiry: 미리 골라 둘 문의 분류
   function openMember(tab, inquiry) {
     var text = $('#mem-loading-text'), retry = $('#mem-retry-wrap');
@@ -731,20 +813,26 @@
     if (!memberReady) {
       text.textContent = T('로그인 상태를 확인하고 있습니다.');
       retry.hidden = true;
-      // 로그인 파일이 이미 있으면(점검·미리보기) 다시 불러오지 않습니다.
-      var files = (window.firebase && window.firebase.auth ? [] : ['assets/vendor/firebase-app-compat.js', 'assets/vendor/firebase-auth-compat.js'])
-        .concat(window.KYLA_MEMBER ? [] : ['assets/js/member.js']);
-      memberReady = files.reduce(function (p, f) { return p.then(function () { return loadScript(BASE + f); }); }, Promise.resolve());
     }
-    var mine = memberReady;
-    mine.then(function () {
+    loadMember().then(function () {
       if (window.KYLA_MEMBER) window.KYLA_MEMBER.show({ tab: tab || '', inquiry: inquiry || '' });
     }, function () {
-      if (memberReady !== mine) return;
-      memberReady = null;
+      if (memberReady) return;                 // 그 사이 다시 불러오기 시작했으면 그쪽이 알립니다
       text.textContent = T('회원 화면을 불러오지 못했습니다. 인터넷 연결을 확인한 뒤 다시 시도해 주세요.');
       retry.hidden = false;
     });
+  }
+  // 머리줄과 메뉴의 '로그아웃'. 로그인 파일이 아직 없으면 불러온 뒤 로그아웃합니다.
+  // 로그아웃하지 못하면(파일을 못 불러옴, 로그인을 쓸 수 없는 브라우저) 회원 화면으로 가서 까닭을 보여 줍니다.
+  var signingOut = false;
+  function signOutHere() {
+    if (signingOut) return;
+    signingOut = true;
+    var toMember = function () { signingOut = false; if (parseHash().view === 'member') route(); else location.hash = '#member'; };
+    loadMember().then(function () {
+      signingOut = false;
+      if (!window.KYLA_MEMBER || !window.KYLA_MEMBER.signOut()) toMember();
+    }, toMember);
   }
 
   /* ---------- 히어로: 최근 대회 표 ---------- */
@@ -1000,7 +1088,10 @@
     if ((m = h.match(/^notice-(.+)$/))) return { view: 'notice', id: m[1] };
     if ((m = h.match(/^event-(.+)$/))) return { view: 'schedule', id: m[1] };
     if ((m = h.match(/^album-(.+)$/))) return { view: 'gallery', id: m[1] };
-    if ((m = h.match(/^apply-(team|coach|inquiry)$/))) return { view: 'apply', tab: m[1] };
+    if ((m = h.match(/^apply-(team|coach|intl|inquiry)$/))) return { view: 'apply', tab: m[1] };
+    // 국제교류 탭의 두 회신서로 바로 가는 주소. 회신서가 제주 교류전 화면에 있던 때의 주소(#jeju2027-form)도 이리로 잇습니다.
+    if ((m = h.match(/^apply-(jeju|exchange)$/))) return { view: 'apply', tab: 'intl', pick: m[1], jump: 'intl-' + m[1] };
+    if (h === 'jeju2027-form') return { view: 'apply', tab: 'intl', pick: 'jeju', jump: 'intl-jeju' };
     if ((m = h.match(/^member-(profile|posts|inquiry)$/))) return { view: 'member', tab: m[1] };
     // '#about-org' 처럼 화면 이름으로 시작하는 주소는 그 화면 안의 구역으로 바로 갑니다.
     if ((m = h.match(/^([a-z0-9]+)-/)) && VIEWS.indexOf(m[1]) >= 0) {
@@ -1076,7 +1167,7 @@
       $('#album-detail').hidden = !item;
       if (item) { renderAlbumDetail(item); title = item.title; }
     }
-    if (r.view === 'apply') setTab(r.tab || 'team');
+    if (r.view === 'apply') { setTab(r.tab || 'team'); if (r.pick) setIntlPick(r.pick); }
     // 문의로 가는 단추(data-inquiry)를 누르고 왔으면 그 분류를 회원 화면의 문의하기에 미리 골라 둡니다.
     if (r.view === 'member') openMember(r.tab, pendingInquiry);
     pendingInquiry = null;
@@ -1163,6 +1254,8 @@
       return;
     }
     if ((el = t.closest('.tab[data-tab]'))) { setTab(el.getAttribute('data-tab')); return; }
+    if (t.closest('[data-signout]')) { closeMenu(); signOutHere(); return; }
+    if ((el = t.closest('[data-intl-pick]'))) { setIntlPick(el.getAttribute('data-intl-pick')); return; }
     if (t.closest('#mem-retry')) { openMember(parseHash().tab, ''); return; }
     if (t.closest('#roster-add')) {
       var row = addRosterRow();
@@ -1232,5 +1325,6 @@
   renderApply();
   renderContact();
   board = createBoard($('#playboard'), $('#board'));
+  showAccount();
   route();
 })();

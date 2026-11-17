@@ -161,6 +161,17 @@ main{display:block;overflow-x:clip}
 .hdr__login:hover{color:var(--red)}
 .hdr__login[aria-current="page"]{font-weight:900;color:var(--red)}
 .hdr__login-long{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+/* 로그인한 브라우저(html[data-account], app.js 의 '머리줄의 로그인 상태'가 붙입니다):
+   '회원 로그인' 자리가 '마이페이지'로 바뀌고, 넓은 화면에서는 그 옆에 '로그아웃'이 나옵니다(좁은 화면의 로그아웃은 메뉴 맨 아래).
+   직원(관리자) 계정이면(data-account="staff") '관리자 화면' 단추도 나옵니다. 좁은 화면에서는 '관리자'로 짧게 적습니다. */
+.hdr__login-my,.hdr__logout,.hdr__in .hdr__admin,.mnav__foot .mnav__signout{display:none}
+html[data-account] .hdr__login-long,html[data-account] .hdr__login-short{display:none}
+html[data-account] .hdr__login-my{display:inline}
+html[data-account] .mnav__foot .mnav__signout{display:inline-flex;min-height:0;font-size:inherit;font-weight:700;color:var(--muted)}
+html[data-account="staff"] .hdr__in .hdr__admin{display:inline-flex}
+.hdr__admin{flex:0 1 auto;min-width:0;min-height:34px;padding:0 11px;font-size:14px;white-space:nowrap}
+.hdr__admin-long{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.hdr__admin-short{overflow:hidden;text-overflow:ellipsis}
 
 .mnav{position:fixed;left:0;right:0;bottom:0;top:calc(var(--hdr) + 4px + env(safe-area-inset-top));z-index:49;background:#fff;overflow-y:auto;padding:4px 0 calc(28px + env(safe-area-inset-bottom))}
 .mnav__link{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:15px max(var(--gutter),env(safe-area-inset-right)) 15px max(var(--gutter),env(safe-area-inset-left));font-weight:900;font-size:22px;letter-spacing:-0.04em;text-decoration:none;border-bottom:1px solid var(--line)}
@@ -375,6 +386,8 @@ a.row:hover .ico{color:var(--red)}
 .cta h2{font-weight:900;font-size:22px;line-height:1.35;letter-spacing:-0.035em}
 .cta p{color:var(--muted);max-width:32em}
 .cta--top{margin-top:36px}
+.cta .cta__due{margin-top:8px;font-weight:700;color:var(--ink)}
+.cta__due strong{font-weight:900;margin-right:10px}
 
 /* 과목 */
 .subjects{display:grid;gap:0;border-top:2px solid var(--ink)}
@@ -449,6 +462,26 @@ a.row:hover .ico{color:var(--red)}
 .tabs{display:flex;gap:0;border-bottom:2px solid var(--ink)}
 .tab{flex:1 1 0;min-width:0;min-height:50px;padding:0 6px;border:0;background:none;font-weight:700;font-size:16px;color:var(--muted);white-space:nowrap}
 .tab[aria-selected="true"]{background:var(--ink);color:#fff;font-weight:900}
+/* 신청·문의의 탭은 네 개라 좁은 화면에서는 두 줄(2×2)로 놓습니다. 칸 사이의 줄은 바탕색으로 그립니다. */
+@media (max-width:559px){
+  .tabs--four{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px;border:2px solid var(--ink);background:var(--ink)}
+  .tabs--four .tab{min-height:48px;background:#fff;white-space:normal;line-height:1.2}
+  .tabs--four .tab[aria-selected="true"]{background:var(--ink)}
+}
+/* 국제교류 탭: 두 회신서 가운데 하나를 고르는 단추. 고른 쪽은 테두리가 진해지고 동그라미가 채워집니다. */
+.picks{display:grid;gap:10px}
+.pick{display:grid;grid-template-columns:20px minmax(0,1fr);column-gap:12px;row-gap:3px;align-items:start;padding:15px 16px 16px;border:0;background:#fff;box-shadow:inset 0 0 0 2px var(--line);color:var(--ink);text-align:left;cursor:pointer}
+.pick::before{content:"";grid-row:1 / span 2;width:20px;height:20px;margin-top:3px;border-radius:50%;box-shadow:inset 0 0 0 2px var(--muted)}
+.pick__title{font-weight:900;font-size:17px;line-height:1.4;letter-spacing:-0.03em}
+.pick__text{grid-column:2;font-size:14.5px;line-height:1.55;color:var(--muted)}
+.pick:hover{box-shadow:inset 0 0 0 2px var(--ink)}
+.pick[aria-pressed="true"]{box-shadow:inset 0 0 0 2px var(--ink);background:var(--tint)}
+.pick[aria-pressed="true"]::before{background:var(--ink);box-shadow:inset 0 0 0 2px var(--ink),inset 0 0 0 5px #fff}
+.replyform{scroll-margin-top:calc(var(--hdr) + 20px)}
+/* 앞의 회신서가 숨겨져 있을 때도 간격을 지킵니다(아래 '.panel > [hidden] + *' 보다 앞섭니다). */
+.panel > .replyform,.panel > [hidden] + .replyform{margin-top:40px}
+.replyform > .secintro{max-width:34em}
+.replyform > .note,.replyform > .form{margin-top:26px}
 .panel{padding-top:28px;padding-bottom:64px}
 .panel > * + *{margin-top:26px}
 .panel > [hidden] + *{margin-top:0}
@@ -605,6 +638,7 @@ html[lang="en"] .mem__facts > div{grid-template-columns:128px minmax(0,1fr)}
    넓은 화면
    ========================================================================== */
 @media (min-width:640px){
+  .picks{grid-template-columns:repeat(2,minmax(0,1fr))}
   .pair{grid-template-columns:repeat(2,minmax(0,1fr))}
   .albums{grid-template-columns:repeat(2,minmax(0,1fr))}
   .photos{grid-template-columns:repeat(3,minmax(0,1fr))}
@@ -702,6 +736,13 @@ html[lang="en"] .mem__facts > div{grid-template-columns:128px minmax(0,1fr)}
   .hdr__login::after{right:auto;left:2px}
   .hdr__login-long{position:static;width:auto;height:auto;overflow:visible;clip-path:none}
   .hdr__login-short{display:none}
+  /* 로그인한 뒤: 마이페이지 | 로그아웃 [관리자 화면] */
+  html[data-account] .hdr__logout{position:relative;display:inline-flex;flex:none;align-items:center;align-self:center;padding:10px 4px 10px 15px;border:0;background:none;font:inherit;font-weight:500;font-size:15px;letter-spacing:-0.03em;color:var(--muted);white-space:nowrap;cursor:pointer}
+  .hdr__logout::before{content:"";position:absolute;left:5px;top:50%;width:1px;height:14px;margin-top:-7px;background:var(--line)}
+  .hdr__logout:hover{color:var(--red)}
+  .hdr__admin{flex:none;margin-left:12px;min-height:38px;padding:0 15px;font-size:14.5px}
+  .hdr__admin-long{position:static;width:auto;height:auto;overflow:visible;clip-path:none}
+  .hdr__admin-short{display:none}
   .mnav{display:none !important}
   .org{max-width:none}
   .org > li > .org__box,.org__next > li > .org__box{width:300px;margin:0 auto;text-align:center}
@@ -739,12 +780,50 @@ html:not([lang="ko"]) [lang="ko"]{font-family:"Gothic A1","Apple SD Gothic Neo",
 html:not([lang="ko"]) .tbl tbody th{white-space:normal;width:32%}
 
 /* 좁은 화면에서는 로고 옆 단체 이름을 접습니다. 머리줄 오른쪽에 로그인과 메뉴가 함께 들어가야 하고,
-   영어·일본어 이름은 한국어보다 길어 조금 더 넓은 화면까지 접습니다. */
-@media (max-width:359px){
+   영어·일본어 이름은 한국어보다 길어 조금 더 넓은 화면까지 접습니다.
+   폭은 실제 글꼴(Gothic A1, Kanit, Noto Sans JP)로 잰 것입니다: 한국어는 380px, 영어·일본어는 430px 부터 이름이 들어갑니다. */
+@media (max-width:379px){
   .brand__name{display:none}
 }
-@media (max-width:419px){
+@media (max-width:429px){
   html:not([lang="ko"]) .brand__name{display:none}
+}
+/* 로그인한 브라우저의 머리줄(html[data-account]). 로그인하지 않은 방문자의 머리줄은 여기서 달라지지 않습니다.
+   좁은 화면: '마이페이지'가 '로그인'보다 길어 로고 옆 이름을 조금 더 넓은 화면까지 접고, 아주 좁으면 '메뉴' 글자는 화면 낭독기에만 읽어 줍니다(아이콘은 그대로).
+   직원(관리자) 계정은 '관리자' 단추까지 들어가야 해서 더 넓은 화면까지 그렇게 하고, 아주 좁으면 간격과 글자를 조금 줄입니다. */
+@media (max-width:419px){
+  html[data-account] .brand__name{display:none}
+}
+@media (max-width:449px){
+  html[data-account]:not([lang="ko"]) .brand__name{display:none}
+}
+@media (max-width:379px){
+  html[data-account] #menu-label{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+}
+@media (max-width:539px){
+  html[data-account="staff"] .brand__name{display:none}
+  html[data-account="staff"] #menu-label{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+}
+@media (max-width:379px){
+  html[data-account="staff"] .hdr__in{gap:6px}
+  html[data-account="staff"] .hdr__login{padding:0 6px;font-size:14px}
+  html[data-account="staff"] .hdr__admin{padding:0 8px;font-size:13px}
+}
+@media (max-width:339px){
+  html[data-account="staff"] .brand__mark{height:24px}
+}
+/* 넓은 화면(PC): 메뉴 옆에 '마이페이지 | 로그아웃'(직원은 '관리자 화면'까지)이 들어가도록, 창이 넓지 않으면 로고 옆 이름을 접습니다.
+   일본어 메뉴는 길어 간격도 줄입니다. 직원 계정은 그 폭에서 '신청·문의' 단추를 접습니다(커뮤니티 메뉴와 화면 아래에서 갈 수 있습니다). */
+@media (min-width:1100px) and (max-width:1259px){
+  html[data-account] .brand__name{display:none}
+  html[data-account][lang="ja"] .nav__top{padding-inline:8px}
+  html[data-account][lang="ja"] a.nav__top[aria-current="page"]::after,html[data-account][lang="ja"] .nav__item.is-current .nav__top::after{left:8px;right:8px}
+  html[data-account="staff"] .hdr__cta{display:none}
+}
+@media (min-width:1260px){
+  html[data-account="staff"]:not([lang="ko"]) .brand__name{display:none}
+  html[data-account="staff"][lang="ko"] .nav__top{padding-inline:9px}
+  html[data-account="staff"][lang="ko"] a.nav__top[aria-current="page"]::after,html[data-account="staff"][lang="ko"] .nav__item.is-current .nav__top::after{left:9px;right:9px}
 }
 
 /* ---------- English ----------
