@@ -1174,7 +1174,7 @@
             </fieldset>
             <div class="form__grid form__grid--2">
               <div class="field"><label class="field__label" for="mf-team">소속</label><input class="input" id="mf-team" maxlength="80" autocomplete="organization" placeholder="팀, 클럽 또는 학교"></div>
-              <div class="field"><label class="field__label" for="mf-phone">휴대전화</label><input class="input" id="mf-phone" type="tel" maxlength="40" inputmode="tel" autocomplete="tel" placeholder="010-0000-0000" aria-describedby="mf-phone-hint"><p class="field__hint" id="mf-phone-hint">선수는 보호자 연락처를 적어 주세요.</p></div>
+              <div class="field"><label class="field__label" for="mf-phone"><span>휴대전화</span><em>필수</em></label><input class="input" id="mf-phone" type="tel" maxlength="40" inputmode="tel" autocomplete="tel" placeholder="010-0000-0000" required aria-describedby="mf-phone-hint" data-msg="휴대전화 번호를 입력해 주세요."><p class="field__hint" id="mf-phone-hint">선수는 보호자 연락처를 적어 주세요.</p></div>
             </div>
             <div class="form__grid form__grid--2" id="mf-more" hidden>
               <fieldset class="field" id="mf-birth-field" hidden>

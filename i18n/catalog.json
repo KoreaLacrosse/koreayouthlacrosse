@@ -3306,5 +3306,13 @@
  "자녀 선수 등록이나 시합 소식 같은 회원 화면도 쓰려면 회원으로도 가입할 수 있습니다. <1>회원으로도 가입하기</1>": {
   "en": "If you also want to use the member page, for example to register a child player or see match updates, you can join as a member too. <1>Join as a member too</1>",
   "ja": "お子さまの選手登録や試合のお知らせなど、会員ページも使いたい場合は、会員としても登録できます。<1>会員としても登録する</1>"
+ },
+ "휴대전화 번호를 입력해 주세요.": {
+  "en": "Enter your mobile phone number.",
+  "ja": "携帯電話番号を入力してください。"
+ },
+ "휴대전화 번호를 숫자로 적어 주세요. 예: 010-0000-0000": {
+  "en": "Enter the mobile number in digits, e.g. 010-0000-0000.",
+  "ja": "携帯電話番号を数字で入力してください。例：010-0000-0000"
  }
 }

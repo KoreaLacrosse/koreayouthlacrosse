@@ -499,6 +499,11 @@
       contactName: me.name || '', email: email(), phone: me.phone || '', joinedOn: '', note: '', source: 'guardian', guardian: u.uid, updatedBy: u.uid
     };
   }
+  // 번호처럼 생겼는지: 숫자 9~15자리. 나라 번호의 +, 띄어쓰기, -, 괄호, 점은 괜찮습니다.
+  function okPhone(s) {
+    var digits = s.replace(/\D/g, '');
+    return /^[0-9+\-(). ]+$/.test(s) && digits.length >= 9 && digits.length <= 15;
+  }
   function submitForm(ev) {
     ev.preventDefault();
     var form = $('mem-form'), first = checkRequired(form), v = readForm(), u = user, join = formMode === 'join';
@@ -509,6 +514,8 @@
     else if (!join && isParent() && !v.parent && shownKids().length) {
       mark(typeBoxes()[0], T('등록한 자녀 선수가 있어 학부모를 뺄 수 없습니다. 자녀 선수 등록을 먼저 지워 주세요.'));
     }
+    // 휴대전화는 필수입니다(2026-11-18 담당자 요청). 비어 있는지는 위의 checkRequired 가 보고, 여기서는 번호처럼 생겼는지만 봅니다.
+    if (v.phone && !okPhone(v.phone)) mark($('mf-phone'), T('휴대전화 번호를 숫자로 적어 주세요. 예: 010-0000-0000'));
     if (v.player) {
       var bad = v.birth.error || (!v.birth.value ? T('출생 연월일을 골라 주세요.')
         : (is14(v.birth.value) ? '' : T('만 14세 미만은 본인이 가입할 수 없습니다. 보호자가 학부모로 가입해 자녀를 선수로 등록해 주세요.')));
@@ -1055,6 +1062,8 @@
       if (state === 'failed' && user) { load(); return; }
       applyWant();
     },
+    // 회원 화면을 열지 않고 로그인 상태 확인만 시작합니다(app.js 의 checkAccountSoon). 머리줄의 표시를 실제 상태로 고치려는 것입니다.
+    check: function () { if (!started) { started = true; start(); } },
     // 머리줄과 메뉴의 '로그아웃'(app.js). 회원 화면을 연 적이 없어도 됩니다. 로그인을 쓸 수 없는 브라우저면 false
     signOut: function () {
       if (!started) { started = true; leaving = true; start(); }

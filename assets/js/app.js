@@ -783,7 +783,8 @@
 
   /* ---------- 회원 화면 (#member) ----------
      회원 화면의 동작(assets/js/member.js)과 구글 로그인에 쓰는 파일(assets/vendor/)은 이 화면을 처음 열 때 불러옵니다.
-     다른 화면만 보는 방문자는 이 파일들을 내려받지 않습니다. member.js 는 아래 KYLA_APP 으로 문구(T)와 설정을 받습니다. */
+     다른 화면만 보는 방문자는 이 파일들을 내려받지 않습니다(이 브라우저에 로그인이 남아 있을 때만 예외: 아래 checkAccountSoon).
+     member.js 는 아래 KYLA_APP 으로 문구(T)와 설정을 받습니다. */
   window.KYLA_APP = { T: T, lang: LANG, base: BASE, cfg: CFG, fmtLong: fmtLong, fmtMD: fmtMD, weekday: weekday, account: setAccount };
   var memberReady = null;
   function loadScript(src) {
@@ -805,6 +806,46 @@
       mine.then(null, function () { if (memberReady === mine) memberReady = null; });
     }
     return memberReady;
+  }
+  /* 로그인이 남아 있는 방문자의 머리줄 바로잡기 (2026-11-18 담당자 요청: 관리자가 로그인해 있으면 '관리자 화면' 단추가 바로 보여야 합니다)
+     머리줄은 브라우저에 남긴 표시(kyla.account)만 보고 그리므로 실제와 다를 수 있습니다. 표시가 생기기 전에 로그인해 둔 브라우저에는 표시가 없고,
+     그 사이 관리자가 됐거나 로그인이 풀렸으면 표시가 낡았습니다. 그래서 이 브라우저에 로그인이 남아 있다는 단서가 있을 때만
+     (머리줄 표시가 있거나, 구글 로그인 파일이 로그인 정보를 넣어 두는 자리에 값이 있을 때) 화면을 다 그린 뒤 한가한 틈에
+     회원 화면 파일을 불러 실제 로그인 상태로 고칩니다. 단서가 없는 방문자(공지와 일정만 보는 대부분의 학부모)는 지금처럼
+     로그인 파일을 내려받지 않습니다. */
+  // 로그인 파일(Firebase)이 로그인 정보를 두는 자리를 읽기만 합니다. 없는 저장소를 새로 만들지 않습니다.
+  function hasSession() {
+    var key = 'firebase:authUser:' + FB.apiKey + ':[DEFAULT]';
+    try { if (window.localStorage.getItem(key)) return Promise.resolve(true); } catch (e) { /* 저장소를 못 쓰는 브라우저 */ }
+    return new Promise(function (resolve) {
+      var done = false, end = function (v) { if (!done) { done = true; resolve(v); } };
+      window.setTimeout(function () { end(false); }, 2500);
+      try {
+        var req = window.indexedDB.open('firebaseLocalStorageDb');
+        req.onupgradeneeded = function () { try { req.transaction.abort(); } catch (e) { /* 이미 끝남 */ } };      // 없던 저장소: 만들지 않고 그만둡니다
+        req.onerror = function (ev) { if (ev && ev.preventDefault) ev.preventDefault(); end(false); };
+        req.onsuccess = function () {
+          var db = req.result;
+          try {
+            if (!db.objectStoreNames.contains('firebaseLocalStorage')) { db.close(); end(false); return; }
+            var get = db.transaction('firebaseLocalStorage').objectStore('firebaseLocalStorage').get(key);
+            get.onsuccess = function () { db.close(); end(!!(get.result && get.result.value)); };
+            get.onerror = function (ev) { if (ev && ev.preventDefault) ev.preventDefault(); db.close(); end(false); };
+          } catch (e) { try { db.close(); } catch (e2) { /* 닫힘 */ } end(false); }
+        };
+      } catch (e) { end(false); }
+    });
+  }
+  function checkAccountSoon() {
+    if (!FB) return;
+    var go = function () {
+      (readAccount() ? Promise.resolve(true) : hasSession()).then(function (yes) {
+        if (!yes) return;
+        loadMember().then(function () { if (window.KYLA_MEMBER && window.KYLA_MEMBER.check) window.KYLA_MEMBER.check(); }, function () { /* 못 불러옴: 머리줄은 그대로 */ });
+      });
+    };
+    if (window.requestIdleCallback) window.requestIdleCallback(go, { timeout: 3000 });
+    else window.setTimeout(go, 1200);
   }
   // tab: 열어 둘 탭(profile | posts | inquiry), inquiry: 미리 골라 둘 문의 분류
   function openMember(tab, inquiry) {
@@ -1327,4 +1368,5 @@
   board = createBoard($('#playboard'), $('#board'));
   showAccount();
   route();
+  checkAccountSoon();
 })();
