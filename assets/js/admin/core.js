@@ -307,6 +307,7 @@
     var d = $('adm-ask'), yes = $('adm-ask-yes');
     $('adm-ask-title').textContent = o.title;
     $('adm-ask-text').textContent = o.text || '';
+    $('adm-ask-text').hidden = !o.text;
     yes.textContent = o.yes || '확인';
     yes.className = 'btn btn--sm' + (o.danger ? '' : ' btn--ink');
     return new Promise(function (resolve) {
@@ -955,7 +956,10 @@
     $('adm-google').addEventListener('click', signIn);
     $('adm-switch').addEventListener('click', signIn);
     $('adm-recheck').addEventListener('click', verify);
-    $('adm-signout').addEventListener('click', A.signOut);
+    // '로그아웃' 단추는 먼저 되묻습니다(2026-11-18 담당자 요청). 로그인이 풀려서 하는 로그아웃(A.signOut 을 바로 부르는 곳)은 묻지 않습니다.
+    $('adm-signout').addEventListener('click', function () {
+      A.ui.ask({ title: '로그아웃하시겠습니까?', yes: '로그아웃' }).then(function (yes) { if (yes) A.signOut(); });
+    });
     $('adm-dlg-x').addEventListener('click', function () { A.ui.close(); });
     $('adm-dlg').addEventListener('cancel', function (ev) { ev.preventDefault(); A.ui.close(); });      // Esc
     $('adm-dlg-form').addEventListener('submit', function (ev) { ev.preventDefault(); });

@@ -461,6 +461,16 @@ a.row:hover .ico{color:var(--red)}
 .lb__nav{display:flex;justify-content:center;gap:16px}
 .lb button{display:inline-flex;align-items:center;justify-content:center;min-width:48px;min-height:48px;border:0;background:none;color:#fff}
 
+/* ---------- 되묻는 창 (로그아웃 확인, index.html 의 #ask-signout) ----------
+   관리자 화면의 되묻는 창(admin.css 의 .adm-dlg--ask)과 같은 모양입니다.
+   dialog 자체에는 display 를 주지 않습니다(닫혀 있을 때도 보이게 됩니다). dialog 를 모르는 오래된 브라우저에서는 감춰 둡니다. */
+.ask{width:min(440px,calc(100vw - 32px));max-width:none;max-height:calc(100dvh - 32px);margin:auto;padding:0;border:0;border-top:4px solid var(--ink);background:#fff;color:var(--ink)}
+.ask:not([open]){display:none}
+.ask::backdrop{background:rgba(20,33,63,.55)}
+.ask__box{padding:22px 22px 18px}
+.ask__box h2{text-wrap:balance}
+.ask__btns{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:8px 20px;margin-top:26px;padding-right:6px}
+
 /* ---------- 신청·문의 ---------- */
 .tabs{display:flex;gap:0;border-bottom:2px solid var(--ink)}
 .tab{flex:1 1 0;min-width:0;min-height:50px;padding:0 6px;border:0;background:none;font-weight:700;font-size:16px;color:var(--muted);white-space:nowrap}

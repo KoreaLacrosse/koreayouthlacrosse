@@ -785,7 +785,8 @@
      회원 화면의 동작(assets/js/member.js)과 구글 로그인에 쓰는 파일(assets/vendor/)은 이 화면을 처음 열 때 불러옵니다.
      다른 화면만 보는 방문자는 이 파일들을 내려받지 않습니다(이 브라우저에 로그인이 남아 있을 때만 예외: 아래 checkAccountSoon).
      member.js 는 아래 KYLA_APP 으로 문구(T)와 설정을 받습니다. */
-  window.KYLA_APP = { T: T, lang: LANG, base: BASE, cfg: CFG, fmtLong: fmtLong, fmtMD: fmtMD, weekday: weekday, account: setAccount };
+  window.KYLA_APP = { T: T, lang: LANG, base: BASE, cfg: CFG, fmtLong: fmtLong, fmtMD: fmtMD, weekday: weekday, account: setAccount,
+                      askSignOut: function () { return askSignOut(); } };
   var memberReady = null;
   function loadScript(src) {
     return new Promise(function (resolve, reject) {
@@ -863,6 +864,29 @@
       retry.hidden = false;
     });
   }
+  /* ---------- 로그아웃 확인 창 (2026-11-18 담당자 요청) ----------
+     머리줄, 휴대폰 메뉴, 회원 화면의 '로그아웃'은 모두 누르면 먼저 이 창(index.html 의 #ask-signout)으로 되묻습니다.
+     '로그아웃'을 누르면 true, '취소'나 Esc 는 false 로 끝납니다. 취소하면 누른 단추로 돌아갑니다.
+     창 바깥을 눌러서는 닫히지 않습니다(관리자 화면의 되묻는 창과 같습니다. 단추를 두 번 누르는 사람에게 창이 떴다 바로 사라지지 않게).
+     이 창을 쓸 수 없는 오래된 브라우저에서는 브라우저의 확인 창으로 묻습니다. */
+  var askEnd = null;
+  function askSignOut() {
+    var d = $('#ask-signout');
+    if (askEnd) askEnd(false);
+    return new Promise(function (resolve) {
+      if (!d || typeof d.showModal !== 'function') { resolve(window.confirm(T('로그아웃하시겠습니까?'))); return; }
+      askEnd = function (yes) { askEnd = null; if (d.open) d.close(); resolve(!!yes); };
+      d.showModal();
+      $('#ask-signout-no').focus();
+    });
+  }
+  (function () {
+    var d = $('#ask-signout');
+    if (!d) return;
+    $('#ask-signout-yes').addEventListener('click', function () { if (askEnd) askEnd(true); });
+    $('#ask-signout-no').addEventListener('click', function () { if (askEnd) askEnd(false); });
+    d.addEventListener('close', function () { if (askEnd && !d.open) askEnd(false); });      // Esc, 휴대폰의 뒤로 가기
+  })();
   // 머리줄과 메뉴의 '로그아웃'. 로그인 파일이 아직 없으면 불러온 뒤 로그아웃합니다.
   // 로그아웃하지 못하면(파일을 못 불러옴, 로그인을 쓸 수 없는 브라우저) 회원 화면으로 가서 까닭을 보여 줍니다.
   var signingOut = false;
@@ -1188,6 +1212,7 @@
 
   function route() {
     var r = parseHash(), title = VIEW_NAMES[r.view], item;
+    if (askEnd) askEnd(false);      // 로그아웃 확인 창이 떠 있는 채로 화면이 바뀌면(뒤로 가기) 닫습니다
     $$('.view').forEach(function (v) { v.classList.toggle('is-active', v.getAttribute('data-view') === r.view); });
 
     if (r.view === 'notice') {
@@ -1295,7 +1320,11 @@
       return;
     }
     if ((el = t.closest('.tab[data-tab]'))) { setTab(el.getAttribute('data-tab')); return; }
-    if (t.closest('[data-signout]')) { closeMenu(); signOutHere(); return; }
+    if (t.closest('[data-signout]')) {
+      // 먼저 되묻습니다. 휴대폰 메뉴는 그대로 열어 두었다가(취소하면 보던 메뉴로 돌아갑니다) 로그아웃할 때 닫습니다.
+      askSignOut().then(function (yes) { if (yes) { closeMenu(); signOutHere(); } });
+      return;
+    }
     if ((el = t.closest('[data-intl-pick]'))) { setIntlPick(el.getAttribute('data-intl-pick')); return; }
     if (t.closest('#mem-retry')) { openMember(parseHash().tab, ''); return; }
     if (t.closest('#roster-add')) {
@@ -1323,6 +1352,7 @@
       if (ev.key === 'ArrowRight') lbShow(lbIndex + 1);
       return;
     }
+    if (ev.key === 'Escape' && askEnd) return;      // 로그아웃 확인 창이 떠 있으면 그 창만 닫힙니다(아래의 메뉴는 그대로)
     if (ev.key === 'Escape') {
       var drop = $('.nav__item.is-open');
       if (drop) { closeDropdowns(); $('.nav__top', drop).focus(); }

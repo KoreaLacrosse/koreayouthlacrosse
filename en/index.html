@@ -1454,6 +1454,17 @@
   </div>
 </div>
 
+<!-- 로그아웃 확인 창. 머리줄, 휴대폰 메뉴, 회원 화면의 '로그아웃'은 모두 누르면 먼저 이 창으로 되묻습니다(app.js 의 askSignOut) -->
+<dialog class="ask" id="ask-signout" aria-labelledby="ask-signout-title">
+  <div class="ask__box">
+    <h2 class="t-3" id="ask-signout-title">Do you want to sign out?</h2>
+    <div class="ask__btns">
+      <button class="linkbtn" type="button" id="ask-signout-no">Cancel</button>
+      <button class="btn btn--sm btn--ink" type="button" id="ask-signout-yes">Sign out</button>
+    </div>
+  </div>
+</dialog>
+
 <noscript><p style="padding:20px;font-weight:700">Notices and the schedule are shown only when JavaScript is turned on.</p></noscript>
 
 <script src="../assets/js/i18n.js"></script>

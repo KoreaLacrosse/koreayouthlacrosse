@@ -9,13 +9,20 @@ body.adm{padding-bottom:0;background:#fff;--series:var(--blue);--pad:20px}
 
 /* ---------- 위쪽 띠 ---------- */
 .adm-bar{border-bottom:4px solid var(--ink);background:#fff}
-.adm-bar__in{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:60px;padding-inline:var(--pad)}
-.adm-bar__brand{flex:none;display:flex;align-items:center;gap:12px;text-decoration:none;font-weight:900;font-size:17px;letter-spacing:-0.03em}
-.adm-bar__brand img{width:92px;height:auto}
-.adm-bar__brand span{padding-left:12px;border-left:2px solid var(--line);white-space:nowrap}
+/* 좁은 화면(400px 아래)에서는 로고와 사이를 조금 줄여 로고, '관리자', 로그아웃, '홈으로'를 한 줄에 둡니다. 360px 아래에서는 '관리자' 글자를 감춥니다. */
+.adm-bar__in{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:60px;padding-inline:var(--pad)}
+.adm-bar__brand{flex:none;display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:900;font-size:17px;letter-spacing:-0.03em}
+.adm-bar__brand img{width:80px;height:auto}
+.adm-bar__brand span{padding-left:10px;border-left:2px solid var(--line);white-space:nowrap}
+.adm-bar__side{display:flex;align-items:center;gap:12px;min-width:0}
 .adm-bar__who{display:flex;align-items:center;gap:14px;min-width:0;font-size:14px;color:var(--muted)}
 .adm-bar__who span{display:none;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}   /* 좁은 화면에서는 계정을 감춥니다 */
 .adm-bar__who .linkbtn{flex:none;color:var(--ink)}
+/* '홈으로' 단추: 방문자 화면 머리줄의 '관리자 화면' 단추와 같은 모양, 같은 자리(오른쪽 끝)입니다 */
+.adm-bar__home{flex:none;min-height:34px;padding:0 10px;font-size:14px;white-space:nowrap}
+@media (max-width:359px){
+  .adm-bar__brand span{display:none}
+}
 
 /* ---------- 들어오기 전: 로그인, 권한 없음 ---------- */
 .adm-gates{padding:36px var(--pad) 72px}
@@ -236,6 +243,14 @@ body.adm{padding-bottom:0;background:#fff;--series:var(--blue);--pad:20px}
 .adm-toast.is-error{box-shadow:inset 5px 0 0 var(--red)}
 .adm-tip{position:fixed;z-index:40;max-width:260px;padding:6px 10px;background:var(--ink);color:#fff;font-size:13.5px;font-weight:500;line-height:1.45;pointer-events:none}
 
+@media (min-width:400px){
+  .adm-bar__in{gap:16px}
+  .adm-bar__brand{gap:12px}
+  .adm-bar__brand img{width:92px}
+  .adm-bar__brand span{padding-left:12px}
+  .adm-bar__side{gap:14px}
+  .adm-bar__home{padding:0 12px}
+}
 @media (min-width:560px){
   .adm-filters{grid-template-columns:repeat(3,minmax(0,1fr))}
   .adm-tiles{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
@@ -253,6 +268,8 @@ body.adm{padding-bottom:0;background:#fff;--series:var(--blue);--pad:20px}
 }
 @media (min-width:900px){
   body.adm{--pad:28px}
+  .adm-bar__side{gap:16px}
+  .adm-bar__home{min-height:38px;padding:0 15px;font-size:14.5px}
   .adm-shell{display:grid;grid-template-columns:196px minmax(0,1fr);align-items:start;max-width:1680px}
   .adm-nav{position:sticky;top:0;border-bottom:0;padding:26px 0 26px var(--pad);overflow:visible}
   .adm-nav ul{display:grid;gap:2px;padding:0}

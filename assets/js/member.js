@@ -314,6 +314,10 @@
     });
   }
   function signOut() { if (auth) auth.signOut().catch(function () {}); }
+  // 회원 화면의 '로그아웃' 단추: 먼저 되묻습니다(app.js 의 로그아웃 확인 창). 로그인이 풀려서 하는 로그아웃은 묻지 않습니다.
+  function askOut() {
+    (APP.askSignOut ? APP.askSignOut() : Promise.resolve(true)).then(function (yes) { if (yes) signOut(); });
+  }
 
   // 카카오톡·인스타그램 같은 앱 안에서 열린 화면에서는 구글이 로그인을 막습니다. 다른 브라우저로 여는 길을 알려 줍니다.
   function inApp() {
@@ -1027,7 +1031,7 @@
     $('mem').addEventListener('click', function (ev) {
       var t = ev.target.closest ? ev.target.closest('[data-mem-signout],[data-mtab]') : null;
       if (!t) return;
-      if (t.hasAttribute('data-mem-signout')) signOut(); else { flash(''); setTab(t.getAttribute('data-mtab')); }
+      if (t.hasAttribute('data-mem-signout')) askOut(); else { flash(''); setTab(t.getAttribute('data-mtab')); }
     });
     $('mem').addEventListener('keydown', function (ev) {
       var t = ev.target.closest ? ev.target.closest('[data-mtab]') : null;
